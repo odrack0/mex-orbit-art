@@ -10,17 +10,27 @@ violarlo invalida el render para el pipeline:
 5. **1024×1024**, la nave ocupando ~70% del lienzo.
 6. Escala relativa coherente entre naves (la Phoenix es pequeña; anotada en cada prompt).
 
-Al recibir el render: validar la silueta a tamaño de juego (~150 px) **antes** de vectorizar.
+Al recibir el render: validar la silueta a tamaño de juego (~150 px) antes de exportar.
+
+## Post-proceso (pipeline PNG — dictamen 2026-08-25)
+
+**El master canónico es el render recortado** (`source/renders/*-cut.png`); los exports del juego son
+downscale Lanczos directo — cero pérdida. La vectorización quedó retirada del pipeline (posterizaba el
+brillo y mordía los contornos); `tools/vectorize-ship.py` se conserva solo como herramienta de estilo.
 
 ```bash
-py -3 tools/chroma-key.py source/renders/<asset>.png source/renders/<asset>-cut.png
-py -3 tools/vectorize-ship.py source/renders/<asset>-cut.png ships/<asset>.svg 16 3 0.9 6 10 0.34
+py -3 tools/chroma-key.py source/renders/<Asset>.jpeg source/renders/<asset>-cut.png
+py -3 tools/export-png.py            # regenera todos los exports (naves/NPCs 512, estación 1024, props 256)
 ```
 
-(Parámetros base del README del pipeline; la pasada cromática se apaga con `0` en cascos de metal neutro.)
+Extras del pipeline:
+- `tools/extract-emissive.py` — capa emisiva (núcleo/venas/reactor) para glow animado en el juego.
+- `tools/obsidiana.py` — pasada de coherencia del catálogo (casco obsidiana, especulares oro, decorado turquesa), con dial de fuerza.
 
-| Asset | Archivo de prompt | Destino |
+| Asset | Archivo de prompt | Export |
 |---|---|---|
-| Nave inicial Phoenix | [`phoenix.md`](phoenix.md) | `ships/phoenix.svg` |
-| Alien Vex | [`vex.md`](vex.md) | `npcs/vex.svg` |
-| Estación base | [`station.md`](station.md) | `world/props/station.svg` |
+| Nave inicial Phoenix | [`phoenix.md`](phoenix.md) | `exports/phoenix.png` (512) |
+| Alien Vex | [`vex.md`](vex.md) | `exports/vex.png` + `vex-emissive.png` (512) |
+| Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
+| Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` (256) — **falta render** |
+| Portal | [`portal.md`](portal.md) | `exports/portal.png` (256) — **falta render** |

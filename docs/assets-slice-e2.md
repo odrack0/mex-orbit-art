@@ -3,9 +3,9 @@
 **Actualizado: 2026-08-25.** El slice (*login → volar → matar un Vex → recoger carga → base → refinar →
 almacén → vender*) necesita exactamente esto para ser jugable. Regla de origen por tipo:
 
-- **Naves, NPCs y estación** → pipeline IA aprobado (12-ago): render cenital 1024 → `chroma-key.py` → `vectorize-ship.py`. **Jamás dibujados a mano.**
+- **Todo lo renderizado** (naves, NPCs, estación, caja, portal) → pipeline **PNG directo** (dictamen 2026-08-25): render cenital 1024 → `chroma-key.py` → downscale Lanczos (`export-png.py`) + capas emisivas (`extract-emissive.py`) + pasada de coherencia opcional (`obsidiana.py`). **Jamás dibujados a mano; la vectorización quedó retirada del pipeline** (posterizaba el brillo y mordía contornos — comparación del 25-ago).
+- Tamaños de export (dial): naves/NPCs **512** (aguantan el zoom 3× de cámara), estación **1024**, props **256**.
 - **Fondos y efectos** → procedurales, generados por `tools/gen-slice-procedural.py` (deterministas, regenerables).
-- **Props menores** (caja, portal) → SVG geométrico con la identidad N (metal oscuro + emisivos cian/violeta), sujetos a dictamen.
 - **UI** → cubierta por el sistema de diseño N (`mex-orbit-docs/05-arte/03-sistema-diseno-ui.md`), no vive en este repo.
 
 ## Estado

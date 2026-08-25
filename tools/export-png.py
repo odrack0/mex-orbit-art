@@ -1,74 +1,45 @@
 # -*- coding: utf-8 -*-
-"""Exporta PNGs para el cliente desde los SVG vectorizados (paths M/L/Z).
+"""Exporta los assets del juego desde los renders recortados: PNG DIRECTO.
 
-El cliente consume exportaciones del pipeline, no los SVG fuente (pesan MB y
-Godot no necesita re-trazarlos). Requiere matplotlib.
+Dictamen 2026-08-25: el master canonico es el render recortado (source/renders/
+*-cut.png); los exports son downscale Lanczos directo — cero perdida. El SVG
+vectorizado queda como herramienta opcional de estilo, no como paso del pipeline
+(posterizaba el brillo y mordia los contornos).
+
+Tamaños (dial del pipeline): naves y NPCs 512 (aguantan el zoom 3x de camara),
+estacion 1024 (es 2x mas grande en pantalla), props 256.
 
 Uso:  py -3 tools/export-png.py
-Emite en exports/: phoenix.png (256), vex.png (256), station.png (512)
 """
 import os
-import re
+import subprocess
+import sys
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-from matplotlib.path import Path as MPath
-from matplotlib.patches import PathPatch
+from PIL import Image
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# (recorte, export, lado, canal_emisivo o None, umbral)
 PIEZAS = [
-    ('ships/phoenix.svg', 'exports/phoenix.png', 256),
-    ('npcs/vex.svg', 'exports/vex.png', 256),
-    ('world/props/station.svg', 'exports/station.png', 512),
+    ('source/renders/phoenix-cut.png', 'exports/phoenix.png', 512, None, 0),
+    ('source/renders/vex-cut.png', 'exports/vex.png', 512, 'r', 18),
+    ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
 ]
 
 
-def parse_d(d):
-    verts, codes = [], []
-    for sub in d.split('M'):
-        sub = sub.strip().rstrip('Zz ').strip()
-        if not sub:
-            continue
-        puntos = [float(p) for p in sub.replace(',', ' ').split()]
-        if len(puntos) < 6:
-            continue
-        xs, ys = puntos[0::2], puntos[1::2]
-        verts.append((xs[0], ys[0]))
-        codes.append(MPath.MOVETO)
-        for x, y in zip(xs[1:], ys[1:]):
-            verts.append((x, y))
-            codes.append(MPath.LINETO)
-        verts.append((xs[0], ys[0]))
-        codes.append(MPath.CLOSEPOLY)
-    return verts, codes
+def exportar(rel_in, rel_out, lado):
+    img = Image.open(os.path.join(RAIZ, rel_in)).convert('RGBA')
+    img = img.resize((lado, lado), Image.LANCZOS)
+    destino = os.path.join(RAIZ, rel_out)
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    img.save(destino, optimize=True)
+    print(f'{rel_out}  {lado}px  {os.path.getsize(destino) // 1024} KB')
 
 
-for rel, destino, lado in PIEZAS:
-    with open(os.path.join(RAIZ, rel), encoding='utf-8') as f:
-        svg = f.read()
-    m = re.search(r'viewBox="0 0 (\d+) (\d+)"', svg)
-    w, h = int(m.group(1)), int(m.group(2))
-    fig = plt.figure(figsize=(lado / 100, lado / 100), dpi=100)
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(0, w)
-    ax.set_ylim(h, 0)
-    ax.axis('off')
-    n = 0
-    for match in re.finditer(r'<path([^>]*)/>', svg):
-        attrs = match.group(1)
-        if 'fill' not in attrs:
-            continue
-        fill = re.search(r'fill="([^"]+)"', attrs).group(1)
-        d = re.search(r'd="([^"]+)"', attrs)
-        if not d:
-            continue
-        verts, codes = parse_d(d.group(1))
-        if verts:
-            ax.add_patch(PathPatch(MPath(verts, codes), facecolor=fill, edgecolor='none'))
-            n += 1
-    ruta = os.path.join(RAIZ, destino)
-    os.makedirs(os.path.dirname(ruta), exist_ok=True)
-    fig.savefig(ruta, transparent=True)   # fondo transparente: es un sprite
-    plt.close(fig)
-    print(f'{destino}  {lado}px  {n} paths  {os.path.getsize(ruta) // 1024} KB')
+for rel_in, rel_out, lado, canal, umbral in PIEZAS:
+    exportar(rel_in, rel_out, lado)
+    if canal:
+        emisiva = rel_out.replace('.png', '-emissive.png')
+        subprocess.run([sys.executable, os.path.join(RAIZ, 'tools', 'extract-emissive.py'),
+                        os.path.join(RAIZ, rel_in), os.path.join(RAIZ, emisiva),
+                        canal, str(lado), str(umbral)], check=True)
