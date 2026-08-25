@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PLACEHOLDER DE DESARROLLO - no es arte final.
+     La estacion base definitiva sale del pipeline IA (render cenital -> vectorizado).
+     Plataforma hexagonal con anillo de atraque; ~300 px en juego. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="plataforma" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#333D52"/>
+      <stop offset=".5" stop-color="#1B2130"/>
+      <stop offset="1" stop-color="#0E1220"/>
+    </linearGradient>
+    <radialGradient id="nucleo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#DFFBFF"/>
+      <stop offset=".4" stop-color="#00E5FF"/>
+      <stop offset="1" stop-color="#065E6B"/>
+    </radialGradient>
+  </defs>
+  <!-- anillo de atraque -->
+  <circle cx="128" cy="128" r="112" fill="none" stroke="#161C2A" stroke-width="10"/>
+  <circle cx="128" cy="128" r="112" fill="none" stroke="#00E5FF" stroke-width="1.2" opacity=".5"/>
+  <!-- brazos -->
+  <g stroke="#1B2130" stroke-width="12">
+    <path d="M128 24 V60"/><path d="M128 196 V232"/>
+    <path d="M24 128 H60"/><path d="M196 128 H232"/>
+  </g>
+  <g stroke="#00E5FF" stroke-width="1.4" opacity=".6">
+    <path d="M128 24 V60"/><path d="M128 196 V232"/>
+    <path d="M24 128 H60"/><path d="M196 128 H232"/>
+  </g>
+  <!-- plataforma hexagonal -->
+  <path d="M128 52 L194 90 L194 166 L128 204 L62 166 L62 90 Z"
+        fill="url(#plataforma)" stroke="#0B0E18" stroke-width="3"/>
+  <path d="M128 70 L178 99 L178 157 L128 186 L78 157 L78 99 Z"
+        fill="none" stroke="#0B0E18" stroke-width="1.6" opacity=".9"/>
+  <!-- pistas de atraque -->
+  <g stroke="#00E5FF" stroke-width="2" stroke-dasharray="6 5" opacity=".65">
+    <path d="M128 70 V110"/><path d="M128 146 V186"/>
+    <path d="M84 103 L112 120"/><path d="M144 136 L172 153"/>
+    <path d="M172 103 L144 120"/><path d="M112 136 L84 153"/>
+  </g>
+  <!-- nucleo -->
+  <circle cx="128" cy="128" r="15" fill="url(#nucleo)"/>
+  <circle cx="128" cy="128" r="22" fill="none" stroke="#00E5FF" stroke-width="1.4" opacity=".5"/>
+  <!-- luces de posicion -->
+  <g fill="#A78BFA">
+    <circle cx="128" cy="52" r="3"/><circle cx="194" cy="90" r="3"/><circle cx="194" cy="166" r="3"/>
+    <circle cx="128" cy="204" r="3"/><circle cx="62" cy="166" r="3"/><circle cx="62" cy="90" r="3"/>
+  </g>
+</svg>

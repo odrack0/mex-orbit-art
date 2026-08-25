@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PLACEHOLDER DE DESARROLLO - no es arte final.
+     El Vex definitivo sale del pipeline: render IA cenital 1024 -> chroma-key -> vectorize-ship.
+     Silueta angular hostil para distinguirlo de naves de jugador a un vistazo. Proa arriba. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="quitina" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#42303E"/>
+      <stop offset=".6" stop-color="#241A26"/>
+      <stop offset="1" stop-color="#120D16"/>
+    </linearGradient>
+  </defs>
+  <!-- garras delanteras -->
+  <path d="M40 44 L22 14 L46 34 Z" fill="url(#quitina)" stroke="#0B0710" stroke-width="2"/>
+  <path d="M88 44 L106 14 L82 34 Z" fill="url(#quitina)" stroke="#0B0710" stroke-width="2"/>
+  <!-- cuerpo -->
+  <path d="M64 22 L84 44 L98 70 L84 96 L64 110 L44 96 L30 70 L44 44 Z"
+        fill="url(#quitina)" stroke="#0B0710" stroke-width="2"/>
+  <!-- placas -->
+  <g stroke="#0B0710" stroke-width="1.4" fill="none" opacity=".85">
+    <path d="M64 22 L64 110"/>
+    <path d="M44 44 L84 44"/><path d="M38 72 L90 72"/>
+  </g>
+  <!-- ojo/nucleo hostil -->
+  <circle cx="64" cy="58" r="7" fill="#FF3D6E"/>
+  <circle cx="64" cy="58" r="11" fill="#FF3D6E" opacity=".25"/>
+  <!-- filos emisivos -->
+  <g stroke="#FF3D6E" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".9">
+    <path d="M30 70 L20 84"/><path d="M98 70 L108 84"/>
+    <path d="M44 96 L36 108"/><path d="M84 96 L92 108"/>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PLACEHOLDER DE DESARROLLO - no es arte final.
+     La Phoenix definitiva sale del pipeline: render IA cenital 1024 -> chroma-key -> vectorize-ship.
+     Este stand-in existe solo para que el slice E2 pueda volar mientras tanto.
+     Proa hacia arriba (contrato de render). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="casco" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#39445C"/>
+      <stop offset=".55" stop-color="#1E2536"/>
+      <stop offset="1" stop-color="#101522"/>
+    </linearGradient>
+  </defs>
+  <!-- fuselaje -->
+  <path d="M64 8 L76 52 L100 78 L96 92 L72 82 L68 108 L60 108 L56 82 L32 92 L28 78 L52 52 Z"
+        fill="url(#casco)" stroke="#0B0E18" stroke-width="2"/>
+  <!-- canopo -->
+  <path d="M64 30 L70 54 L64 64 L58 54 Z" fill="#0E2A33" stroke="#00E5FF" stroke-width="1.4"/>
+  <!-- lineas de panel -->
+  <g stroke="#0B0E18" stroke-width="1.2" fill="none" opacity=".8">
+    <path d="M64 64 L64 100"/>
+    <path d="M56 82 L44 88"/><path d="M72 82 L84 88"/>
+  </g>
+  <!-- filos emisivos -->
+  <g stroke="#00E5FF" stroke-width="1.6" fill="none" stroke-linecap="round">
+    <path d="M76 52 L98 79"/><path d="M52 52 L30 79"/>
+  </g>
+  <!-- toberas -->
+  <rect x="57" y="106" width="5" height="8" rx="1.5" fill="#00E5FF"/>
+  <rect x="66" y="106" width="5" height="8" rx="1.5" fill="#00E5FF"/>
+  <rect x="56" y="112" width="7" height="6" rx="2" fill="#00E5FF" opacity=".35"/>
+  <rect x="65" y="112" width="7" height="6" rx="2" fill="#00E5FF" opacity=".35"/>
+</svg>
