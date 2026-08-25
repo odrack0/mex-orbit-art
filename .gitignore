@@ -1,0 +1,6 @@
+# Python
+__pycache__/
+*.pyc
+
+# renders fuente pesados en crudo se versionan solo si son canon; los cortes intermedios no
+source/renders/*-cut.png
