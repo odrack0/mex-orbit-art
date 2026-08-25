@@ -24,7 +24,15 @@ PIEZAS = [
     ('source/renders/phoenix-cut.png', 'exports/phoenix.png', 512, None, 0),
     ('source/renders/vex-cut.png', 'exports/vex.png', 512, 'r', 18),
     ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
+    ('source/renders/caja-cut.png', 'exports/cargo-box.png', 256, 'c', 16),
+    ('source/renders/portal-cut.png', 'exports/portal.png', 256, 'm', 14),
+    ('source/renders/planeta-a-cut.png', 'exports/map-layers/planet-a.png', 512, None, 0),
+    ('source/renders/planet-b-cut.png', 'exports/map-layers/planet-b.png', 512, None, 0),
+    ('source/renders/planet-c-cut.png', 'exports/map-layers/planet-c.png', 512, None, 0),
 ]
+
+# el fondo principal es imagen a sangre SIN croma: solo se ajusta a 2048x1280
+FONDO = ('source/renders/fondo-1-1.png', 'exports/map-1-1.png', (2048, 1280))
 
 
 def exportar(rel_in, rel_out, lado):
@@ -37,9 +45,23 @@ def exportar(rel_in, rel_out, lado):
 
 
 for rel_in, rel_out, lado, canal, umbral in PIEZAS:
+    if not os.path.exists(os.path.join(RAIZ, rel_in)):
+        print(f'(salta {rel_out}: falta {rel_in})')
+        continue
     exportar(rel_in, rel_out, lado)
     if canal:
         emisiva = rel_out.replace('.png', '-emissive.png')
         subprocess.run([sys.executable, os.path.join(RAIZ, 'tools', 'extract-emissive.py'),
                         os.path.join(RAIZ, rel_in), os.path.join(RAIZ, emisiva),
                         canal, str(lado), str(umbral)], check=True)
+
+# fondo principal: recorte/ajuste a 2048x1280 (cover, sin deformar)
+rel_in, rel_out, (fw, fh) = FONDO
+if os.path.exists(os.path.join(RAIZ, rel_in)):
+    img = Image.open(os.path.join(RAIZ, rel_in)).convert('RGB')
+    escala = max(fw / img.width, fh / img.height)
+    img = img.resize((round(img.width * escala), round(img.height * escala)), Image.LANCZOS)
+    x0 = (img.width - fw) // 2
+    y0 = (img.height - fh) // 2
+    img.crop((x0, y0, x0 + fw, y0 + fh)).save(os.path.join(RAIZ, rel_out), optimize=True)
+    print(f'{rel_out}  {fw}x{fh}  {os.path.getsize(os.path.join(RAIZ, rel_out)) // 1024} KB')

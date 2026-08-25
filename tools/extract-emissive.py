@@ -3,7 +3,7 @@
 (el nucleo y las venas del Vex = rojez alta). La capa se dibuja en el juego
 con blend aditivo y alpha pulsante — glow animado sin perder calidad.
 
-Canales: r, g, b (domina un canal) o c (cian: min(g,b) domina sobre r).
+Canales: r, g, b (domina un canal), c (cian: min(g,b) sobre r) o m (violeta: min(r,b) sobre g).
 
 Uso:  py -3 tools/extract-emissive.py <entrada.png> <salida.png> <canal r|g|b|c> [tam] [umbral]
 Ej.:  py -3 tools/extract-emissive.py source/renders/vex-cut.png exports/vex-emissive.png r 512 18
@@ -31,6 +31,8 @@ for y in range(h):
             continue
         if canal == 'c':
             exceso = min(g, b) - r
+        elif canal == 'm':
+            exceso = min(r, b) - g
         else:
             canales = [r, g, b]
             dominante = canales[idx]
