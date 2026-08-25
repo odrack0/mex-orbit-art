@@ -18,9 +18,11 @@ la estructura más grande del mapa 1-1 con diferencia. Identidad de facción vis
 ## Post-proceso
 
 ```bash
-py -3 tools/chroma-key.py source/renders/station.png source/renders/station-cut.png
-py -3 tools/vectorize-ship.py source/renders/station-cut.png world/props/station.svg 16 3 1.05 8 7 0.30
+py -3 tools/chroma-key.py source/renders/Base.jpeg source/renders/station-cut.png
+py -3 tools/vectorize-ship.py source/renders/station-cut.png world/props/station.svg 10 2 2.2 20 5 0.32
 ```
 
-Parámetros aligerados (mucha superficie): `epsilon` 1.05, `area_min` 8, 7 bandas de croma — la combinación
-recomendada del pipeline para piezas grandes con decorado de color.
+Parámetros muy aligerados (la pieza más grande del slice): calibrados 2026-08-25. Dos lecciones de esta pieza,
+ya integradas en `chroma-key.py`: (1) los huecos grandes NO se rellenan — el vano entre el anillo de atraque y
+la plataforma es fondo legítimo (5º argumento `HOLE_MAX`, default 2500 px); (2) el verdor se mide contra
+`max(r,b)`, no la media — si no, el núcleo cian brillante se recorta como croma.

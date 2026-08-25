@@ -195,7 +195,7 @@ if CBANDS > 0 and npx > 60:
                 parts.append(f'<path fill="{band_color(lo, t, sect)}" d="{d}"/>')
 
 svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W0} {H0}" width="{W0*4}" height="{H0*4}">',
-       "<title>DarkOrbit Goliath — recreacion vectorial del render original</title>",
+       f"<title>MexOrbit — {__import__('os').path.splitext(__import__('os').path.basename(OUT))[0]} (vectorizado del render)</title>",
        f'<defs><clipPath id="s"><path d="{sil}"/></clipPath></defs>',
        '<g clip-path="url(#s)">'] + parts + ["</g></svg>"]
 open(OUT, "w", encoding="utf-8").write("\n".join(svg))

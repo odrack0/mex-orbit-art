@@ -21,9 +21,10 @@ vs. fuselajes limpios) y su acento de color es **rojo hostil**, nunca cian.
 ## Post-proceso
 
 ```bash
-py -3 tools/chroma-key.py source/renders/vex.png source/renders/vex-cut.png
-py -3 tools/vectorize-ship.py source/renders/vex-cut.png npcs/vex.svg 16 3 0.9 6 10 0.30
+py -3 tools/chroma-key.py source/renders/Vex.jpeg source/renders/vex-cut.png
+py -3 tools/vectorize-ship.py source/renders/vex-cut.png npcs/vex.svg 12 2 1.6 14 6 0.30
 ```
 
 La pasada cromática va encendida: el núcleo y las vetas rojas son decorado de color sobre quitina oscura.
-Nota: `sat_min` 0.30 porque el rojo sobre negro tiende a saturación media.
+Nota: `sat_min` 0.30 porque el rojo sobre negro tiende a saturación media. Parámetros aligerados calibrados
+2026-08-25 (ver `phoenix.md`).

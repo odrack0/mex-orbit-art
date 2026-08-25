@@ -27,6 +27,9 @@ D = {
     'phx': dato('placeholders/phoenix-placeholder.svg', SVG),
     'vex': dato('placeholders/vex-placeholder.svg', SVG),
     'est': dato('placeholders/station-placeholder.svg', SVG),
+    'fphx': dato('ships/phoenix.svg', SVG),
+    'fvex': dato('npcs/vex.svg', SVG),
+    'fest': dato('world/props/station.svg', SVG),
 }
 
 HTML = """<title>Assets Slice E2</title>
@@ -92,7 +95,20 @@ naves/NPC/estación esperan su render IA — los placeholders son solo para desa
     <div class="meta">world/props/portal.svg · en juego ~140 px</div></div>
 </div>
 
-<h2>Placeholders de desarrollo <span class="tag dev">no son arte final</span></h2>
+<h2>Naves, NPC y estación — vectorizados del render IA <span class="tag ok">finales a dictamen</span></h2>
+<div class="grid">
+  <div class="card"><h3>Phoenix · nave inicial</h3>
+    <div class="stage"><img src="__FPHX__" width="150" alt="phoenix a tamaño de juego"><img src="__FPHX__" width="300"></div>
+    <div class="meta">ships/phoenix.svg · izquierda: ~150 px, el tamaño real en juego</div></div>
+  <div class="card"><h3>Vex · alien base</h3>
+    <div class="stage"><img src="__FVEX__" width="150" alt="vex a tamaño de juego"><img src="__FVEX__" width="300"></div>
+    <div class="meta">npcs/vex.svg · izquierda: ~150 px</div></div>
+  <div class="card"><h3>Estación base</h3>
+    <div class="stage"><img src="__FEST__" width="300" alt="estación"><img src="__FEST__" width="440"></div>
+    <div class="meta">world/props/station.svg · en juego ~300 px (izquierda)</div></div>
+</div>
+
+<h2>Placeholders de desarrollo <span class="tag dev">sustituidos por los finales</span></h2>
 <div class="grid">
   <div class="card"><h3>Phoenix (stand-in)</h3>
     <div class="stage"><img src="__PHX__" width="72" alt="phoenix placeholder"><img src="__PHX__" width="128"></div>
@@ -105,13 +121,13 @@ naves/NPC/estación esperan su render IA — los placeholders son solo para desa
     <div class="meta">placeholders/station-placeholder.svg</div></div>
 </div>
 
-<h2>Pendientes del pipeline IA <span class="tag pend">falta render</span></h2>
+<h2>Origen <span class="tag ok">pipeline completo</span></h2>
 <div class="grid">
-  <div class="card prompt"><h3>Phoenix · Vex · Estación</h3>
-    Los tres esperan su <b>render cenital 1024</b> (Gemini/Recraft) con el contrato aprobado: ortográfica
-    estricta, proa arriba, luz axial, croma verde. Prompts listos en <code>prompts/phoenix.md</code>,
-    <code>prompts/vex.md</code> y <code>prompts/station.md</code>; al llegar cada render:
-    <code>chroma-key.py</code> → <code>vectorize-ship.py</code> y el placeholder se sustituye 1:1.</div>
+  <div class="card prompt"><h3>Cómo se produjeron</h3>
+    Render IA cenital 1024 con el contrato aprobado (ortográfica estricta, proa arriba, luz axial, croma
+    verde) → <code>chroma-key.py</code> (recorte + despill) → <code>vectorize-ship.py</code> (bandas de
+    luminancia + pasada cromática). Los renders fuente viven en <code>source/renders/</code>; regenerar es
+    correr los mismos comandos de <code>prompts/*.md</code>.</div>
 </div>
 """
 

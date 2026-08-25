@@ -20,8 +20,10 @@ Debe leerse frágil junto a cualquier otra nave del catálogo. Familia de nombre
 ## Post-proceso
 
 ```bash
-py -3 tools/chroma-key.py source/renders/phoenix.png source/renders/phoenix-cut.png
-py -3 tools/vectorize-ship.py source/renders/phoenix-cut.png ships/phoenix.svg 16 3 0.9 6 10 0.34
+py -3 tools/chroma-key.py source/renders/Phoenix.jpeg source/renders/phoenix-cut.png
+py -3 tools/vectorize-ship.py source/renders/phoenix-cut.png ships/phoenix.svg 12 2 1.6 14 6 0.34
 ```
 
-Validar silueta a ~150 px. Si el casco es metal neutro sin decorado de color, apagar la pasada cromática (`... 0.9 6 0`).
+Validar silueta a ~150 px. **Parámetros calibrados el 2026-08-25**: los renders IA de 1024 traen mucho más
+detalle que los sprites legados — con los parámetros del README original (16 3 0.9 6 10) el SVG salía de
+4+ MB; con estos queda en ~700 KB sin pérdida apreciable a tamaño de juego.
