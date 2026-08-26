@@ -27,6 +27,8 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Skarnox** (forma mayor del Skarn) | ✅ render final | `exports/skarnox.png` + `skarnox-emissive.png` · fuente `source/renders/Skarnox.jpeg` | pipeline IA |
 | **NPC Gravit** (forma menor, hierro macizo) | ✅ render final | `exports/gravit.png` + `gravit-emissive.png` · fuente `source/renders/Gravit.jpeg` | pipeline IA |
 | **NPC Mordax** (fauces radiales) | ✅ render final | `exports/mordax.png` + `mordax-emissive.png` · fuente `source/renders/Mordax.jpeg` | pipeline IA |
+| **NPC Gravon** (forma mayor del Gravit) | ⏳ **falta render** | prompt en `prompts/gravon.md` | pipeline IA |
+| **NPC Vorax** (el devorador) | ⏳ **falta render** | prompt en `prompts/vorax.md` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
@@ -61,6 +63,8 @@ script, no retocar el PNG.
 | Skarnox | `r` | 40 | Mismo problema de cristal que el Skarn, y con más cristal: revisar la capa antes de darla por buena |
 | Gravit | `r` | 20 | Metal oscuro sin decorado claro: el rojo del núcleo domina limpio |
 | Mordax | `r` | **50** | El peor caso: cuerpo rojo-pardo **y** dientes pálidos. Debe encenderse la mirada, no la dentadura |
+| Gravon | `r` | 20 | Hereda el del Gravit; subir si la maquinaria interna expuesta tira a rojiza |
+| Vorax | `r` | 25 | Sus vísceras recorren **todo** el cuerpo: es la capa emisiva más grande del catálogo, no un punto |
 | Skarn | `r` | **40** | Sus **cristales rosados** también tiran a rojo. Con 12–26 entraban a la capa emisiva y brillaban como si fueran magma; a 40 solo sobrevive el magma de las grietas |
 | Estación / caja | `c` | 16 | Decorado cian |
 | Portal | `m` | 14 | Vórtice violeta |

@@ -36,6 +36,10 @@ PIEZAS = [
     # canal rojo. Umbral alto para que se enciendan la mirada y las costuras,
     # no la dentadura ni el caparazon entero.
     ('source/renders/mordax-cut.png', 'exports/mordax.png', 512, 'r', 50),
+    ('source/renders/gravon-cut.png', 'exports/gravon.png', 512, 'r', 20),
+    # Vorax: sus visceras recorren TODO el cuerpo, no son un nucleo puntual.
+    # Umbral de partida 25; si el cuerpo entero se enciende, subir.
+    ('source/renders/vorax-cut.png', 'exports/vorax.png', 512, 'r', 25),
     ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
     ('source/renders/caja-cut.png', 'exports/cargo-box.png', 256, 'c', 16),
     ('source/renders/portal-cut.png', 'exports/portal.png', 256, 'm', 14),

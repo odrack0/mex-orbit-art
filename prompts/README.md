@@ -36,6 +36,8 @@ Extras del pipeline:
 | Alien Skarnox (forma mayor del Skarn) | [`skarnox.md`](skarnox.md) | `exports/skarnox.png` + `skarnox-emissive.png` (512) |
 | Alien Gravit (forma **menor**, hierro macizo) | [`gravit.md`](gravit.md) | `exports/gravit.png` + `gravit-emissive.png` (512) |
 | Alien Mordax (fauces, agresivo de cerca) | [`mordax.md`](mordax.md) | `exports/mordax.png` + `mordax-emissive.png` (512) |
+| Alien Gravon (forma **mayor** del Gravit) | [`gravon.md`](gravon.md) | `exports/gravon.png` + `gravon-emissive.png` (512) — **falta render** |
+| Alien Vorax (el devorador, huye malherido) | [`vorax.md`](vorax.md) | `exports/vorax.png` + `vorax-emissive.png` (512) — **falta render** |
 | Alien Ferox (cazador óseo) | [`ferox.md`](ferox.md) | `exports/ferox.png` + `ferox-emissive.png` (512) |
 | Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
 | Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` + `cargo-box-emissive.png` (256) |
