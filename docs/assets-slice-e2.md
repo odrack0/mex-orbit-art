@@ -27,8 +27,8 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Skarnox** (forma mayor del Skarn) | ✅ render final | `exports/skarnox.png` + `skarnox-emissive.png` · fuente `source/renders/Skarnox.jpeg` | pipeline IA |
 | **NPC Gravit** (forma menor, hierro macizo) | ✅ render final | `exports/gravit.png` + `gravit-emissive.png` · fuente `source/renders/Gravit.jpeg` | pipeline IA |
 | **NPC Mordax** (fauces radiales) | ✅ render final | `exports/mordax.png` + `mordax-emissive.png` · fuente `source/renders/Mordax.jpeg` | pipeline IA |
-| **NPC Gravon** (forma mayor del Gravit) | ⏳ **falta render** | prompt en `prompts/gravon.md` | pipeline IA |
-| **NPC Vorax** (el devorador) | ⏳ **falta render** | prompt en `prompts/vorax.md` | pipeline IA |
+| **NPC Gravon** (forma mayor del Gravit) | ✅ render final | `exports/gravon.png` + `gravon-emissive.png` · fuente `source/renders/Gravon.jpeg` | pipeline IA |
+| **NPC Vorax** (el devorador) | ✅ render final | `exports/vorax.png` + `vorax-emissive.png` · fuente `source/renders/Vorax.jpeg` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
