@@ -84,3 +84,8 @@ alta (>22) producen lectura.
 
 Se aprendió a la mala con el Gravon: su banda móvil estaba cortada en `r 0.24`, justo antes de donde
 empieza su detalle asimétrico (0.24–0.33). El efecto era invisible sin que nada estuviera roto.
+
+**Y la asimetría es necesaria, no suficiente.** El Gravon acabó SIN anillos: su detalle son piezas
+soldadas **de un aro a otro**, así que rotar una banda no las hace girar, las cizalla. Esta
+herramienta dice dónde hay detalle; si ese detalle *puede* girar —una pieza sobre un anillo, no una
+estructura entre anillos— lo dice el ojo.
