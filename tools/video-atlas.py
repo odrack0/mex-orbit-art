@@ -18,8 +18,12 @@ El vídeo debe cumplir el contrato de render (`prompts/README.md`) MÁS dos cosa
     el salto de la costura contra el paso normal entre fotogramas y avisa. Eso NO
     se arregla después: se arregla pidiéndoselo al generador.
 
+El vídeo fuente se versiona en `source/renders/<Nombre>.mp4`, igual que los
+renders fijos: el master canónico vive en el repo, no en la carpeta de descargas
+de nadie. Sin él no se puede reexportar a otros fps ni a otra resolución.
+
 Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [lado] [croma]
-Ej.:  py -3 tools/video-atlas.py ~/Downloads/gravon.mp4 exports/gravon-anim.png 12 384
+Ej.:  py -3 tools/video-atlas.py source/renders/Gravon.mp4 exports/gravon-anim.png 12 384
 """
 import math
 import os

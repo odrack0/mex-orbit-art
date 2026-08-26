@@ -93,7 +93,7 @@ estructura entre anillos— lo dice el ojo.
 ## Aliens animados: vídeo en bucle -> atlas
 
 ```bash
-py -3 tools/video-atlas.py <video.mp4> exports/<code>-anim.png 12 384
+py -3 tools/video-atlas.py source/renders/<Nombre>.mp4 exports/<code>-anim.png 12 384
 ```
 
 Recorta el croma de cada fotograma, encuadra por la **caja de la unión** (no por el primer
