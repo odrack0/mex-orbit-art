@@ -43,6 +43,8 @@ entero en VRAM: con 256 cuesta 12,2 MB en vez de 27,6.
 | Gravon | 214 px | 384 | 27,6 MB |
 | Skarnox | 208 px | 384 | 27,6 MB |
 | Mordax | 186 px | 320 | 19,1 MB |
+| Vex | 141 px | 256 | 12,2 MB |
+| Vexor | 178 px | 320 | 11,7 MB |
 | Gravit | 124 px | 256 | 12,2 MB |
 | Vorax | 232 px | 128×512 | 12,2 MB |
 | caja | 96 px | 192 | 6,9 MB |
@@ -62,6 +64,22 @@ RANGO=0:24 py -3 tools/video-atlas.py source/renders/Portal.mp4 exports/portal-a
 
 El recorte del rango va **antes** de calcular la caja de la unión: encuadrar contando fotogramas que
 se van a tirar agranda la caja y encoge al bicho dentro de su celda.
+
+`RANGO` y `SECUENCIA` son **independientes**, aunque nacieran juntas con el portal. El Vexor pliega y
+despliega las alas dos veces en sus 4 s: quiere `RANGO=0:25` (media película, misma animación, la
+mitad de VRAM) pero **sigue siendo un bucle** y su costura importa. Recortar y no-cerrar son dos
+decisiones distintas.
+
+**Antes de exportar entero, mirar si el vídeo se repite.** Medir el salto del fotograma `k` contra el
+`0` para todo `k` y buscar el primer valle: si lo hay, ahí está el ciclo real y el resto es VRAM
+tirada.
+
+**Y si no hay ciclo, puede que no haga falta.** El vídeo del Vex es una **rampa** —se enciende y
+despliega las alas y ahí se queda—, con una costura de 3,9× que ningún recorte arregla. Se reproduce
+con vaivén (`"pingpong": true` en su JSON) y el cierre sale perfecto por construcción sin gastar un
+fotograma más. Ojo: eso solo vale si el movimiento **no tiene dirección privilegiada**. Los aros del
+Gravon tienen rotación neta y al revés se mecerían; un ala que se abre no, porque cerrarse es su
+vuelta.
 
 **Antes de exportar, medir el vídeo.** Cuatro vídeos se rechazaron por el mismo tipo de fallo, y los
 tres números que los cazan son baratos:

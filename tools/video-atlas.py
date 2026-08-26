@@ -32,14 +32,18 @@ seria triple muestreo pagado entero en VRAM. Con 256 cuesta 12,2 MB en vez de
 27,6 — la mitad del presupuesto de esa ronda, ahorrada mirando un numero que ya
 estaba en el JSON. Un factor de ~2x sobre el tamanio en pantalla va sobrado.
 
-Con RANGO=ini:fin se exporta solo ese tramo COMO SECUENCIA, no como bucle: es
-lo que necesita el portal, que reposa en su primer fotograma y reproduce el
-encendido entero una vez al activarlo.
+Con RANGO=ini:fin se exporta solo ese tramo. Con SECUENCIA=1 ademas se salta el
+analisis de bucle, porque el asset no vuelve al principio: es lo que necesita el
+portal, que reposa en su primer fotograma y reproduce el encendido una sola vez
+al activarlo. Las dos cosas son independientes — el Vexor usa RANGO sin
+SECUENCIA porque su ciclo se repite dos veces en el video y basta con la mitad,
+pero sigue siendo un bucle.
 
 Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [celda] [croma]
 Ej.:  py -3 tools/video-atlas.py source/renders/Gravon.mp4 exports/gravon-anim.png 12 384
       py -3 tools/video-atlas.py source/renders/Vorax.mp4 exports/vorax-anim.png 12 128x512
-      RANGO=0:24 py -3 tools/video-atlas.py source/renders/Portal.mp4 exports/portal-anim.png 12 384
+      RANGO=0:24 SECUENCIA=1 py -3 tools/video-atlas.py source/renders/Portal.mp4 exports/portal-anim.png 12 384
+      RANGO=0:25 py -3 tools/video-atlas.py source/renders/Vexor.mp4 exports/vexor-anim.png 12 320
 """
 import math
 import os
@@ -113,13 +117,17 @@ print('fotogramas extraidos: %d a %d fps' % (len(archivos), FPS))
 # Con RANGO=ini:fin se queda ese tramo y se salta el analisis de bucle. El
 # recorte va ANTES de la caja de la union a proposito: encuadrar contando
 # fotogramas que se van a tirar agranda la caja y encoge al bicho en la celda.
+# Ojo: RANGO y SECUENCIA eran lo mismo y ya no lo son. El portal necesitaba las
+# dos cosas a la vez —un tramo Y sin bucle— y de ahi salieron pegadas. El Vexor
+# separo el caso: su ciclo de alas se repite DOS veces en el video, asi que
+# quiere un tramo (0:25, la mitad) pero sigue siendo un bucle y su costura
+# importa. Recortar y no-cerrar son decisiones independientes.
 RANGO = os.environ.get('RANGO', '')
-UN_DISPARO = bool(RANGO)
-if UN_DISPARO:
+UN_DISPARO = os.environ.get('SECUENCIA', '') == '1'
+if RANGO:
     _i, _f = (int(v) for v in RANGO.split(':'))
     archivos = archivos[_i:_f + 1]
-    print('RANGO %d:%d -> %d fotogramas · secuencia de un disparo, sin analisis de bucle'
-          % (_i, _f, len(archivos)))
+    print('RANGO %d:%d -> %d fotogramas' % (_i, _f, len(archivos)))
 
 # ---- recorte de todos, y caja de la UNION ----
 # La caja se calcula sobre TODOS los fotogramas, no sobre el primero: el bicho
