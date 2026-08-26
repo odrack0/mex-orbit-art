@@ -33,8 +33,8 @@ Extras del pipeline:
 | Alien Vex | [`vex.md`](vex.md) | `exports/vex.png` + `vex-emissive.png` (512) |
 | Alien Vexor (forma mayor del Vex) | [`vexor.md`](vexor.md) | `exports/vexor.png` + `vexor-emissive.png` (512) |
 | Alien Skarn (especie mineral) | [`skarn.md`](skarn.md) | `exports/skarn.png` + `skarn-emissive.png` (512) |
-| Alien Skarnox (forma mayor del Skarn) | [`skarnox.md`](skarnox.md) | `exports/skarnox.png` + `skarnox-emissive.png` (512) — **falta render** |
-| Alien Ferox (cazador óseo) | [`ferox.md`](ferox.md) | `exports/ferox.png` + `ferox-emissive.png` (512) — **falta render** |
+| Alien Skarnox (forma mayor del Skarn) | [`skarnox.md`](skarnox.md) | `exports/skarnox.png` + `skarnox-emissive.png` (512) |
+| Alien Ferox (cazador óseo) | [`ferox.md`](ferox.md) | `exports/ferox.png` + `ferox-emissive.png` (512) |
 | Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
 | Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` + `cargo-box-emissive.png` (256) |
 | Portal | [`portal.md`](portal.md) | `exports/portal.png` + `portal-emissive.png` (256) |

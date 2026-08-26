@@ -23,8 +23,8 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Vex** | ✅ render final | `exports/vex.png` + `vex-emissive.png` · fuente `source/renders/Vex.jpeg` | pipeline IA |
 | **NPC Vexor** (forma mayor del Vex) | ✅ render final | `exports/vexor.png` + `vexor-emissive.png` · fuente `source/renders/Vexor.jpeg` | pipeline IA |
 | **NPC Skarn** (especie mineral) | ✅ render final | `exports/skarn.png` + `skarn-emissive.png` · fuente `source/renders/Skarn.jpeg` | pipeline IA |
-| **NPC Ferox** (cazador óseo, especie clara) | ⏳ **falta render** | prompt en `prompts/ferox.md` | pipeline IA |
-| **NPC Skarnox** (forma mayor del Skarn) | ⏳ **falta render** | prompt en `prompts/skarnox.md` | pipeline IA |
+| **NPC Ferox** (cazador óseo, especie clara) | ✅ render final | `exports/ferox.png` + `ferox-emissive.png` · fuente `source/renders/Ferox.jpeg` | pipeline IA |
+| **NPC Skarnox** (forma mayor del Skarn) | ✅ render final | `exports/skarnox.png` + `skarnox-emissive.png` · fuente `source/renders/Skarnox.jpeg` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
