@@ -26,6 +26,12 @@ La celda puede ser cuadrada ("384") o rectangular ("128x512"). Para un bicho
 alargado la segunda ahorra muchisimo: cuadrar al Vorax desperdicia el 80% de
 cada celda.
 
+**La celda se elige por el `screen_size` del bicho, no copiando la del anterior.**
+Es la leccion del Gravit: mide 124 px en pantalla, asi que la 384 del Gravon
+seria triple muestreo pagado entero en VRAM. Con 256 cuesta 12,2 MB en vez de
+27,6 — la mitad del presupuesto de esa ronda, ahorrada mirando un numero que ya
+estaba en el JSON. Un factor de ~2x sobre el tamanio en pantalla va sobrado.
+
 Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [celda] [croma]
 Ej.:  py -3 tools/video-atlas.py source/renders/Gravon.mp4 exports/gravon-anim.png 12 384
       py -3 tools/video-atlas.py source/renders/Vorax.mp4 exports/vorax-anim.png 12 128x512
@@ -139,6 +145,10 @@ print('bucle crudo: %d fotogramas · salto %.2f/255 (paso normal %.2f)' % (n, sa
 #   · Gravon: 49 fotogramas saltaban 4x; el mejor recorte apenas bajaba a 3,5x
 #     perdiendo 6 fotogramas. El video ERA un ciclo entero que no cerraba
 #     (rotacion neta de los aros) -> recortar solo quita movimiento real.
+#   · Gravit: 48 fotogramas saltaban 4,12 con paso normal 1,18; recortando a 45,
+#     1,28 = 1,1x el paso normal. El mejor bucle de un bicho hasta ahora.
+#   · Mordax: 4,44 con paso normal 3,16 = 1,4x, y el mejor recorte solo bajaba a
+#     3,26 perdiendo 7. Se deja entero: 1,4x ya no se ve.
 # Por eso solo se aplica si la mejora es GRANDE; si no, se deja entero y se avisa.
 mejor = min(((float(np.abs(gris(rgbas[k - 1]) - g0).mean()), k)
              for k in range(int(n * 0.72), n + 1)), key=lambda t: t[0])

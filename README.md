@@ -28,6 +28,40 @@ pipeline/     # scripts de exportación
 brand/        # identidad (nota: el nombre del juego es temporal — nada de logos definitivos aún)
 ```
 
+## Vídeos en bucle -> atlas animado
+
+`tools/video-atlas.py` convierte un vídeo con croma verde en la rejilla de fotogramas que monta el
+cliente. El master vive en `source/renders/<Nombre>.mp4`: sin él no se puede reexportar a otros fps
+ni a otra resolución.
+
+**La celda se elige por lo que el bicho mide en pantalla** (`screen_size` de su JSON), no copiando la
+del anterior. Un Gravit de 124 px en una celda de 384 es triple muestreo que nadie ve y que se paga
+entero en VRAM: con 256 cuesta 12,2 MB en vez de 27,6.
+
+| bicho | en pantalla | celda | VRAM |
+|---|---|---|---|
+| Gravon | 214 px | 384 | 27,6 MB |
+| Skarnox | 208 px | 384 | 27,6 MB |
+| Mordax | 186 px | 320 | 19,1 MB |
+| Gravit | 124 px | 256 | 12,2 MB |
+| Vorax | 232 px | 128×512 | 12,2 MB |
+| caja | 96 px | 192 | 6,9 MB |
+
+La del Vorax no es cuadrada a propósito: es un gusano de 125×638 y cuadrarlo tiraría el 80% de cada
+celda.
+
+**Antes de exportar, medir el vídeo.** Cuatro vídeos se rechazaron por el mismo tipo de fallo, y los
+tres números que los cazan son baratos:
+
+| medida | bueno | rechazado |
+|---|---|---|
+| deriva del centroide | Gravit 6×2 px · Mordax 0×11 px | Vorax v1: 55×37 px |
+| variación de la caja | Gravit 0 px · Mordax 6×32 px | Vorax v1: 70×196 px |
+| fondo | croma verde | Gravon v1 negro: el metal oscuro no se separa |
+
+El cuarto fue la primera caja de carga, en perspectiva 3/4 con suelo y reflejo — eso no lo caza un
+número, lo caza mirar. El contrato de render está en `prompts/README.md`.
+
 ## Relación con otros repos
 
 | Repo | Relación |
