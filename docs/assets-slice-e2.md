@@ -24,7 +24,7 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Vexor** (forma mayor del Vex) | ✅ render final | `exports/vexor.png` + `vexor-emissive.png` · fuente `source/renders/Vexor.jpeg` | pipeline IA |
 | **NPC Skarn** (especie mineral) | ✅ render final | `exports/skarn.png` + `skarn-emissive.png` · fuente `source/renders/Skarn.jpeg` | pipeline IA |
 | **NPC Ferox** (cazador óseo, especie clara) | ✅ render final | `exports/ferox.png` + `ferox-emissive.png` · fuente `source/renders/Ferox.jpeg` | pipeline IA |
-| **NPC Skarnox** (forma mayor del Skarn) | ✅ render final | `exports/skarnox.png` + `skarnox-emissive.png` · fuente `source/renders/Skarnox.jpeg` | pipeline IA |
+| **NPC Skarnox** (forma mayor del Skarn) | ✅ **atlas animado** | `exports/skarnox-anim.png` (48 fotogramas) · fuente `source/renders/Skarnox.mp4` · el PNG fijo y su emisiva se conservan de respaldo | vídeo IA |
 | **NPC Gravit** (forma menor, hierro macizo) | ✅ render final | `exports/gravit.png` + `gravit-emissive.png` · fuente `source/renders/Gravit.jpeg` | pipeline IA |
 | **NPC Mordax** (fauces radiales) | ✅ render final | `exports/mordax.png` + `mordax-emissive.png` · fuente `source/renders/Mordax.jpeg` | pipeline IA |
 | **NPC Gravon** (forma mayor del Gravit) | ✅ **atlas animado** | `exports/gravon-anim.png` (49 fotogramas) · fuente `source/renders/Gravon.mp4` · el PNG fijo y su emisiva se conservan de respaldo | vídeo IA |
