@@ -27,6 +27,10 @@ PIEZAS = [
     # El Skarn lleva umbral ALTO: sus cristales rosados tambien tiran a rojo y
     # con 12-26 entraban a la capa emisiva, brillando como si fueran magma.
     ('source/renders/skarn-cut.png', 'exports/skarn.png', 512, 'r', 40),
+    # Ferox: primer asset CLARO del catalogo. El hueso marfil tiene algo de rojo,
+    # asi que el umbral sube para que se enciendan los ojos y las costuras, no el cuerpo.
+    ('source/renders/ferox-cut.png', 'exports/ferox.png', 512, 'r', 45),
+    ('source/renders/skarnox-cut.png', 'exports/skarnox.png', 512, 'r', 40),
     ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
     ('source/renders/caja-cut.png', 'exports/cargo-box.png', 256, 'c', 16),
     ('source/renders/portal-cut.png', 'exports/portal.png', 256, 'm', 14),
