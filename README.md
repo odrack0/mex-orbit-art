@@ -42,6 +42,7 @@ entero en VRAM: con 256 cuesta 12,2 MB en vez de 27,6.
 |---|---|---|---|
 | Gravon | 214 px | 384 | 27,6 MB |
 | Skarnox | 208 px | 384 | 27,6 MB |
+| Ferox | 190 px | 320 | 19,1 MB |
 | Mordax | 186 px | 320 | 19,1 MB |
 | Vex | 141 px | 256 | 12,2 MB |
 | Vexor | 178 px | 320 | 11,7 MB |
@@ -73,6 +74,11 @@ decisiones distintas.
 **Antes de exportar entero, mirar si el vídeo se repite.** Medir el salto del fotograma `k` contra el
 `0` para todo `k` y buscar el primer valle: si lo hay, ahí está el ciclo real y el resto es VRAM
 tirada.
+
+**Y el valle solo cuenta si cierra igual de bien que el vídeo entero.** El Vexor recortaba porque su
+valle empataba con el total (0,95 contra 0,99). El Ferox tiene uno que ahorraría 7 MB y no se usa,
+porque cierra a 1,49× cuando el entero cierra a 0,5×: un sub-bucle que cierra *peor* no es un ciclo
+repetido, es un parecido, y recortar ahí quita movimiento real.
 
 **Y si no hay ciclo, puede que no haga falta.** El vídeo del Vex es una **rampa** —se enciende y
 despliega las alas y ahí se queda—, con una costura de 3,9× que ningún recorte arregla. Se reproduce
