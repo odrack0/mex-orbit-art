@@ -17,7 +17,7 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | Láser cian (jugador) | ✅ generado | `fx/laser-cyan.png` (256×24, blend ADD) | procedural |
 | Láser rojo (hostil) | ✅ generado | `fx/laser-red.png` | procedural |
 | Explosión (8 frames) | ✅ generado | `fx/explosion-sheet.png` (8×128) | procedural |
-| Caja de carga | ✅ propuesta | `world/props/cargo-box.svg` | SVG geométrico |
+| Caja de carga | ✅ **atlas animado** | `exports/cargo-box-anim.png` (48 fotogramas) · fuente `source/renders/Caja.mp4` | vídeo IA |
 | Portal | ✅ propuesta | `world/props/portal.svg` | SVG geométrico |
 | **Nave Phoenix** | ✅ **vectorizada** (render 2026-08-25) | `ships/phoenix.svg` · fuente `source/renders/Phoenix.jpeg` | pipeline IA |
 | **NPC Vex** | ✅ render final | `exports/vex.png` + `vex-emissive.png` · fuente `source/renders/Vex.jpeg` | pipeline IA |
@@ -133,3 +133,16 @@ rejilla.
 | 4 s | 8 | 32 | 2304×2304 | 20,2 MB |
 
 Los diales son la longitud del bucle, los fps y el lado — en ese orden de impacto.
+
+## Pedir un vídeo que loopee de verdad
+
+La caja de carga cerró el bucle mejor que ningún otro asset — costura de **0,9 veces** un paso
+normal, o sea que salta menos que avanzar un fotograma — y no fue suerte: **su luz da la vuelta
+completa al contorno**. Cuando la animación es un recorrido que vuelve al punto de partida, el ciclo
+cierra **por construcción** y no depende de que el modelo acierte con la costura.
+
+Es la diferencia con el Gravon, cuyos aros giran un ángulo que no completa una vuelta: ahí no hay
+composición en 2D que lo arregle.
+
+**Al pedir el vídeo, describe un ciclo cerrado** (una luz que recorre un borde entero, un latido que
+vuelve a su punto de partida) en vez de "que se anime".
