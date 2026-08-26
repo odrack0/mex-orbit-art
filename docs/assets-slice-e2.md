@@ -20,7 +20,9 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | Caja de carga | ✅ propuesta | `world/props/cargo-box.svg` | SVG geométrico |
 | Portal | ✅ propuesta | `world/props/portal.svg` | SVG geométrico |
 | **Nave Phoenix** | ✅ **vectorizada** (render 2026-08-25) | `ships/phoenix.svg` · fuente `source/renders/Phoenix.jpeg` | pipeline IA |
-| **NPC Vex** | ✅ **vectorizado** | `npcs/vex.svg` · fuente `source/renders/Vex.jpeg` | pipeline IA |
+| **NPC Vex** | ✅ render final | `exports/vex.png` + `vex-emissive.png` · fuente `source/renders/Vex.jpeg` | pipeline IA |
+| **NPC Vexor** (forma mayor del Vex) | ⏳ **falta render** | prompt en `prompts/vexor.md` | pipeline IA |
+| **NPC Skarn** (especie mineral) | ⏳ **falta render** | prompt en `prompts/skarn.md` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 

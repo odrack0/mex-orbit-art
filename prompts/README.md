@@ -31,6 +31,8 @@ Extras del pipeline:
 |---|---|---|
 | Nave inicial Phoenix | [`phoenix.md`](phoenix.md) | `exports/phoenix.png` (512) |
 | Alien Vex | [`vex.md`](vex.md) | `exports/vex.png` + `vex-emissive.png` (512) |
+| Alien Vexor (forma mayor del Vex) | [`vexor.md`](vexor.md) | `exports/vexor.png` + `vexor-emissive.png` (512) — **falta render** |
+| Alien Skarn (especie mineral) | [`skarn.md`](skarn.md) | `exports/skarn.png` + `skarn-emissive.png` (512) — **falta render** |
 | Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
-| Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` (256) — **falta render** |
-| Portal | [`portal.md`](portal.md) | `exports/portal.png` (256) — **falta render** |
+| Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` + `cargo-box-emissive.png` (256) |
+| Portal | [`portal.md`](portal.md) | `exports/portal.png` + `portal-emissive.png` (256) |
