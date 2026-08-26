@@ -71,3 +71,16 @@ script, no retocar el PNG.
 
 Regla: al agregar un asset, **mirar la capa emisiva antes de darla por buena** — un umbral bajo convierte en
 lámpara cualquier cosa que tenga un tinte del canal.
+
+## Dónde se ve girar un anillo
+
+```bash
+py -3 tools/ring-bands.py exports/gravon.png
+```
+
+Da el perfil de **asimetría angular por radio**. Rotar un anillo perfectamente liso mapea píxeles
+idénticos sobre sí mismos: el shader funciona y aun así no se ve nada. Solo las bandas con variación
+alta (>22) producen lectura.
+
+Se aprendió a la mala con el Gravon: su banda móvil estaba cortada en `r 0.24`, justo antes de donde
+empieza su detalle asimétrico (0.24–0.33). El efecto era invisible sin que nada estuviera roto.
