@@ -21,8 +21,8 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | Portal | ✅ propuesta | `world/props/portal.svg` | SVG geométrico |
 | **Nave Phoenix** | ✅ **vectorizada** (render 2026-08-25) | `ships/phoenix.svg` · fuente `source/renders/Phoenix.jpeg` | pipeline IA |
 | **NPC Vex** | ✅ render final | `exports/vex.png` + `vex-emissive.png` · fuente `source/renders/Vex.jpeg` | pipeline IA |
-| **NPC Vexor** (forma mayor del Vex) | ⏳ **falta render** | prompt en `prompts/vexor.md` | pipeline IA |
-| **NPC Skarn** (especie mineral) | ⏳ **falta render** | prompt en `prompts/skarn.md` | pipeline IA |
+| **NPC Vexor** (forma mayor del Vex) | ✅ render final | `exports/vexor.png` + `vexor-emissive.png` · fuente `source/renders/Vexor.jpeg` | pipeline IA |
+| **NPC Skarn** (especie mineral) | ✅ render final | `exports/skarn.png` + `skarn-emissive.png` · fuente `source/renders/Skarn.jpeg` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
@@ -45,3 +45,17 @@ script, no retocar el PNG.
 - Los tres renders IA (Phoenix, Vex, estación) — requieren pasar los prompts por Gemini/Recraft y correr el post-proceso.
 - La pasada de coherencia "Obsidiana" (`tools/design-mexorbit.py`) se aplicará cuando haya ≥2 naves para unificar material.
 - Dirección de estilo del mundo (paleta de nebulosas por facción/zona, densidad de decorado): sesión de arte propia; el fondo actual es la base neutral.
+
+## Umbral de la capa emisiva: no todo lo rojo es luz
+
+`extract-emissive.py` se queda con los píxeles donde un canal **domina**, y el umbral es por asset:
+
+| Asset | Canal | Umbral | Por qué |
+|---|---|---|---|
+| Vex / Vexor | `r` | 18 | Núcleo y venas: rojo puro y saturado sobre quitina oscura |
+| Skarn | `r` | **40** | Sus **cristales rosados** también tiran a rojo. Con 12–26 entraban a la capa emisiva y brillaban como si fueran magma; a 40 solo sobrevive el magma de las grietas |
+| Estación / caja | `c` | 16 | Decorado cian |
+| Portal | `m` | 14 | Vórtice violeta |
+
+Regla: al agregar un asset, **mirar la capa emisiva antes de darla por buena** — un umbral bajo convierte en
+lámpara cualquier cosa que tenga un tinte del canal.

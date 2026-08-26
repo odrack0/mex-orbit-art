@@ -23,6 +23,10 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PIEZAS = [
     ('source/renders/phoenix-cut.png', 'exports/phoenix.png', 512, None, 0),
     ('source/renders/vex-cut.png', 'exports/vex.png', 512, 'r', 18),
+    ('source/renders/vexor-cut.png', 'exports/vexor.png', 512, 'r', 18),
+    # El Skarn lleva umbral ALTO: sus cristales rosados tambien tiran a rojo y
+    # con 12-26 entraban a la capa emisiva, brillando como si fueran magma.
+    ('source/renders/skarn-cut.png', 'exports/skarn.png', 512, 'r', 40),
     ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
     ('source/renders/caja-cut.png', 'exports/cargo-box.png', 256, 'c', 16),
     ('source/renders/portal-cut.png', 'exports/portal.png', 256, 'm', 14),
