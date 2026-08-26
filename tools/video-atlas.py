@@ -22,8 +22,13 @@ El vídeo fuente se versiona en `source/renders/<Nombre>.mp4`, igual que los
 renders fijos: el master canónico vive en el repo, no en la carpeta de descargas
 de nadie. Sin él no se puede reexportar a otros fps ni a otra resolución.
 
-Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [lado] [croma]
+La celda puede ser cuadrada ("384") o rectangular ("128x512"). Para un bicho
+alargado la segunda ahorra muchisimo: cuadrar al Vorax desperdicia el 80% de
+cada celda.
+
+Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [celda] [croma]
 Ej.:  py -3 tools/video-atlas.py source/renders/Gravon.mp4 exports/gravon-anim.png 12 384
+      py -3 tools/video-atlas.py source/renders/Vorax.mp4 exports/vorax-anim.png 12 128x512
 """
 import math
 import os
@@ -38,7 +43,15 @@ from scipy.ndimage import binary_closing, binary_fill_holes, gaussian_filter, la
 VIDEO = sys.argv[1]
 SALIDA = sys.argv[2]
 FPS = int(sys.argv[3]) if len(sys.argv) > 3 else 12
-LADO = int(sys.argv[4]) if len(sys.argv) > 4 else 384
+# Celda del atlas: "384" (cuadrada) o "128x512". Las celdas NO tienen por que ser
+# cuadradas — Sprite2D parte la textura en hframes x vframes iguales, y punto.
+# Para un bicho alargado la diferencia es enorme: cuadrar al Vorax (125x638)
+# desperdicia el 80% de cada celda.
+_celda = sys.argv[4] if len(sys.argv) > 4 else '384'
+if 'x' in _celda.lower():
+    LADO_W, LADO_H = (int(v) for v in _celda.lower().split('x'))
+else:
+    LADO_W = LADO_H = int(_celda)
 T = float(sys.argv[5]) if len(sys.argv) > 5 else 22.0
 
 
@@ -91,8 +104,16 @@ union = np.any(np.stack(piezas), axis=0)
 ys, xs = np.where(union)
 x0, x1, y0, y1 = xs.min(), xs.max(), ys.min(), ys.max()
 cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
-lado_src = int(max(x1 - x0, y1 - y0) * 1.06)          # 6% de aire alrededor
-print('caja de la union: %d,%d -> %d,%d   recorte cuadrado %d px' % (x0, y0, x1, y1, lado_src))
+# el recorte toma la PROPORCION de la celda y se agranda hasta contener la union
+aspecto = LADO_W / float(LADO_H)
+w_src = int((x1 - x0) * 1.06)
+h_src = int((y1 - y0) * 1.06)
+if w_src / float(h_src) < aspecto:
+    w_src = int(h_src * aspecto)
+else:
+    h_src = int(w_src / aspecto)
+print('caja de la union: %d,%d -> %d,%d   recorte %dx%d (celda %dx%d)'
+      % (x0, y0, x1, y1, w_src, h_src, LADO_W, LADO_H))
 
 # ---- mejor punto de bucle ----
 # El vídeo casi nunca cierra exacto; se prueba a soltar los últimos fotogramas y
@@ -164,15 +185,16 @@ if CF and salto0 > consec * 2.0 and n > CF * 3:
 # ---- atlas ----
 cols = math.ceil(math.sqrt(n))
 filas = math.ceil(n / cols)
-atlas = Image.new('RGBA', (cols * LADO, filas * LADO), (0, 0, 0, 0))
+atlas = Image.new('RGBA', (cols * LADO_W, filas * LADO_H), (0, 0, 0, 0))
 for i in range(n):
     im = Image.fromarray(rgbas[i], 'RGBA').crop(
-        (cx - lado_src // 2, cy - lado_src // 2, cx + lado_src // 2, cy + lado_src // 2))
-    atlas.paste(im.resize((LADO, LADO), Image.LANCZOS), ((i % cols) * LADO, (i // cols) * LADO))
+        (cx - w_src // 2, cy - h_src // 2, cx + w_src // 2, cy + h_src // 2))
+    atlas.paste(im.resize((LADO_W, LADO_H), Image.LANCZOS),
+                ((i % cols) * LADO_W, (i // cols) * LADO_H))
 os.makedirs(os.path.dirname(SALIDA) or '.', exist_ok=True)
 atlas.save(SALIDA, optimize=True)
-print('guardado %s  %dx%d  (%d cols x %d filas, %d px por fotograma)'
-      % (SALIDA, atlas.width, atlas.height, cols, filas, LADO))
+print('guardado %s  %dx%d  (%d cols x %d filas, celda %dx%d)'
+      % (SALIDA, atlas.width, atlas.height, cols, filas, LADO_W, LADO_H))
 print('VRAM RGBA8: %.1f MB' % (atlas.width * atlas.height * 4 / 1048576))
 print()
 print('JSON del bicho:  "frames": { "atlas": "res://...", "hframes": %d, "vframes": %d, '

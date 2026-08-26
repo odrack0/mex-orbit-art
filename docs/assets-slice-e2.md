@@ -28,7 +28,7 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Gravit** (forma menor, hierro macizo) | ✅ render final | `exports/gravit.png` + `gravit-emissive.png` · fuente `source/renders/Gravit.jpeg` | pipeline IA |
 | **NPC Mordax** (fauces radiales) | ✅ render final | `exports/mordax.png` + `mordax-emissive.png` · fuente `source/renders/Mordax.jpeg` | pipeline IA |
 | **NPC Gravon** (forma mayor del Gravit) | ✅ **atlas animado** | `exports/gravon-anim.png` (49 fotogramas) · fuente `source/renders/Gravon.mp4` · el PNG fijo y su emisiva se conservan de respaldo | vídeo IA |
-| **NPC Vorax** (el devorador) | ✅ render final | `exports/vorax.png` + `vorax-emissive.png` · fuente `source/renders/Vorax.jpeg` | pipeline IA |
+| **NPC Vorax** (el devorador) | ✅ **atlas animado** | `exports/vorax-anim.png` (45 fotogramas, celda **rectangular** 128×512) · fuente `source/renders/Vorax.mp4` | vídeo IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
@@ -146,3 +146,11 @@ composición en 2D que lo arregle.
 
 **Al pedir el vídeo, describe un ciclo cerrado** (una luz que recorre un borde entero, un latido que
 vuelve a su punto de partida) en vez de "que se anime".
+
+## Celdas rectangulares para bichos alargados
+
+`video-atlas.py` acepta la celda como `384` (cuadrada) o `128x512`. Las celdas **no tienen por qué
+ser cuadradas**: `Sprite2D` parte la textura en `hframes` × `vframes` iguales y nada más.
+
+En el Vorax la diferencia es de tres a uno. Mide 125×638 px; cuadrarlo dejaría el **80% de cada
+celda vacía** — 27,6 MB de VRAM. Con celda 128×512 son **12,2 MB**.
