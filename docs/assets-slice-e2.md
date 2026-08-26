@@ -89,3 +89,33 @@ empieza su detalle asimétrico (0.24–0.33). El efecto era invisible sin que na
 soldadas **de un aro a otro**, así que rotar una banda no las hace girar, las cizalla. Esta
 herramienta dice dónde hay detalle; si ese detalle *puede* girar —una pieza sobre un anillo, no una
 estructura entre anillos— lo dice el ojo.
+
+## Aliens animados: vídeo en bucle -> atlas
+
+```bash
+py -3 tools/video-atlas.py <video.mp4> exports/<code>-anim.png 12 384
+```
+
+Recorta el croma de cada fotograma, encuadra por la **caja de la unión** (no por el primer
+fotograma: el bicho bascula y encuadrar por uno solo le corta un borde en otros) y empaqueta la
+rejilla.
+
+**El vídeo debe cumplir el contrato de render más dos cosas:**
+
+1. **Croma verde, no negro.** El primer intento vino sobre negro y fue inservible: un casco de metal
+   oscuro sobre fondo negro no tiene frontera que separar.
+2. **Bucle**: el último fotograma tiene que casar con el primero. El script mide el salto de la
+   costura contra el paso normal y avisa — pero **eso no se arregla después**. Dos técnicas
+   descartadas, y por qué:
+   - *Ping-pong*: cerraría gratis, pero las bandas interiores del Gravon tienen rotación **neta**
+     (+60° y −32° por ciclo), así que al revés se mecerían en vez de girar.
+   - *Fundido de la cola sobre la cabeza*: solo sirve si el vídeo dura **más** de un ciclo y sobra
+     material. Cuando el vídeo **es** un ciclo entero que no cierra, solapar quita movimiento real
+     — el salto bajó de 2,96 a 2,28 perdiendo seis fotogramas. Peor negocio.
+
+| Bucle | fps | Fotogramas | Atlas a 384 px | VRAM |
+|---|---|---|---|---|
+| 4 s | 12 | 49 | 2688×2688 | 27,6 MB |
+| 4 s | 8 | 32 | 2304×2304 | 20,2 MB |
+
+Los diales son la longitud del bucle, los fps y el lado — en ese orden de impacto.
