@@ -105,13 +105,27 @@ rejilla.
 1. **Croma verde, no negro.** El primer intento vino sobre negro y fue inservible: un casco de metal
    oscuro sobre fondo negro no tiene frontera que separar.
 2. **Bucle**: el último fotograma tiene que casar con el primero. El script mide el salto de la
-   costura contra el paso normal y avisa — pero **eso no se arregla después**. Dos técnicas
-   descartadas, y por qué:
+   costura contra el paso normal, **busca el mejor cierre** y decide.
+
+   *Recortar* al mejor cierre es lo único que funciona, y solo cuando el vídeo se pasa un poco de
+   ciclo. Los dos casos reales, medidos:
+   - **Skarnox**: 48 fotogramas saltaban 13× el paso normal; recortando a 43, bajó a 2,00. El
+     vídeo sobraba material → recortar **arregla**, y el script lo hace solo.
+   - **Gravon**: 49 fotogramas saltaban 4× y el mejor recorte no mejoraba nada. Ese vídeo **es**
+     un ciclo entero que no cierra (rotación neta de los aros) → recortar solo quitaría
+     movimiento real, y el script lo deja entero.
+
+   Por eso el recorte solo se aplica si la mejora es grande (por debajo del 60% del salto original).
+
+   Dos técnicas descartadas, y por qué:
    - *Ping-pong*: cerraría gratis, pero las bandas interiores del Gravon tienen rotación **neta**
      (+60° y −32° por ciclo), así que al revés se mecerían en vez de girar.
-   - *Fundido de la cola sobre la cabeza*: solo sirve si el vídeo dura **más** de un ciclo y sobra
-     material. Cuando el vídeo **es** un ciclo entero que no cierra, solapar quita movimiento real
-     — el salto bajó de 2,96 a 2,28 perdiendo seis fotogramas. Peor negocio.
+   - *Fundido de la cola sobre la cabeza*: solo sirve si sobra material, igual que el recorte, pero
+     además **fantasmea** al mezclar dos instantes distintos. Si sobra material, recortar es mejor.
+
+   **Ojo con leer el ratio a secas**: en una animación lenta el paso normal es diminuto (0,34 en el
+   Skarnox nuevo), así que una costura pequeña en absoluto sale con un múltiplo alto. Lo que
+   importa es el valor sobre 255, no las veces.
 
 | Bucle | fps | Fotogramas | Atlas a 384 px | VRAM |
 |---|---|---|---|---|

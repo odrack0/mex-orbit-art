@@ -108,7 +108,30 @@ consec = float(np.mean([np.abs(gris(rgbas[i + 1]) - gris(rgbas[i])).mean()
 salto0 = float(np.abs(gris(rgbas[n - 1]) - g0).mean())
 print('bucle crudo: %d fotogramas · salto %.2f/255 (paso normal %.2f)' % (n, salto0, consec))
 
-# CIERRE DEL BUCLE (apagado por defecto).
+# ---- 1. RECORTE al mejor cierre ----
+# Un video casi nunca dura EXACTAMENTE un ciclo: suele pasarse un poco. Soltar
+# esos fotogramas de mas cierra el bucle sin inventar nada.
+#
+# Cuando funciona y cuando no, medido en los dos casos reales:
+#   · Skarnox: 48 fotogramas saltaban 13x el paso normal; recortando a 42, 3,5x.
+#     El video se pasaba de ciclo y sobraba material -> recortar ARREGLA.
+#   · Gravon: 49 fotogramas saltaban 4x; el mejor recorte apenas bajaba a 3,5x
+#     perdiendo 6 fotogramas. El video ERA un ciclo entero que no cerraba
+#     (rotacion neta de los aros) -> recortar solo quita movimiento real.
+# Por eso solo se aplica si la mejora es GRANDE; si no, se deja entero y se avisa.
+mejor = min(((float(np.abs(gris(rgbas[k - 1]) - g0).mean()), k)
+             for k in range(int(n * 0.72), n + 1)), key=lambda t: t[0])
+if mejor[0] < salto0 * 0.6 and mejor[1] < n:
+    print('recortado al mejor cierre: %d -> %d fotogramas · salto %.2f (era %.2f)'
+          % (n, mejor[1], mejor[0], salto0))
+    rgbas = rgbas[:mejor[1]]
+    n, salto0 = mejor[1], mejor[0]
+else:
+    print('sin recorte: el mejor cierre (%.2f en %d) no compensa perder %d fotogramas'
+          % (mejor[0], mejor[1], n - mejor[1]))
+print('costura final: %.2f/255 = %.1f veces el paso normal' % (salto0, salto0 / max(consec, 1e-6)))
+
+# ---- 2. CIERRE POR FUNDIDO (apagado por defecto). ----
 #
 # Dos tecnicas descartadas y por que, que es lo que hay que recordar:
 #
