@@ -34,8 +34,8 @@ Extras del pipeline:
 | Alien Vexor (forma mayor del Vex) | [`vexor.md`](vexor.md) | `exports/vexor.png` + `vexor-emissive.png` (512) |
 | Alien Skarn (especie mineral) | [`skarn.md`](skarn.md) | `exports/skarn.png` + `skarn-emissive.png` (512) |
 | Alien Skarnox (forma mayor del Skarn) | [`skarnox.md`](skarnox.md) | `exports/skarnox.png` + `skarnox-emissive.png` (512) |
-| Alien Gravit (forma **menor**, hierro macizo) | [`gravit.md`](gravit.md) | `exports/gravit.png` + `gravit-emissive.png` (512) — **falta render** |
-| Alien Mordax (fauces, agresivo de cerca) | [`mordax.md`](mordax.md) | `exports/mordax.png` + `mordax-emissive.png` (512) — **falta render** |
+| Alien Gravit (forma **menor**, hierro macizo) | [`gravit.md`](gravit.md) | `exports/gravit.png` + `gravit-emissive.png` (512) |
+| Alien Mordax (fauces, agresivo de cerca) | [`mordax.md`](mordax.md) | `exports/mordax.png` + `mordax-emissive.png` (512) |
 | Alien Ferox (cazador óseo) | [`ferox.md`](ferox.md) | `exports/ferox.png` + `ferox-emissive.png` (512) |
 | Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
 | Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` + `cargo-box-emissive.png` (256) |
