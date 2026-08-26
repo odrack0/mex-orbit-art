@@ -25,6 +25,8 @@ almacén → vender*) necesita exactamente esto para ser jugable. Regla de orige
 | **NPC Skarn** (especie mineral) | ✅ render final | `exports/skarn.png` + `skarn-emissive.png` · fuente `source/renders/Skarn.jpeg` | pipeline IA |
 | **NPC Ferox** (cazador óseo, especie clara) | ✅ render final | `exports/ferox.png` + `ferox-emissive.png` · fuente `source/renders/Ferox.jpeg` | pipeline IA |
 | **NPC Skarnox** (forma mayor del Skarn) | ✅ render final | `exports/skarnox.png` + `skarnox-emissive.png` · fuente `source/renders/Skarnox.jpeg` | pipeline IA |
+| **NPC Gravit** (forma menor, hierro macizo) | ⏳ **falta render** | prompt en `prompts/gravit.md` | pipeline IA |
+| **NPC Mordax** (fauces radiales) | ⏳ **falta render** | prompt en `prompts/mordax.md` | pipeline IA |
 | **Estación base** | ✅ **vectorizada** | `world/props/station.svg` · fuente `source/renders/Base.jpeg` | pipeline IA |
 | Placeholders (Phoenix/Vex/estación) | 🗄️ obsoletos | `placeholders/` | sustituidos por los finales; se conservan como referencia |
 
@@ -57,6 +59,8 @@ script, no retocar el PNG.
 | Vex / Vexor | `r` | 18 | Núcleo y venas: rojo puro y saturado sobre quitina oscura |
 | Ferox | `r` | **45** | Primer asset **claro**: el hueso marfil tiene algo de rojo. Debe encenderse la mirada y las costuras, no el cuerpo entero |
 | Skarnox | `r` | 40 | Mismo problema de cristal que el Skarn, y con más cristal: revisar la capa antes de darla por buena |
+| Gravit | `r` | 20 | Metal oscuro sin decorado claro: el rojo del núcleo domina limpio |
+| Mordax | `r` | **50** | El peor caso: cuerpo rojo-pardo **y** dientes pálidos. Debe encenderse la mirada, no la dentadura |
 | Skarn | `r` | **40** | Sus **cristales rosados** también tiran a rojo. Con 12–26 entraban a la capa emisiva y brillaban como si fueran magma; a 40 solo sobrevive el magma de las grietas |
 | Estación / caja | `c` | 16 | Decorado cian |
 | Portal | `m` | 14 | Vórtice violeta |

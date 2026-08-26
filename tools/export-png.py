@@ -31,6 +31,11 @@ PIEZAS = [
     # asi que el umbral sube para que se enciendan los ojos y las costuras, no el cuerpo.
     ('source/renders/ferox-cut.png', 'exports/ferox.png', 512, 'r', 45),
     ('source/renders/skarnox-cut.png', 'exports/skarnox.png', 512, 'r', 40),
+    ('source/renders/gravit-cut.png', 'exports/gravit.png', 512, 'r', 20),
+    # Mordax: cuerpo rojo-pardo Y dientes palidos, la peor combinacion para el
+    # canal rojo. Umbral alto para que se enciendan la mirada y las costuras,
+    # no la dentadura ni el caparazon entero.
+    ('source/renders/mordax-cut.png', 'exports/mordax.png', 512, 'r', 50),
     ('source/renders/station-cut.png', 'exports/station.png', 1024, 'c', 16),
     ('source/renders/caja-cut.png', 'exports/cargo-box.png', 256, 'c', 16),
     ('source/renders/portal-cut.png', 'exports/portal.png', 256, 'm', 14),
