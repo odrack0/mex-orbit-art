@@ -32,9 +32,14 @@ seria triple muestreo pagado entero en VRAM. Con 256 cuesta 12,2 MB en vez de
 27,6 — la mitad del presupuesto de esa ronda, ahorrada mirando un numero que ya
 estaba en el JSON. Un factor de ~2x sobre el tamanio en pantalla va sobrado.
 
+Con RANGO=ini:fin se exporta solo ese tramo COMO SECUENCIA, no como bucle: es
+lo que necesita el portal, que reposa en su primer fotograma y reproduce el
+encendido entero una vez al activarlo.
+
 Uso:  py -3 tools/video-atlas.py <video.mp4> <salida.png> [fps] [celda] [croma]
 Ej.:  py -3 tools/video-atlas.py source/renders/Gravon.mp4 exports/gravon-anim.png 12 384
       py -3 tools/video-atlas.py source/renders/Vorax.mp4 exports/vorax-anim.png 12 128x512
+      RANGO=0:24 py -3 tools/video-atlas.py source/renders/Portal.mp4 exports/portal-anim.png 12 384
 """
 import math
 import os
@@ -97,6 +102,25 @@ subprocess.run(['ffmpeg', '-v', 'error', '-i', VIDEO, '-vf', 'fps=%d' % FPS,
 archivos = sorted(os.listdir(tmp))
 print('fotogramas extraidos: %d a %d fps' % (len(archivos), FPS))
 
+# ---- RANGO: secuencia de un disparo en vez de bucle ----
+# No todo asset animado es un bucle. El portal es una SECUENCIA: reposo en el
+# fotograma 0, y al activarlo se reproduce entera una vez mientras el server
+# resuelve el salto de sector. Ahi no hay costura que cerrar —nadie vuelve al
+# principio— asi que toda la maquinaria de bucle sobra y estorba: el recorte al
+# mejor cierre le comeria justo el final, que es el fotograma en el que el
+# portal se queda.
+#
+# Con RANGO=ini:fin se queda ese tramo y se salta el analisis de bucle. El
+# recorte va ANTES de la caja de la union a proposito: encuadrar contando
+# fotogramas que se van a tirar agranda la caja y encoge al bicho en la celda.
+RANGO = os.environ.get('RANGO', '')
+UN_DISPARO = bool(RANGO)
+if UN_DISPARO:
+    _i, _f = (int(v) for v in RANGO.split(':'))
+    archivos = archivos[_i:_f + 1]
+    print('RANGO %d:%d -> %d fotogramas · secuencia de un disparo, sin analisis de bucle'
+          % (_i, _f, len(archivos)))
+
 # ---- recorte de todos, y caja de la UNION ----
 # La caja se calcula sobre TODOS los fotogramas, no sobre el primero: el bicho
 # bascula durante el bucle y encuadrar por uno solo le corta un borde en otros.
@@ -133,7 +157,11 @@ n = len(rgbas)
 consec = float(np.mean([np.abs(gris(rgbas[i + 1]) - gris(rgbas[i])).mean()
                         for i in range(min(10, n - 1))]))
 salto0 = float(np.abs(gris(rgbas[n - 1]) - g0).mean())
-print('bucle crudo: %d fotogramas · salto %.2f/255 (paso normal %.2f)' % (n, salto0, consec))
+if UN_DISPARO:
+    print('secuencia: %d fotogramas · %.1f s a %d fps · el salto 0->fin (%.2f) da igual: '
+          'no se vuelve al principio' % (n, n / float(FPS), FPS, salto0))
+else:
+    print('bucle crudo: %d fotogramas · salto %.2f/255 (paso normal %.2f)' % (n, salto0, consec))
 
 # ---- 1. RECORTE al mejor cierre ----
 # Un video casi nunca dura EXACTAMENTE un ciclo: suele pasarse un poco. Soltar
@@ -152,7 +180,9 @@ print('bucle crudo: %d fotogramas · salto %.2f/255 (paso normal %.2f)' % (n, sa
 # Por eso solo se aplica si la mejora es GRANDE; si no, se deja entero y se avisa.
 mejor = min(((float(np.abs(gris(rgbas[k - 1]) - g0).mean()), k)
              for k in range(int(n * 0.72), n + 1)), key=lambda t: t[0])
-if mejor[0] < salto0 * 0.6 and mejor[1] < n:
+if UN_DISPARO:
+    pass
+elif mejor[0] < salto0 * 0.6 and mejor[1] < n:
     print('recortado al mejor cierre: %d -> %d fotogramas · salto %.2f (era %.2f)'
           % (n, mejor[1], mejor[0], salto0))
     rgbas = rgbas[:mejor[1]]
@@ -160,7 +190,8 @@ if mejor[0] < salto0 * 0.6 and mejor[1] < n:
 else:
     print('sin recorte: el mejor cierre (%.2f en %d) no compensa perder %d fotogramas'
           % (mejor[0], mejor[1], n - mejor[1]))
-print('costura final: %.2f/255 = %.1f veces el paso normal' % (salto0, salto0 / max(consec, 1e-6)))
+if not UN_DISPARO:
+    print('costura final: %.2f/255 = %.1f veces el paso normal' % (salto0, salto0 / max(consec, 1e-6)))
 
 # ---- 2. CIERRE POR FUNDIDO (apagado por defecto). ----
 #
@@ -179,7 +210,7 @@ print('costura final: %.2f/255 = %.1f veces el paso normal' % (salto0, salto0 / 
 # 2D: se arregla al GENERAR, pidiendo que el ultimo fotograma case con el
 # primero. Con CROSSFADE=n se puede forzar el fundido si el video lo permite.
 CF = int(os.environ.get('CROSSFADE', '0'))
-if CF and salto0 > consec * 2.0 and n > CF * 3:
+if CF and not UN_DISPARO and salto0 > consec * 2.0 and n > CF * 3:
     L = n - CF
     for i in range(CF):
         t = (i + 1) / float(CF + 1)          # 0 = cola pura, 1 = cabeza pura

@@ -46,9 +46,22 @@ entero en VRAM: con 256 cuesta 12,2 MB en vez de 27,6.
 | Gravit | 124 px | 256 | 12,2 MB |
 | Vorax | 232 px | 128×512 | 12,2 MB |
 | caja | 96 px | 192 | 6,9 MB |
+| portal | 380 u | 384 | 14,1 MB |
 
 La del Vorax no es cuadrada a propósito: es un gusano de 125×638 y cuadrarlo tiraría el 80% de cada
 celda.
+
+**No todo asset animado es un bucle.** Con `RANGO=ini:fin` se exporta un tramo como **secuencia de un
+disparo** y se salta el análisis de bucle entero. Es lo que necesita el portal, que reposa en su
+primer fotograma y reproduce el encendido una sola vez al activarlo: ahí no hay costura que cerrar, y
+el recorte al mejor cierre le comería justo el final, que es donde el portal se queda.
+
+```
+RANGO=0:24 py -3 tools/video-atlas.py source/renders/Portal.mp4 exports/portal-anim.png 12 384
+```
+
+El recorte del rango va **antes** de calcular la caja de la unión: encuadrar contando fotogramas que
+se van a tirar agranda la caja y encoge al bicho dentro de su celda.
 
 **Antes de exportar, medir el vídeo.** Cuatro vídeos se rechazaron por el mismo tipo de fallo, y los
 tres números que los cazan son baratos:
