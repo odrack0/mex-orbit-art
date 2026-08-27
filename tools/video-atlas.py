@@ -53,7 +53,8 @@ import tempfile
 
 import numpy as np
 from PIL import Image
-from scipy.ndimage import binary_closing, binary_fill_holes, gaussian_filter, label
+from scipy.ndimage import (binary_closing, binary_erosion, binary_fill_holes,
+                           gaussian_filter, label)
 
 VIDEO = sys.argv[1]
 SALIDA = sys.argv[2]
@@ -90,13 +91,25 @@ def recortar(a):
         tam = np.bincount(lab.ravel())
         tam[0] = 0
         pieza = np.isin(lab, np.where(tam >= max(24, int(0.00004 * pieza.size)))[0])
-    # despill: el verde que queda sobre el casco se recorta al nivel de r/b
+    # DESPILL: el verde se recorta al nivel de r/b, y punto.
+    #
+    # Antes quitaba el 92% del sobrante y ademas SUMABA un 30% a rojo y azul. Sobre
+    # un pixel de croma puro eso no deja gris: deja un teal (#345C5E medido en la
+    # base). En un bicho no se nota —silueta irregular y escalado hacia ABAJO—,
+    # pero la estacion se dibuja a 2,5x su celda, y ahi el borde de dos pixeles se
+    # convierte en un halo turquesa de cinco alrededor de una silueta limpia.
+    #
+    # Recortar el verde a `max(r, b)` es el despill de toda la vida y deja el
+    # borde del color que tenga el objeto, no de un color inventado.
     out = a.copy()
-    exceso = np.maximum(0.0, g - np.maximum(r, b))
-    out[:, :, 1] = g - exceso * 0.92
-    out[:, :, 0] = np.minimum(255, out[:, :, 0] + exceso * 0.30)
-    out[:, :, 2] = np.minimum(255, out[:, :, 2] + exceso * 0.30)
-    alpha = np.clip((gaussian_filter(pieza.astype(np.float32), 0.8) - 0.35) / 0.4, 0, 1) * 255
+    out[:, :, 1] = np.minimum(g, np.maximum(r, b))
+
+    # Y el alfa se calcula sobre la pieza ENCOGIDA un pixel. El anillo exterior no
+    # es del objeto: es mezcla de objeto y croma, y por muy bien que se despille
+    # sigue trayendo fondo. Mejor perder un pixel de silueta que quedarse el borde
+    # del croma dentro del asset.
+    nucleo = binary_erosion(pieza, np.ones((3, 3)))
+    alpha = np.clip((gaussian_filter(nucleo.astype(np.float32), 0.8) - 0.35) / 0.4, 0, 1) * 255
     return np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8), pieza
 
 
