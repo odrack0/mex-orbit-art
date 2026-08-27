@@ -285,6 +285,37 @@ Meshy igual que se regeneraría un vídeo.
 **Un modelo se valida antes de normalizarlo**, con
 `mex-orbit-testing/assets/validar-modelo.py`.
 
+### Elegir la pose: `tools/frames-de-video.py`
+
+Meshy congela **una** pose, la de la imagen que le des, y no hay forma de sacarle
+un rango de movimiento. El primer Vexor se generó desde un fotograma con las alas
+pegadas al cuerpo, y por eso salió una concha donde el ala y el flanco son la
+misma superficie: no hay nada que abrir, y la animación se queda en doblar un
+filo.
+
+De ahí la regla, que es lo contrario de lo intuitivo:
+
+> **Modela en la pose más EXTENDIDA y anima hacia adentro.** Un hueso o una clave
+> de forma siempre pueden juntar geometría; ninguno puede inventar superficie que
+> no se modeló.
+
+```bash
+py -3 tools/frames-de-video.py source/renders/Vexor.mp4 source/frames/Vexor 24
+```
+
+Saca los fotogramas ya sin croma, todos en el **mismo lienzo cuadrado** —si cada
+uno se recortara a su caja, el bicho cambiaría de tamaño entre poses y Meshy
+recibiría dos escalas distintas— y **mide el ancho de la silueta** para decir cuál
+es el más abierto y cuál el más cerrado. Es el mismo criterio con el que se
+encontró la bisagra en la malla, aplicado al vídeo.
+
+En el Vexor: 96 fotogramas, silueta de 695 a 1147 px (un recorrido del 39%),
+**f029 el más abierto y f052 el más cerrado**. Y en f029 se ve el fondo entre los
+dedos del ala y el cuerpo, que es exactamente la separación que obliga a Meshy a
+modelar volúmenes distintos.
+
+Los fotogramas **no se versionan**: se regeneran del `.mp4`, que sí está en git.
+
 ### Animación: `tools/animar-alas.py`
 
 Meshy da malla estática. Las alas se pliegan con una **clave de forma**, no con

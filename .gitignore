@@ -8,3 +8,6 @@ source/renders/*-cut.png
 # modelos 3D en crudo: 78 MB por pieza, diez veces el archivo mas grande del repo.
 # Se versiona el master de trabajo (source/3d-models/*.glb), no lo que escupe Meshy.
 source/3d-models/crudo/
+
+# fotogramas extraidos de un video: se regeneran del master en source/renders/
+source/frames/
