@@ -50,9 +50,28 @@ entero en VRAM: con 256 cuesta 12,2 MB en vez de 27,6.
 | Vorax | 232 px | 128×512 | 12,2 MB |
 | caja | 96 px | 192 | 6,9 MB |
 | portal | 380 u | 384 | 14,1 MB |
+| base | 820 u | 632×1048 | 40,4 MB |
 
 La del Vorax no es cuadrada a propósito: es un gusano de 125×638 y cuadrarlo tiraría el 80% de cada
 celda.
+
+**La celda y los fps son el mismo dial, y la base lo enseñó.** El área del atlas es celda × número de
+fotogramas, así que subir uno obliga a bajar el otro. La base se dibuja a 820 px de ancho: con 48
+fotogramas a 12 fps la celda no pasaba de 320, o sea el render **reducido a la mitad y luego ampliado
+2,56×** — contornos deshechos y líneas de panel ilegibles. A 4 fps caben 16 celdas de 632×1048, que es
+la resolución completa del render, con una ampliación de 1,30×.
+
+Lo que decide si el cambio sale gratis es **cuánto se mueve el sujeto**, y eso se mide en la salida
+del script: triplicar el intervalo entre fotogramas subió el paso normal de 2,25 a 3,00 sobre 255. Un
+balanceo lento aguanta pocos fotogramas; un bicho que aletea, no. Mirar ese número antes de bajar los
+fps, no después.
+
+Y un límite que conviene tener presente: un sujeto **grande en pantalla y con muchos fotogramas** no
+cabe nítido a ningún precio razonable. Dibujar la base a 820 px con 48 fotogramas afilados serían
+219 MB. Si hiciera falta esa fluidez, la salida no es el atlas: es **cámara fija en el render y que se
+muevan solo las luces**, y entonces el cuerpo va en un PNG nítido y barato y solo la capa emisiva se
+anima. Se probó a separarlas de este vídeo restando el mínimo temporal y no salió, porque aquí se
+mueve la base entera.
 
 **No todo asset animado es un bucle.** Con `RANGO=ini:fin` se exporta un tramo como **secuencia de un
 disparo** y se salta el análisis de bucle entero. Es lo que necesita el portal, que reposa en su
@@ -95,9 +114,40 @@ tres números que los cazan son baratos:
 | deriva del centroide | Gravit 6×2 px · Mordax 0×11 px | Vorax v1: 55×37 px |
 | variación de la caja | Gravit 0 px · Mordax 6×32 px | Vorax v1: 70×196 px |
 | fondo | croma verde | Gravon v1 negro: el metal oscuro no se separa |
+| luz de borde | ninguna | Base v2: el 57% del anillo del objeto llega teal |
 
 El cuarto fue la primera caja de carga, en perspectiva 3/4 con suelo y reflejo — eso no lo caza un
 número, lo caza mirar. El contrato de render está en `prompts/README.md`.
+
+La quinta medida es la última en llegar y la aprendió la base: **el croma no debe ILUMINAR al sujeto.**
+Si el generador pone luz de rebote verde en el contorno, esa luz está pintada en el arte y ningún
+recorte la quita — no es mezcla con el fondo, es iluminación. Se intentó despillar solo el anillo
+restando en la dirección del croma y el borde salió **magenta**, porque ahí el verde-azulado del croma
+y las tiras de luz cian de la propia base son el mismo píxel. Se mide igual que lo demás: qué
+porcentaje del anillo exterior del objeto, **en el vídeo sin tocar**, tiene verde y azul por encima
+del rojo.
+
+## El recorte del croma
+
+No es un umbral con desenfoque encima, y dejó de serlo porque la base lo delató. Umbralizar cuantiza
+el contorno a píxeles enteros y difuminar después no recupera la forma. El recorte estima un **alfa
+continuo** a partir del verdor y luego **desmezcla**: un píxel de borde es `objeto·α + croma·(1−α)`,
+así que se le resta lo que puso el croma y se divide por α. El borde sale del color que tiene el
+objeto, con su forma real. El *despill* clásico no basta: baja el canal verde, pero lo que el croma
+aportó en luminancia se queda dentro y el ribete se ve igual, oscuro en vez de verde.
+
+Un hueco cerrado dentro de la silueta es fondo **si es verde**, y mota si no lo es. Antes se decidía
+por tamaño (< 2500 px se rellenaba) y el tamaño nunca fue el criterio: los vanos del aro de la base
+miden ~1.400 px y se quedaban dentro, rellenos de croma.
+
+**Y el atlas se sangra.** Godot filtra en bilineal y al filtrar mezcla el RGB de los téxeles vecinos
+**sin mirar su alfa**: un téxel transparente que guarde croma verde no es inofensivo por ser
+invisible, su color entra en la media y tiñe el borde del de al lado. Por eso cada píxel transparente
+recibe el color del píxel opaco más cercano. A 1× casi no se nota; la base se dibuja a más de 1× y
+ahí cada téxel del contorno se reparte entre varios píxeles de pantalla.
+
+Se comprueba mirando el verdor del borde opaco del atlas contra el del render sin tocar: si coinciden
+(−11,6 contra −12,4 en la base), lo que queda es el arte y no el croma.
 
 ## Relación con otros repos
 

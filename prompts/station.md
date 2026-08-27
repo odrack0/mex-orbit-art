@@ -12,6 +12,8 @@ la estructura más grande del mapa 1-1 con diferencia. Identidad de facción vis
 > structure with turquoise-cyan emissive accents — industrial sci-fi, high detail, video game asset render.
 > Lighting strictly from directly above (camera axis), no side lighting, no ground shadow.
 > Flat solid chroma green background (#00B140), no vignette, no other objects, 1024x1024.
+> The green background is a matte backdrop only: it must NOT light the subject — no green rim light,
+> no green reflection or bounce on the edges, no green glow around the silhouette.
 
 **Escala**: ~2× el diámetro de la nave más grande; en juego rinde a ~300 px.
 
@@ -76,3 +78,36 @@ Parámetros muy aligerados (la pieza más grande del slice): calibrados 2026-08-
 ya integradas en `chroma-key.py`: (1) los huecos grandes NO se rellenan — el vano entre el anillo de atraque y
 la plataforma es fondo legítimo (5º argumento `HOLE_MAX`, default 2500 px); (2) el verdor se mide contra
 `max(r,b)`, no la media — si no, el núcleo cian brillante se recorta como croma.
+
+## El ribete verde-azulado del contorno (v2)
+
+El segundo vídeo llegó con **luz de rebote del croma en el borde**: el 57% del anillo exterior del
+objeto, medido en el vídeo sin tocar, tiene verde y azul por encima del rojo, media (55, 83, 88). En
+pantalla se ve como un ribete sucio que parece un recorte mal hecho, y no lo es.
+
+Esa luz **está pintada en el arte**. El recorte del croma separa mezcla, no iluminación: puede quitar
+lo que el fondo aportó al píxel, no lo que el fondo aportó a la escena. Se probó a despillar solo el
+anillo restando en la dirección del croma y el borde salió magenta, porque en la base el teal del
+rebote y las tiras de luz cian del propio diseño son el mismo píxel.
+
+Por eso el prompt lo pide explícitamente. Al recibir el vídeo se comprueba **antes** de exportar nada,
+que es cuando todavía se puede pedir otro.
+
+## Celda y fps de la base
+
+No es un bicho: se dibuja a 820 px de ancho, así que la celda manda sobre el número de fotogramas. La
+primera exportación fue 48 fotogramas a 12 fps con celda 320×532, o sea el render reducido a la mitad
+y ampliado 2,56× — contornos deshechos. La buena es **16 fotogramas a 4 fps con celda 632×1048**, la
+resolución completa del render:
+
+```bash
+RANGO=0:15 py -3 tools/video-atlas.py source/renders/Base.mp4 exports/station-anim.png 4 632x1048
+```
+
+Sale barato porque el movimiento es lento: triplicar el intervalo entre fotogramas solo subió el paso
+normal de 2,25 a 3,00 sobre 255. Si el render nuevo se mueve más, ese número lo dirá antes de verlo.
+
+**Y hay una salida mejor si alguna vez hace falta fluidez de verdad**: pedir el vídeo con **cámara
+fija y que se muevan solo las luces**. Entonces el cuerpo va en un PNG nítido y barato y solo la capa
+emisiva se anima, que es el patrón que ya usan la caja y el portal en calidad media. Se intentó
+separar así este vídeo restando el mínimo temporal y no salió, porque aquí se mueve la base entera.
