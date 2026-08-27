@@ -149,6 +149,38 @@ lee el ojo de lejos.
 La mitad técnica de este mismo problema está en el cliente y es el filtrado de textura — sin mipmaps
 el contorno se puntea. Está documentado en el README de `mex-orbit-client`.
 
+## Relieve: mapas de normales (ruta C)
+
+`tools/gen-normal.py` deriva un mapa de normales **del propio render**. Existe porque el arte es
+cenital y los sprites rotan, así que su iluminación gira con ellos: el brillo del casco apunta siempre
+al mismo sitio *relativo a la nave*, nunca al mismo sitio del mundo, y el ojo lee eso como recorte de
+papel. Con el mapa, el shader reilumina contra una luz fija en el mundo y al virar el reflejo **barre**
+el casco.
+
+Lo que **no** da: volumen. La silueta sigue plana y no hay escorzo. Es relieve, no perspectiva — la
+alternativa que sí da perspectiva es el atlas de rotación, y ese obliga a rehacer el catálogo entero
+con un solo ángulo de cámara.
+
+La altura sale de dos fuentes que hacen cosas distintas:
+
+| fuente | qué aporta | por qué así |
+|---|---|---|
+| silueta | el volumen del cuerpo | la distancia al borde aproxima un casco redondeado; el radio sale de la propia pieza, así que un casco ancho abomba más que una antena |
+| luminancia **pasada por alto** | paneles, remaches, greebles | cruda trae cocida la luz del render (un degradado suave), y entonces el mapa cree que la nave es una rampa |
+
+**La fuerza no se pasa a mano: se resuelve** para que la inclinación media de la normal caiga en un
+objetivo (30° por defecto). Un factor fijo da un resultado distinto en cada asset —depende del
+contraste del render y del tamaño del export— y entonces cada nave se ilumina con una intensidad
+distinta sin que nadie sepa por qué. Se ve en las dos Phoenix: la misma inclinación pide fuerza 27,2
+en una y 40,9 en la otra.
+
+El defecto conocido de derivar altura de la luminancia es que **lo claro sube**, así que un rótulo
+pintado se convierte en un bulto. Con un render de arcilla no pasa —ahí el sombreado *es* la forma—;
+con uno sucio y rotulado, sí. Otra razón por la que un render limpio vale más que uno bonito.
+
+La dirección de la luz **no** vive aquí: es una sola para todo el mundo y está en el cliente
+(`AssetDefs.LUZ_MUNDO_GRADOS`). Dos objetos con su propia luz se leen como dos recortes pegados.
+
 ## El recorte del croma
 
 No es un umbral con desenfoque encima, y dejó de serlo porque la base lo delató. Umbralizar cuantiza
