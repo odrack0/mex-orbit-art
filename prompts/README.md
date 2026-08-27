@@ -12,6 +12,11 @@ violarlo invalida el render para el pipeline:
 
 Al recibir el render: validar la silueta a tamaño de juego (~150 px) antes de exportar.
 
+**Los efectos no siguen este contrato**, y no es un descuido: un láser no tiene proa ni cenital que
+respetar. Lo suyo son otras dos reglas —blanco y negro puro, porque el juego los tiñe con `modulate`
+según la munición, y fondo negro en vez de transparente, porque se dibujan en blend aditivo— y viven
+en el prompt de cada uno.
+
 ## Post-proceso (pipeline PNG — dictamen 2026-08-25)
 
 **El master canónico es el render recortado** (`source/renders/*-cut.png`); los exports del juego son
@@ -42,3 +47,4 @@ Extras del pipeline:
 | Estación base | [`station.md`](station.md) | `exports/station.png` + `station-emissive.png` (1024) |
 | Caja de carga | [`caja.md`](caja.md) | `exports/cargo-box.png` + `cargo-box-emissive.png` (256) |
 | Portal | [`portal.md`](portal.md) | `exports/portal.png` + `portal-emissive.png` (256) |
+| Láseres (haz normal y potenciado) | [`laseres.md`](laseres.md) | `exports/beam.png` (156×24) + `beam-skilled.png` (156×40) |
