@@ -316,7 +316,42 @@ modelar volúmenes distintos.
 
 Los fotogramas **no se versionan**: se regeneran del `.mp4`, que sí está en git.
 
-### Animación: `tools/animar-alas.py`
+### Partir y animar: `partir-en-piezas.py` + rotación de nodos
+
+**Este es el camino bueno.** `animar-alas.py`, más abajo, quedó como referencia
+histórica: funciona, pero cuesta tres veces más.
+
+```bash
+blender --background --factory-startup --python tools/partir-en-piezas.py -- \
+    <entrada.glb> <salida.glb> 0.30 vexor
+```
+
+Meshy nunca entrega una cáscara limpia: son cientos de trozos solapados (431 en el
+Vexor v1, 1340 en el v2). Eso, que parece un defecto, es la salida — cada trozo se
+asigna **entero** a cuerpo, `ala_izq` o `ala_der` según dónde caiga su centro.
+Nada se corta, así que no hay agujeros ni interiores huecos, y las UV sobreviven.
+La opción «Dividir» de Meshy sobra, y menos mal: entrega las piezas sin textura y
+solo deja texturizar el modelo entero.
+
+Y **el movimiento no va en el GLB.** El cliente ya mueve el pulso, la ondulación y
+los anillos desde `_process`; plegar un ala es lo mismo, dos rotaciones:
+
+```gdscript
+ala_izq.rotation.y = -ang
+ala_der.rotation.y =  ang
+```
+
+Medido con 150 bichos plegando alas: **149,8 fps por nodos contra 48,4 por clave
+de forma**, y solo un 4% por debajo del modelo quieto. Un nodo rotado es una
+matriz; una clave de forma son deltas por vértice.
+
+`tools/animar-nodos.py` existe para cuando haga falta una animación *authorada*
+dentro del GLB, y documenta dos trampas del exportador que costaron dos pasadas:
+hay que poner `rotation_mode = "XYZ"` (el importador deja los objetos en
+cuaternión y el exportador tira la animación entera sin avisar), y cada pieza con
+su propia Action sale como una animación **separada**.
+
+### Animación por clave de forma: `tools/animar-alas.py`
 
 Meshy da malla estática. Las alas se pliegan con una **clave de forma**, no con
 esqueleto: un armature pide modo edición y pintar pesos, y los operadores de modo
