@@ -181,6 +181,27 @@ con uno sucio y rotulado, sí. Otra razón por la que un render limpio vale más
 La dirección de la luz **no** vive aquí: es una sola para todo el mundo y está en el cliente
 (`AssetDefs.LUZ_MUNDO_GRADOS`). Dos objetos con su propia luz se leen como dos recortes pegados.
 
+### Atlas y resolución
+
+Con `ATLAS=colsxfilas` se procesa una rejilla. Cada celda va por su cuenta —la silueta y el paso alto
+no pueden cruzar el borde, ahí empieza otro fotograma— pero **la fuerza se resuelve una sola vez para
+toda la hoja**: por celda, cada fotograma tendría su propia intensidad y el bicho parpadearía al
+animarse.
+
+Con `ESCALA=0.5` el mapa sale a media resolución, y eso no es una concesión: las normales son de
+frecuencia más baja que el color, y a tamaño completo **doblarían la VRAM del asset**. A la mitad
+cuesta un 25%. Los nueve bichos suman +40 MB y la estación +10.
+
+Media, no menos: bajar a 0,3 ahorraría otros 3 MB por bicho pero cambia el resultado iluminado a
+tamaño de juego un **9,9%**, y eso se ve. Medido sobre el Ferox a 190 px, que es lo que mide en
+pantalla.
+
+**Los emisivos no necesitan protección**, aunque lo parezca. Multiplicar por la luz debería apagar una
+grieta de lava en la cara oscura, y apenas lo hace: el 2% en los píxeles más brillantes. La razón es
+bonita — como la altura sale de la luminancia, las normales derivadas ya apuntan hacia la luz del
+propio render, así que el relieve refuerza el sombreado que el arte ya traía en vez de pelearse con
+él.
+
 ## El recorte del croma
 
 No es un umbral con desenfoque encima, y dejó de serlo porque la base lo delató. Umbralizar cuantiza
