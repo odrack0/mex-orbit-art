@@ -36,6 +36,11 @@ LADO = int(argv[3]) if len(argv) > 3 else 512
 CANAL = (argv[4] if len(argv) > 4 else "r").lower()
 GANANCIA = float(argv[5] if len(argv) > 5 else 1.0)
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from salvaguarda import comprobar_salida    # noqa: E402
+comprobar_salida(entrada, salida)
+
+
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=entrada)
 

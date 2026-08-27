@@ -49,6 +49,11 @@ COLA_SEG = int(argv[4]) if len(argv) > 4 else 0
 # 0.32 sale del `from: 0.68` de undulate, medido en su dia sobre el sprite.
 COLA_DESDE = float(argv[5]) if len(argv) > 5 else 0.32
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from salvaguarda import comprobar_salida    # noqa: E402
+comprobar_salida(entrada, salida)
+
+
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=entrada)
 orig = [o for o in bpy.data.objects if o.type == "MESH"][0]
