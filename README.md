@@ -127,6 +127,28 @@ y las tiras de luz cian de la propia base son el mismo píxel. Se mide igual que
 porcentaje del anillo exterior del objeto, **en el vídeo sin tocar**, tiene verde y azul por encima
 del rojo.
 
+## Cuánto detalle admite una nave
+
+La Phoenix v1 era un render fotorrealista con suciedad, franjas de peligro y rótulos («POD 749»,
+«ORION LOGISTICS»). Se ve magnífica a 512 px y no se ve en el juego, porque **la nave se dibuja a
+141 px y el zoom baja hasta 0,1**. Un rótulo de cinco píxeles a esa escala no es detalle: es ruido que
+además hierve al moverse.
+
+El criterio no es «menos detalle» a ojo, se mide a tamaño de juego:
+
+| | contraste a 141 px | a 35 px |
+|---|---|---|
+| Phoenix v1 (fotorreal) | 31,1 | 29,4 |
+| Phoenix v2 (limpia) | **43,6** | **42,1** |
+
+Lo que sobrevive al tamaño final es **silueta y contraste de valor**, no la densidad de detalle. La v2
+gana un 40% de contraste y a 35 px se sigue leyendo como nave; la v1 a ese tamaño es una mancha parda.
+Los cañones de la v2 sobresalen más, y eso también ayuda: ensanchan la silueta, que es lo primero que
+lee el ojo de lejos.
+
+La mitad técnica de este mismo problema está en el cliente y es el filtrado de textura — sin mipmaps
+el contorno se puntea. Está documentado en el README de `mex-orbit-client`.
+
 ## El recorte del croma
 
 No es un umbral con desenfoque encima, y dejó de serlo porque la base lo delató. Umbralizar cuantiza

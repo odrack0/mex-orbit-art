@@ -1,73 +1,36 @@
-"""Quita el fondo verde de un render y neutraliza el derrame de color sobre el casco."""
+# -*- coding: utf-8 -*-
+"""Quita el fondo verde de un render fijo. El recorte vive en `croma.py`.
+
+Este script tenia su propia copia del criterio, y se quedo atras: mantenia el
+despill viejo (quitar el 92% del verde sobrante y SUMAR un 30% a rojo y azul,
+que sobre croma puro deja un teal) y el alfa de mascara binaria con desenfoque
+encima. El del atlas se rehizo por el contorno de la estacion y este no, porque
+eran dos copias. Ahora los dos llaman a lo mismo.
+
+  py -3 tools/chroma-key.py <entrada> <salida.png> [umbral]
+
+Los argumentos LMIN y HOLE_MAX del script viejo ya no existen: el alfa es
+continuo, asi que no hay luminancia minima que ajustar, y un hueco cerrado se
+decide por si es VERDE, no por su tamanio.
+"""
+import os
 import sys
+
 import numpy as np
 from PIL import Image
-from scipy.ndimage import binary_fill_holes, binary_closing, binary_opening, label, gaussian_filter
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from croma import recortar    # noqa: E402  (tras ajustar sys.path)
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 T = float(sys.argv[3]) if len(sys.argv) > 3 else 22.0
-# Luminancia minima para considerar un pixel "fondo". El croma es brillante; con
-# naves oscuras esto evita que un reflejo verde sobre el casco se recorte como fondo.
-LMIN = float(sys.argv[4]) if len(sys.argv) > 4 else 0.0
+if len(sys.argv) > 4:
+    print('AVISO: LMIN y HOLE_MAX ya no se usan; ver la cabecera del script.')
 
-im = Image.open(SRC).convert("RGB")
-a = np.array(im).astype(np.float32)
-r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
-
-# "verdor": cuanto sobresale el verde sobre el MAYOR de rojo y azul.
-# Contra la media, un cian brillante (g alto, b alto) puntuaba como verde y
-# se recortaba el nucleo/las franjas emisivas; contra el maximo, no.
-greenness = g - np.maximum(r, b)
-print("verdor  min %.1f  max %.1f  mediana %.1f" % (greenness.min(), greenness.max(), np.median(greenness)))
-
-lum = 0.299 * r + 0.587 * g + 0.114 * b
-# La sombra proyectada es el mismo verde pero oscurecido: en valor absoluto pasa el
-# umbral, asi que hay que medir el verdor RELATIVO al brillo para descartarla tambien.
-ratio = greenness / np.maximum(lum, 1.0)
-bg = ((greenness > T) & (lum > LMIN)) | (ratio > 0.25)
-ship = ~bg
-
-# limpieza conservadora: cerrar solo huecos pequenos y NO erosionar.
-# Una apertura se come antenas, barras y puntas finas del casco.
-ship = binary_closing(ship, np.ones((3, 3)))
-# Rellenar SOLO huecos pequenos (ruido interior). Un hueco grande es fondo
-# legitimo visible a traves de la pieza: el vano de un anillo de atraque,
-# el hueco del anillo de la Goliath. Rellenarlo todo convierte ese fondo en "nave".
-HOLE_MAX = int(sys.argv[5]) if len(sys.argv) > 5 else 2500
-filled = binary_fill_holes(ship)
-holes = filled & ~ship
-lab_h, nh = label(holes)
-if nh:
-    hsizes = np.bincount(lab_h.ravel())
-    hsizes[0] = 0
-    small = np.where((hsizes > 0) & (hsizes < HOLE_MAX))[0]
-    ship = ship | np.isin(lab_h, small)
-    print("huecos: %d, rellenados (< %d px): %d" % (nh, HOLE_MAX, len(small)))
-
-# conserva toda pieza que no sea ruido, no solo la mayor: hay detalles
-# (puntas de gondola, extremos de canon) que quedan separados del cuerpo.
-lab, n = label(ship)
-if n > 1:
-    sizes = np.bincount(lab.ravel())
-    sizes[0] = 0
-    keep = np.where(sizes >= max(24, int(0.00004 * ship.size)))[0]
-    ship = np.isin(lab, keep)
-    print("piezas: %d, conservadas: %d" % (n, len(keep)))
-print("cobertura nave: %.1f%%" % (100.0 * ship.mean()))
-
-# despill: si sigue habiendo verde de mas en el casco, se recorta al nivel de r/b
-out = a.copy()
-excess = np.maximum(0.0, g - np.maximum(r, b))
-out[:, :, 1] = g - excess * 0.92
-# recupera algo de luminancia perdida al quitar el verde
-lift = excess * 0.30
-out[:, :, 0] = np.minimum(255, out[:, :, 0] + lift)
-out[:, :, 2] = np.minimum(255, out[:, :, 2] + lift)
-
-# alfa con borde suavizado para que el vectorizador no dentelle
-alpha = gaussian_filter(ship.astype(np.float32), 0.8)
-alpha = np.clip((alpha - 0.35) / 0.4, 0, 1) * 255
-
-rgba = np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)
-Image.fromarray(rgba, "RGBA").save(OUT)
-print("guardado", OUT)
+a = np.array(Image.open(SRC).convert('RGB')).astype(np.float32)
+rgba, pieza = recortar(a, T)
+print('cobertura de la pieza: %.1f%%' % (100.0 * pieza.mean()))
+al = rgba[:, :, 3].astype(np.float32)
+print('borde: %d px opacos, %d en transicion' % ((al >= 250).sum(), ((al > 10) & (al < 250)).sum()))
+Image.fromarray(rgba, 'RGBA').save(OUT)
+print('guardado', OUT)
