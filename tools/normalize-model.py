@@ -85,14 +85,24 @@ tris0 = sum(tris_pieza)
 # falla en silencio con --background, dejando la rotacion sin aplicar.
 mini, maxi = caja()
 ext = maxi - mini
-if ext[2] >= max(ext[0], ext[1]):
+# La senial es cual es la dimension MENOR, no cual es la mayor. El grosor del
+# bicho es su eje fino, y tras normalizar ese eje tiene que ser Z (el alto).
+#
+# La primera version preguntaba si Z era la MAYOR, y funcionaba de casualidad
+# mientras el bicho fuese mas largo que ancho. Con el Vexor de alas abiertas
+# —1,91 de ancho contra 1,61 de largo— dejo de serlo, y el modelo entro de pie
+# diciendo "no hacia falta".
+fino = int(np.argmin(ext))
+if fino == 0:
+    print("AVISO: el eje fino es X. Este script solo sabe tumbar desde Y; revisalo a mano")
+if fino == 1:
     # La MISMA rotacion a todas las piezas: si cada una girase por su cuenta el
     # conjunto se desmontaria.
     R = mathutils.Matrix.Rotation(math.radians(-90), 4, "X")
     for o in objs:
         o.data.transform(R)
         o.data.update()
-    print("TUMBADO  -90 en X (entraba de pie: alto era la dimension mayor)")
+    print("TUMBADO  -90 en X (entraba de pie: el eje fino era Y, %.3f)" % ext[1])
 else:
     print("TUMBADO  no hacia falta, ya venia en el plano")
 
