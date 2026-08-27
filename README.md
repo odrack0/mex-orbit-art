@@ -196,11 +196,13 @@ Media, no menos: bajar a 0,3 ahorraría otros 3 MB por bicho pero cambia el resu
 tamaño de juego un **9,9%**, y eso se ve. Medido sobre el Ferox a 190 px, que es lo que mide en
 pantalla.
 
-**Los emisivos no necesitan protección**, aunque lo parezca. Multiplicar por la luz debería apagar una
-grieta de lava en la cara oscura, y apenas lo hace: el 2% en los píxeles más brillantes. La razón es
-bonita — como la altura sale de la luminancia, las normales derivadas ya apuntan hacia la luz del
-propio render, así que el relieve refuerza el sombreado que el arte ya traía en vez de pelearse con
-él.
+**Los emisivos SÍ necesitan protección, y medirlo en el asset equivocado casi lo oculta.** Medido sobre el Ferox salía un 2%, así que no se escribió: como la altura sale de la
+luminancia, las normales derivadas apuntan hacia la luz del propio render y el relieve refuerza el
+sombreado que el arte ya traía. Pero el Ferox casi no tiene luz propia. En la caja de carga —tubos de
+neón— y en el portal —plasma— la misma cuenta da el negocio entero, y el shader acabó protegiéndolos.
+
+La lección no es sobre emisivos: **un asset no basta para decidir una regla del pipeline.** El que se
+elija para medir decide la respuesta.
 
 ## El recorte del croma
 
