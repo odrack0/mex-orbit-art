@@ -11,3 +11,7 @@ source/3d-models/crudo/
 
 # fotogramas extraidos de un video: se regeneran del master en source/renders/
 source/frames/
+
+# los .blend se regeneran del GLB con tools/a-blend.py en dos segundos
+*.blend
+*.blend[0-9]
