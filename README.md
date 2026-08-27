@@ -226,12 +226,79 @@ ahí cada téxel del contorno se reparte entre varios píxeles de pantalla.
 Se comprueba mirando el verdor del borde opaco del atlas contra el del render sin tocar: si coinciden
 (−11,6 contra −12,4 en la base), lo que queda es el arte y no el croma.
 
+## Modelos 3D -> asset de juego
+
+`tools/normalize-model.py` convierte lo que devuelve Meshy en algo que el cliente
+puede comer. **No es un paso de limpieza opcional: el crudo incumple el contrato
+por los cuatro costados** y el primer Vexor lo enseñó de golpe.
+
+```bash
+# crudo -> master de trabajo
+blender --background --factory-startup --python tools/normalize-model.py -- \
+    source/3d-models/crudo/vexor-texture.glb source/3d-models/vexor.glb 200000 1024 r
+
+# master -> asset de juego
+blender --background --factory-startup --python tools/normalize-model.py -- \
+    source/3d-models/vexor.glb <cliente>/pruebas/vexor.glb 15000 512 r
+```
+
+| paso | crudo de Meshy | master de trabajo | asset de juego |
+|---|---|---|---|
+| triángulos | 1 965 610 | 200 000 | **15 000** |
+| textura | 2048 | 1024 | **512** |
+| peso | 78,2 MB | 7,4 MB | **0,8 MB** |
+| VRAM | 48 MB | 16 MB | **4 MB** |
+
+**Los 15 000 no son un recorte prudente: están medidos.** A tamaño de juego no se
+distinguen de los dos millones, porque el detalle vive en el mapa de normales y
+no en los polígonos. A 5 000 se empiezan a redondear las púas.
+
+Y para comparar: el atlas animado del mismo Vexor cuesta **11,7 MB** y solo sirve
+para un rumbo. El modelo cuesta 4 y sirve para todos, más cualquier elevación de
+cámara.
+
+### Las cuatro cosas que arregla, y por qué cada una
+
+- **Tumbarlo.** Meshy lee la imagen como un póster y devuelve el modelo de pie,
+  con el largo en Z. Al tumbarlo −90° en X el largo pasa a +Y, que al exportar a
+  glTF es −Z, que es el «adelante» de Godot: la proa acaba mirando donde debe sin
+  tocar nada más. **El paso es idempotente** — mira la caja y solo rota si el alto
+  es la dimensión mayor, porque el script también se corre sobre su propia salida
+  y rotar a ciegas ponía el master de pie otra vez.
+- **Pivote al centro.** El giro es sobre el origen; descentrado, el bicho orbita
+  en vez de virar. No se ve en una captura fija, aparece en cuanto gira.
+- **Decimar y bajar texturas.** Ver la tabla.
+- **Emisión.** Meshy pinta las vetas y los núcleos en el albedo y deja
+  `emissiveFactor` a cero: se ve rojo, pero no es luz. Se derivan por dominancia
+  de canal —la misma heurística que `extract-emissive.py`— pero **una sola vez,
+  horneada en su textura**, en vez de adivinarla en cada render. En el Vexor el
+  22% de la textura emite, y son sus dos núcleos.
+
+### Qué se versiona y qué no
+
+`source/3d-models/crudo/` está **ignorado**: son 78 MB por modelo, diez veces el
+archivo más grande de este repo, y git no olvida. Lo que se versiona es el master
+de trabajo, del que se re-exporta a cualquier presupuesto. Los dos millones de
+triángulos no hacen falta para nada; si alguna vez hicieran, se regeneran desde
+Meshy igual que se regeneraría un vídeo.
+
+**Un modelo se valida antes de normalizarlo**, con
+`mex-orbit-testing/assets/validar-modelo.py`.
+
+### Lo que el pipeline de modelos NO resuelve
+
+La animación. Meshy da malla estática: las alas del Vexor no se pliegan. Eso es
+trabajo de Blender —separar piezas y poner keyframes— y es el coste real de esta
+ruta, mayor que modelar. Ocho de los nueve bichos son piezas rígidas y no
+necesitan esqueleto; el Vorax sí.
+
 ## Relación con otros repos
 
 | Repo | Relación |
 |---|---|
 | `mex-orbit-client` | Consumidor de las exportaciones |
 | `mex-orbit-docs` | El pilar 05-arte define la dirección; aquí se ejecuta |
+| `mex-orbit-testing` | Valida los assets antes y después: `validar-video.py`, `validar-modelo.py` |
 
 ## Estado
 

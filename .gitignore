@@ -4,3 +4,7 @@ __pycache__/
 
 # renders fuente pesados en crudo se versionan solo si son canon; los cortes intermedios no
 source/renders/*-cut.png
+
+# modelos 3D en crudo: 78 MB por pieza, diez veces el archivo mas grande del repo.
+# Se versiona el master de trabajo (source/3d-models/*.glb), no lo que escupe Meshy.
+source/3d-models/crudo/
