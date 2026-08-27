@@ -249,9 +249,25 @@ blender --background --factory-startup --python tools/normalize-model.py -- \
 | peso | 78,2 MB | 7,4 MB | **0,8 MB** |
 | VRAM | 48 MB | 16 MB | **4 MB** |
 
-**Los 15 000 no son un recorte prudente: están medidos.** A tamaño de juego no se
-distinguen de los dos millones, porque el detalle vive en el mapa de normales y
-no en los polígonos. A 5 000 se empiezan a redondear las púas.
+**Los 15 000 valen para el JUEGO y no para mirar de cerca**, y la diferencia
+costó una confusión entera. Medido a 700 px con encuadre cerrado:
+
+| tris | cómo se ve de cerca |
+|---|---|
+| 3,06 M (crudo) | referencia |
+| **200 000** | indistinguible del crudo |
+| 50 000 | empiezan a asomar las facetas |
+| **15 000** | claramente poligonal: filos rectos, vetas dentadas, púas convertidas en esquirlas |
+
+A tamaño de juego —178 px— los 15 000 se leen perfectos y las esquirlas son
+subpíxel. **Pero en cuanto el bicho ocupa el triple, se ven.** Por eso el master
+de trabajo va a 200 000: no es margen por si acaso, es el presupuesto para
+mirarlo.
+
+La primera versión de esta tabla decía que 15 000 eran indistinguibles de dos
+millones. Estaba medida sobre el Vexor v1 y **renderizada a 356 px**, donde
+cualquier defecto es subpíxel. Dos errores a la vez, y explicaron un rato largo
+buscando en Godot un fallo que estaba en la decimación.
 
 Y para comparar: el atlas animado del mismo Vexor cuesta **11,7 MB** y solo sirve
 para un rumbo. El modelo cuesta 4 y sirve para todos, más cualquier elevación de
