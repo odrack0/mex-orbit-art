@@ -38,16 +38,41 @@ GANANCIA = float(argv[5] if len(argv) > 5 else 1.0)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=entrada)
-obj = [o for o in bpy.data.objects if o.type == "MESH"][0]
-obj.name = os.path.splitext(os.path.basename(salida))[0]
 
-tris0 = sum(len(p.vertices) - 2 for p in obj.data.polygons)
+# TODAS las mallas, no la primera. Con la opcion "Dividir" de Meshy el modelo
+# llega ya partido en piezas —que es justo lo que hace falta para animar por
+# rotacion en vez de por clave de forma— y quedarse con `[0]` perderia las alas
+# en silencio, sin un solo error.
+objs = [o for o in bpy.data.objects if o.type == "MESH"]
+if not objs:
+    print("ERROR: el archivo no trae ninguna malla")
+    sys.exit(1)
+base_nombre = os.path.splitext(os.path.basename(salida))[0]
+if len(objs) == 1:
+    objs[0].name = base_nombre
+print("PIEZAS %d: %s" % (len(objs), ", ".join(o.name for o in objs)))
+
+def coords(o):
+    co = np.empty(len(o.data.vertices) * 3, dtype=np.float32)
+    o.data.vertices.foreach_get("co", co)
+    return co.reshape(-1, 3)
 
 def caja():
-    co = np.empty(len(obj.data.vertices) * 3, dtype=np.float32)
-    obj.data.vertices.foreach_get("co", co)
-    co = co.reshape(-1, 3)
-    return co.min(axis=0), co.max(axis=0)
+    """Caja de TODAS las piezas juntas. Cada una por su cuenta daria una caja
+    distinta, y entonces el tumbado y el centrado desmontarian el conjunto."""
+    lo = np.array([np.inf] * 3, dtype=np.float64)
+    hi = np.array([-np.inf] * 3, dtype=np.float64)
+    for o in objs:
+        c = coords(o)
+        lo = np.minimum(lo, c.min(axis=0))
+        hi = np.maximum(hi, c.max(axis=0))
+    return lo, hi
+
+def tris_de(o):
+    return sum(len(p.vertices) - 2 for p in o.data.polygons)
+
+tris_pieza = [tris_de(o) for o in objs]
+tris0 = sum(tris_pieza)
 
 # ---- 1. tumbar, SOLO si hace falta ----
 # Meshy devuelve el modelo de pie, con el largo en Z. Pero este script tambien se
@@ -61,68 +86,118 @@ def caja():
 mini, maxi = caja()
 ext = maxi - mini
 if ext[2] >= max(ext[0], ext[1]):
-    obj.data.transform(mathutils.Matrix.Rotation(math.radians(-90), 4, "X"))
-    obj.data.update()
+    # La MISMA rotacion a todas las piezas: si cada una girase por su cuenta el
+    # conjunto se desmontaria.
+    R = mathutils.Matrix.Rotation(math.radians(-90), 4, "X")
+    for o in objs:
+        o.data.transform(R)
+        o.data.update()
     print("TUMBADO  -90 en X (entraba de pie: alto era la dimension mayor)")
 else:
     print("TUMBADO  no hacia falta, ya venia en el plano")
 
-# ---- 2. pivote al centro ----
+# ---- 2. pivote al centro DEL CONJUNTO ----
+# El mismo desplazamiento para todas: centrar cada pieza en su propia caja las
+# amontonaria en el origen. El pivote de cada ala en su bisagra es otra decision
+# y vive en la herramienta de animacion, no aqui — aqui solo se centra el bicho.
 mini, maxi = caja()
 centro = (mini + maxi) * 0.5
-obj.data.transform(mathutils.Matrix.Translation(Vector(-centro)))
-obj.data.update()
+Tr = mathutils.Matrix.Translation(Vector(-centro))
+for o in objs:
+    o.data.transform(Tr)
+    o.data.update()
 dim = maxi - mini
 print("CAJA  ancho %.3f  largo %.3f  alto %.3f   (alto/largo = %.0f%%)"
       % (dim[0], dim[1], dim[2], 100.0 * dim[2] / dim[1]))
 
-# ---- 3. decimar ----
+if len(objs) > 1:
+    for o in objs:
+        c = coords(o)
+        lo, hi = c.min(axis=0), c.max(axis=0)
+        ctr = (lo + hi) * 0.5
+        print("      %-18s tris %-7d  centro (%+.3f, %+.3f, %+.3f)  dim (%.2f, %.2f, %.2f)"
+              % (o.name[:18], tris_de(o), ctr[0], ctr[1], ctr[2],
+                 hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]))
+
+# ---- 3. decimar, REPARTIENDO el presupuesto ----
+# Un ratio unico por pieza dejaria a un ala de 2 000 triangulos igual de densa
+# que un cuerpo de 200 000. El presupuesto se reparte en proporcion a lo que
+# cada pieza traia, asi que todas bajan al mismo ritmo.
 if TRIS and tris0 > TRIS:
-    mod = obj.modifiers.new("dec", "DECIMATE")
-    mod.ratio = TRIS / float(tris0)
+    ratio = TRIS / float(tris0)
+    for o in objs:
+        mod = o.modifiers.new("dec", "DECIMATE")
+        mod.ratio = ratio
 
 # ---- 4. texturas ----
 for img in bpy.data.images:
     if img.size[0] > LADO:
         img.scale(LADO, LADO)
 
-# ---- 5. emision ----
-mat = bpy.data.materials[0]
-mat.name = obj.name
-nt = mat.node_tree
-bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+# ---- 5. emision, material por material ----
+# Con el modelo partido puede venir un material por pieza. Cada uno necesita su
+# emision, pero si comparten la MISMA textura de albedo la mascara se calcula una
+# sola vez: derivarla por material duplicaria la imagen en el GLB.
+usados = []
+for o in objs:
+    for m in o.data.materials:
+        if m is not None and m not in usados:
+            usados.append(m)
+if not usados:
+    usados = list(bpy.data.materials)
 
-# La textura de albedo se busca SIGUIENDO EL ENLACE de Base Color, no por su
-# nombre: el exportador de glTF renombra las imagenes al escribir, asi que
-# buscar "base" funciona con el crudo de Meshy y falla en cuanto el script se
-# corre sobre su propia salida — que es justo el caso del master de trabajo.
-enlaces_base = bsdf.inputs["Base Color"].links
-base = enlaces_base[0].from_node if enlaces_base else None
-if base is None or base.type != "TEX_IMAGE":
-    print("AVISO: Base Color sin textura; no se puede derivar la emision")
+print("MATERIALES %d en %d piezas" % (len(usados), len(objs)))
+if len(usados) > 1:
+    print("      AVISO: un material por pieza son varias draw calls por bicho.")
+    print("      Con 150 instancias eso se nota; lo ideal es un solo material y")
+    print("      un solo atlas para todo el modelo.")
 
-# Si ya viene con emision (el modelo pasó por aqui antes), no se vuelve a
-# derivar: aplicarla dos veces la duplicaria sobre si misma.
-ya_emite = bool(bsdf.inputs["Emission Color"].links)
-if ya_emite:
-    print("EMISION ya presente: se respeta la del modelo de entrada")
+cache_emi = {}      # imagen de albedo -> imagen emisiva derivada
 
-if base is not None and not ya_emite:
-    LADO_REAL = base.image.size[0]
-    px = np.empty(LADO_REAL * LADO_REAL * 4, dtype=np.float32)
-    base.image.pixels.foreach_get(px)
-    px = px.reshape(-1, 4)
-    idx = {"r": 0, "g": 1, "b": 2}[CANAL]
-    otros = [i for i in (0, 1, 2) if i != idx]
-    mask = np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
-    cobertura = float((mask > 0.02).mean())
+for mat in usados:
+    if not mat.use_nodes:
+        continue
+    nt = mat.node_tree
+    bsdf = next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if bsdf is None:
+        continue
 
-    emi = np.zeros_like(px)
-    emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
-    emi[:, 3] = 1.0
-    img_emi = bpy.data.images.new("emissive", LADO_REAL, LADO_REAL, alpha=True)
-    img_emi.pixels.foreach_set(emi.reshape(-1))
-    img_emi.pack()
+    # La textura de albedo se busca SIGUIENDO EL ENLACE de Base Color, no por su
+    # nombre: el exportador de glTF renombra las imagenes al escribir, asi que
+    # buscar "base" funciona con el crudo de Meshy y falla en cuanto el script se
+    # corre sobre su propia salida — que es justo el caso del master de trabajo.
+    enlaces_base = bsdf.inputs["Base Color"].links
+    base = enlaces_base[0].from_node if enlaces_base else None
+    if base is None or base.type != "TEX_IMAGE":
+        print("AVISO  '%s': Base Color sin textura, sin emision que derivar" % mat.name)
+        continue
+
+    # Si ya viene con emision (el modelo paso por aqui antes), no se vuelve a
+    # derivar: aplicarla dos veces la duplicaria sobre si misma.
+    if bsdf.inputs["Emission Color"].links:
+        print("EMISION '%s' ya presente: se respeta la del modelo de entrada" % mat.name)
+        continue
+
+    if base.image in cache_emi:
+        img_emi = cache_emi[base.image]
+    else:
+        LADO_REAL = base.image.size[0]
+        px = np.empty(LADO_REAL * LADO_REAL * 4, dtype=np.float32)
+        base.image.pixels.foreach_get(px)
+        px = px.reshape(-1, 4)
+        idx = {"r": 0, "g": 1, "b": 2}[CANAL]
+        otros = [i for i in (0, 1, 2) if i != idx]
+        mask = np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
+
+        emi = np.zeros_like(px)
+        emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
+        emi[:, 3] = 1.0
+        img_emi = bpy.data.images.new("emissive_%s" % mat.name, LADO_REAL, LADO_REAL, alpha=True)
+        img_emi.pixels.foreach_set(emi.reshape(-1))
+        img_emi.pack()
+        cache_emi[base.image] = img_emi
+        print("EMISION '%s' canal '%s': %.1f%% de la textura emite"
+              % (mat.name, CANAL, float((mask > 0.02).mean()) * 100))
 
     nodo_emi = nt.nodes.new("ShaderNodeTexImage")
     nodo_emi.image = img_emi
@@ -130,7 +205,6 @@ if base is not None and not ya_emite:
     nodo_emi.location = (-400, -300)
     nt.links.new(nodo_emi.outputs["Color"], bsdf.inputs["Emission Color"])
     bsdf.inputs["Emission Strength"].default_value = 1.0
-    print("EMISION canal '%s': %.1f%% de la textura emite" % (CANAL, cobertura * 100))
 
 # ---- exportar ----
 os.makedirs(os.path.dirname(salida) or ".", exist_ok=True)
@@ -138,7 +212,9 @@ bpy.ops.export_scene.gltf(filepath=salida, export_format="GLB", export_apply=Tru
                           export_yup=True, use_selection=False)
 
 dg = bpy.context.evaluated_depsgraph_get()
-tris1 = sum(len(p.vertices) - 2 for p in obj.evaluated_get(dg).to_mesh().polygons)
+tris1 = 0
+for o in objs:
+    tris1 += sum(len(p.vertices) - 2 for p in o.evaluated_get(dg).to_mesh().polygons)
 mb0 = os.path.getsize(entrada) / 1048576.0
 mb1 = os.path.getsize(salida) / 1048576.0
 vram = 3 * LADO * LADO * 4 / 1048576.0
