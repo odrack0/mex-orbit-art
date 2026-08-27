@@ -35,6 +35,8 @@ TRIS = int(argv[2]) if len(argv) > 2 else 15000
 LADO = int(argv[3]) if len(argv) > 3 else 512
 CANAL = (argv[4] if len(argv) > 4 else "r").lower()
 GANANCIA = float(argv[5] if len(argv) > 5 else 1.0)
+# Distancia de soldadura antes de decimar. 0 la desactiva.
+SOLDAR = float(argv[6]) if len(argv) > 6 else 0.0005
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
@@ -57,10 +59,29 @@ if len(objs) == 1:
     objs[0].name = base_nombre
 print("PIEZAS %d: %s" % (len(objs), ", ".join(o.name for o in objs)))
 
-def coords(o):
+def desplazamiento(o):
+    """Traslacion acumulada del objeto y sus padres, sumada A MANO.
+
+    No se usa `matrix_world`: en --background el depsgraph no se evalua y viene
+    sin actualizar. Los modelos del contrato no llevan rotacion ni escala en los
+    nodos, asi que sumar las traslaciones basta y es exacto."""
+    t = np.zeros(3, dtype=np.float64)
+    n = o
+    while n is not None:
+        t += np.array([n.location.x, n.location.y, n.location.z], dtype=np.float64)
+        n = n.parent
+    return t
+
+
+def coords(o, mundo=True):
+    """Vertices de la pieza. En MUNDO por defecto: en un modelo partido cada ala
+    guarda sus vertices relativos a su bisagra y su sitio vive en el nodo, asi
+    que leer solo los locales daba una caja mas pequenia que el bicho — 1,31 de
+    ancho en vez de 1,90— y el centrado lo desmontaba."""
     co = np.empty(len(o.data.vertices) * 3, dtype=np.float32)
     o.data.vertices.foreach_get("co", co)
-    return co.reshape(-1, 3)
+    co = co.reshape(-1, 3).astype(np.float64)
+    return co + desplazamiento(o) if mundo else co
 
 def caja():
     """Caja de TODAS las piezas juntas. Cada una por su cuenta daria una caja
@@ -115,12 +136,20 @@ else:
 # El mismo desplazamiento para todas: centrar cada pieza en su propia caja las
 # amontonaria en el origen. El pivote de cada ala en su bisagra es otra decision
 # y vive en la herramienta de animacion, no aqui — aqui solo se centra el bicho.
+#
+# Y NO se recentra un modelo que ya viene partido y colocado: sus piezas guardan
+# su sitio en el nodo, y moverles la malla las sacaria de su bisagra. Un modelo
+# partido llega ya centrado de `partir-en-piezas.py`.
 mini, maxi = caja()
 centro = (mini + maxi) * 0.5
-Tr = mathutils.Matrix.Translation(Vector(-centro))
-for o in objs:
-    o.data.transform(Tr)
-    o.data.update()
+jerarquia = any(o.parent is not None for o in objs)
+if jerarquia:
+    print("PIVOTE  el modelo viene partido y colocado: no se recentra")
+else:
+    Tr = mathutils.Matrix.Translation(Vector(-centro))
+    for o in objs:
+        o.data.transform(Tr)
+        o.data.update()
 dim = maxi - mini
 print("CAJA  ancho %.3f  largo %.3f  alto %.3f   (alto/largo = %.0f%%)"
       % (dim[0], dim[1], dim[2], 100.0 * dim[2] / dim[1]))
@@ -133,6 +162,34 @@ if len(objs) > 1:
         print("      %-18s tris %-7d  centro (%+.3f, %+.3f, %+.3f)  dim (%.2f, %.2f, %.2f)"
               % (o.name[:18], tris_de(o), ctr[0], ctr[1], ctr[2],
                  hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]))
+
+# ---- 2b. SOLDAR antes de decimar ----
+# Meshy no entrega una superficie sino cientos de cascaras solapadas —1773 en el
+# Vexor de alas abiertas— y el decimador Collapse no fusiona ENTRE cascaras: se
+# come cada trozo por su cuenta hasta dejar esquirlas. Ese era el "se ve roto"
+# que costo media sesion perseguir por Godot, por el mapa de normales y por las
+# caras traseras.
+#
+# Soldar los vertices coincidentes de las costuras convierte las 1773 cascaras en
+# UNA, y solo cuesta el 6% de los vertices. Despues el decimador tiene una
+# superficie con la que trabajar.
+#
+# La distancia esta medida: a 0,0005 quedan 1 cascara y la malla se conserva; a
+# 0,002 ya funde el 64% de los vertices y empieza a comerse detalle real.
+if SOLDAR > 0:
+    import bmesh
+    for o in objs:
+        v0 = len(o.data.vertices)
+        bm = bmesh.new()
+        bm.from_mesh(o.data)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=SOLDAR)
+        bm.to_mesh(o.data)
+        bm.free()
+        o.data.update()
+        print("SOLDADO %-18s verts %d -> %d (-%.0f%%)"
+              % (o.name[:18], v0, len(o.data.vertices),
+                 100.0 * (v0 - len(o.data.vertices)) / max(1, v0)))
+    tris0 = sum(tris_de(o) for o in objs)
 
 # ---- 3. decimar, REPARTIENDO el presupuesto ----
 # Un ratio unico por pieza dejaria a un ala de 2 000 triangulos igual de densa
