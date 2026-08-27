@@ -68,6 +68,11 @@ llave.value = 0.0
 esc = bpy.context.scene
 esc.frame_start = 1
 esc.frame_end = FOTOGRAMAS
+# 12 fps, los mismos del atlas. No es cosmetico: la DURACION del GLB es lo que
+# lee el AnimationPlayer, y de ahi sale la fase que alimenta el pulso emisivo.
+# A los 24 de fabrica el ciclo duraba 1,08 s en vez de 2,17 y el destello caia
+# donde no toca — el mismo desfase que se venia a arreglar.
+esc.render.fps = 12
 llaves = obj.data.shape_keys
 llaves.animation_data_create()
 for f in range(1, FOTOGRAMAS + 1):

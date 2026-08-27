@@ -218,8 +218,12 @@ for mat in usados:
 
 # ---- exportar ----
 os.makedirs(os.path.dirname(salida) or ".", exist_ok=True)
+# export_tangents: sin ellas Godot se las inventa al importar, y sobre una malla
+# de cientos de cascaras con las UV troceadas las inventa mal — el mapa de
+# normales acaba pintando un aspecto de cristal roto que en Blender no se ve,
+# porque alli las tangentes se calculan al vuelo y de otra manera.
 bpy.ops.export_scene.gltf(filepath=salida, export_format="GLB", export_apply=True,
-                          export_yup=True, use_selection=False)
+                          export_yup=True, use_selection=False, export_tangents=True)
 
 dg = bpy.context.evaluated_depsgraph_get()
 tris1 = 0

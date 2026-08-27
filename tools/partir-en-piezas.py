@@ -37,6 +37,17 @@ argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida = argv[0], argv[1]
 CORTE = float(argv[2]) if len(argv) > 2 else 0.30
 BASE = argv[3] if len(argv) > 3 else "vexor"
+# Segmentos de cola. 0 = el cuerpo queda de una pieza.
+#
+# El abdomen del Vexor es SEGMENTADO —lo dice su propio JSON: "la quitina de
+# arriba no se menea; el abdomen segmentado si"— asi que una cadena de trozos no
+# es una aproximacion de la ondulacion, es lo que el bicho tiene. Se encadenan
+# padre-hijo, de modo que rotar el primero arrastra a los de detras y una onda
+# recorre la cola sola.
+COLA_SEG = int(argv[4]) if len(argv) > 4 else 0
+# Desde donde empieza la cola, en tanto por uno del largo contado DESDE LA POPA.
+# 0.32 sale del `from: 0.68` de undulate, medido en su dia sobre el sprite.
+COLA_DESDE = float(argv[5]) if len(argv) > 5 else 0.32
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=entrada)
@@ -75,16 +86,38 @@ print("TROZOS %d  corte |x| = %.2f" % (len(trozos), CORTE))
 
 # Cada VERTICE hereda el destino de su trozo: asi el trozo viaja entero y no se
 # parte ninguna cara.
-destino = np.zeros(len(bm.verts), dtype=np.int8)   # 0 cuerpo, -1 izq, +1 der
+ys_todo = np.array([v.co.y for v in bm.verts])
+y_popa, y_proa = float(ys_todo.min()), float(ys_todo.max())
+largo = y_proa - y_popa
+y_cola = y_popa + COLA_DESDE * largo
+
+# 0 cuerpo, -1 izq, +1 der, 10+k segmento k de cola
+destino = np.zeros(len(bm.verts), dtype=np.int8)
 for g in trozos:
     xs = np.array([v.co.x for v in g])
-    ctr = 0.5 * (float(xs.min()) + float(xs.max()))
-    d = 0 if abs(ctr) <= CORTE else (1 if ctr > 0 else -1)
+    ys = np.array([v.co.y for v in g])
+    cx = 0.5 * (float(xs.min()) + float(xs.max()))
+    cy = 0.5 * (float(ys.min()) + float(ys.max()))
+    if abs(cx) > CORTE:
+        d = 1 if cx > 0 else -1
+    elif COLA_SEG > 0 and cy < y_cola:
+        # el trozo entero cae en la banda de su centro: nada se corta
+        k = int((cy - y_popa) / max(1e-6, (y_cola - y_popa)) * COLA_SEG)
+        d = 10 + min(COLA_SEG - 1, max(0, k))
+    else:
+        d = 0
     for v in g:
         destino[v.index] = d
 bm.free()
 
 piezas = [("%s_cuerpo" % BASE, 0), ("%s_ala_izq" % BASE, -1), ("%s_ala_der" % BASE, 1)]
+if COLA_SEG > 0:
+    print("COLA %d segmentos desde y=%+.3f (%.0f%% del largo desde la popa)"
+          % (COLA_SEG, y_cola, COLA_DESDE * 100))
+    # se nombran de la union hacia la punta: cola_1 cuelga del cuerpo, cola_2 de
+    # cola_1... asi rotar uno arrastra a los de detras, que es lo que hace la onda
+    for k in range(COLA_SEG - 1, -1, -1):
+        piezas.append(("%s_cola_%d" % (BASE, COLA_SEG - k), 10 + k))
 creadas = []
 for nombre, marca in piezas:
     bm = bmesh.new()
@@ -115,23 +148,48 @@ for nombre, marca in piezas:
         c = np.empty(len(me.vertices) * 3, dtype=np.float32)
         me.vertices.foreach_get("co", c)
         c = c.reshape(-1, 3)
-        bisagra = Vector((CORTE * marca, float(0.5 * (c[:, 1].min() + c[:, 1].max())), 0.0))
+        if marca >= 10:
+            # La bisagra de un segmento de cola es su borde DELANTERO, no su
+            # centro: la union con el segmento de delante. Rotar sobre el centro
+            # partiria la cola por la mitad en vez de doblarla.
+            bisagra = Vector((0.0, float(c[:, 1].max()), 0.0))
+        else:
+            bisagra = Vector((CORTE * marca, float(0.5 * (c[:, 1].min() + c[:, 1].max())), 0.0))
         me.transform(Matrix.Translation(-bisagra))
         me.update()
-        ob.location = bisagra
-        print("  %-16s caras %6d  bisagra (%+.3f, %+.3f, %+.3f)"
+        print("  %-18s caras %6d  bisagra (%+.3f, %+.3f, %+.3f)"
               % (nombre, len(me.polygons), bisagra.x, bisagra.y, bisagra.z))
     else:
-        print("  %-16s caras %6d  (en el origen)" % (nombre, len(me.polygons)))
-    creadas.append((ob, marca))
+        bisagra = Vector((0.0, 0.0, 0.0))
+        print("  %-18s caras %6d  (en el origen)" % (nombre, len(me.polygons)))
+    creadas.append((ob, marca, bisagra))
 
-# ---- jerarquia: las alas cuelgan del cuerpo ----
-cuerpo = next((o for o, m in creadas if m == 0), None)
+# ---- jerarquia ----
+# Las alas cuelgan del cuerpo. La cola se ENCADENA: cola_1 del cuerpo, cola_2 de
+# cola_1... asi rotar un segmento arrastra a los de detras y una onda recorre la
+# cola sin que nadie la coordine.
+#
+# La posicion de cada hijo se calcula A MANO, restando la bisagra del padre. NO
+# se usa `matrix_parent_inverse = padre.matrix_world.inverted()`: en --background
+# el depsgraph no se evalua, `matrix_world` viene sin actualizar, y con una cadena
+# el error se ACUMULA — la cola salia despegada del cuerpo y cada segmento mas
+# lejos que el anterior.
+cuerpo = next((o for o, m, _ in creadas if m == 0), None)
+por_marca = {m: (o, b) for o, m, b in creadas}
 if cuerpo is not None:
-    for ob, marca in creadas:
-        if marca != 0:
-            ob.parent = cuerpo
-            ob.matrix_parent_inverse = cuerpo.matrix_world.inverted()
+    for ob, marca, bisagra in creadas:
+        if marca == 0:
+            continue
+        if marca >= 10 and (marca + 1) in por_marca:
+            padre, bis_padre = por_marca[marca + 1]   # el de delante en la cadena
+        else:
+            padre, bis_padre = cuerpo, Vector((0.0, 0.0, 0.0))
+        ob.parent = padre
+        ob.matrix_parent_inverse = Matrix()           # identidad: no compensamos nada
+        ob.location = bisagra - bis_padre             # relativa al padre, medida
+        if marca >= 10:
+            print("  cadena: %-16s cuelga de %-16s  local (%+.3f, %+.3f, %+.3f)"
+                  % (ob.name, padre.name, ob.location.x, ob.location.y, ob.location.z))
 
 bpy.data.objects.remove(orig, do_unlink=True)
 bpy.ops.export_scene.gltf(filepath=salida, export_format="GLB", export_apply=False,
