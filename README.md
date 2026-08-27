@@ -285,12 +285,54 @@ Meshy igual que se regeneraría un vídeo.
 **Un modelo se valida antes de normalizarlo**, con
 `mex-orbit-testing/assets/validar-modelo.py`.
 
+### Animación: `tools/animar-alas.py`
+
+Meshy da malla estática. Las alas se pliegan con una **clave de forma**, no con
+esqueleto: un armature pide modo edición y pintar pesos, y los operadores de modo
+fallan en silencio con `--background`. Una clave de forma es dato puro, glTF la
+exporta como morph target y Godot la reproduce.
+
+```bash
+blender --background --factory-startup --python tools/animar-alas.py -- \
+    <cliente>/pruebas/vexor.glb <cliente>/pruebas/vexor-anim.glb 0.26 0.30 42 1 26
+```
+
+**La bisagra se mide, no se estima.** En el Vexor el ancho salta de 0,512 a 1,102
+en t=0,75: ahí acaban las placas del tórax y empiezan las alas, o sea |x| ≈ 0,26.
+Y el mismo perfil confirma el `from: 0.68` de `undulate` medido en el sprite 2D —
+el ancho cae de 0,968 a 0,619 en t≈0,28, que es el mismo sitio. **El modelo y el
+sprite coinciden en dónde acaba el tórax.**
+
+El pliegue no es rígido: el peso va de 0 en la bisagra a 1 una banda más afuera,
+así que el ala se *dobla* en vez de girar en bloque, y de paso no deja arruga dura
+en la unión. 26 fotogramas, un ciclo, y **el bucle cierra por construcción** — el
+último fotograma repite el primero. Toda la maquinaria de medir la costura y
+buscar el valle se cae con esto.
+
+Y sale gratis algo que en 2D costó trabajo: las vetas emisivas se pliegan con las
+placas. En el sprite eso obligó a que `undulate` y `undulate_add` compartieran un
+include; aquí la emisión es un material de la misma malla y no puede
+desincronizarse.
+
+**El precio de la clave de forma está medido, y no es en peso sino en dibujo.**
+Cuesta 0,3 MB sobre el asset de juego, pero con 150 instancias en pantalla el
+mero hecho de que la malla tenga morph target baja de 190 a 113 fps *sin
+reproducir nada*. A población real (20–30 bichos) el coste es del 17–22% y el
+suelo se queda en 109 fps. Si algún día hicieran falta 150 bichos animados a la
+vez, la salida es esqueleto: unas pocas matrices en vez de deltas por vértice.
+
 ### Lo que el pipeline de modelos NO resuelve
 
-La animación. Meshy da malla estática: las alas del Vexor no se pliegan. Eso es
-trabajo de Blender —separar piezas y poner keyframes— y es el coste real de esta
-ruta, mayor que modelar. Ocho de los nueve bichos son piezas rígidas y no
-necesitan esqueleto; el Vorax sí.
+El **abdomen que ondula** no se hornea. `undulate` es continuo y reacciona al
+estado (`idle: 0.5` es cuánto se menea parado), así que en 3D pasa a ser un vertex
+shader o un hueso movido por código — nunca keyframes, que lo congelarían.
+
+Y el **pulso emisivo** tampoco: es luz, no geometría. Pero gana algo al mudarse.
+Hoy corre en su propio reloj (`speed: 3.2` → periodo 1,96 s) al lado de un ciclo
+de alas de 2,17 s: se separan del todo cada ~21 s, así que el destello *no* está
+sincronizado con el aleteo aunque lo parezca. Con la animación en el GLB, el
+shader puede leer su fase y entonces el destello cae en el aleteo por
+construcción.
 
 ## Relación con otros repos
 
