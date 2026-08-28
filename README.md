@@ -662,3 +662,23 @@ vez de sumar más de 1 — el mismo fallo que tuvieron los cuernos.
 peso entero encima del de `raiz`, y la suma por vértice salió **2,000 exacto** — la firma de dos huesos
 reclamando lo mismo al 100%. Ahora `COLA_SEG = 0` la salta, como `BISAGRA` alta salta las alas y
 `CUERNO_DESDE = 0` los cuernos.
+
+## La estación: dos casos que un bicho no tiene
+
+**Un asset puede tener DOS colores de acento.** La estación lleva el rótulo en magenta (p99 0,298) y
+las ventanas en cian (p99 0,153): con un solo canal, uno de los dos se queda apagado. Y pedir el de
+más cobertura era peor —el azul domina en el **92,2 %** de la textura porque el casco entero es
+azul-gris, así que habría encendido la torre entera. El canal acepta ahora una suma: `c+m` toma el
+**máximo** de las dos máscaras, no la suma, porque un píxel es del acento que más domine y no de los
+dos a la vez.
+
+**Y no todo se tumba.** El contrato del normalizador —el eje fino acaba en el alto— codifica «objeto
+plano visto desde arriba», que es lo que son los bichos y las naves. Una estación es una **torre
+vertical**: tumbarla la acuesta. No hay heurística que distinga los dos casos mirando la caja, porque
+la diferencia no está en el modelo sino en cómo se mira, así que se dice con `TUMBAR=0`.
+
+| estación | valor | por qué |
+|---|---|---|
+| `TUMBAR` | **0** | es una torre, no un objeto plano |
+| tris | 30 228, **sin decimar** | es UNA instancia, no quince como un Vex |
+| canal | `c+m` | rótulo magenta + ventanas cian |

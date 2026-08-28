@@ -41,6 +41,13 @@ CANAL = (argv[4] if len(argv) > 4 else "r").lower()
 GANANCIA = float(argv[5] if len(argv) > 5 else 1.0)
 # Distancia de soldadura antes de decimar. 0 la desactiva.
 SOLDAR = float(argv[6]) if len(argv) > 6 else 0.0005
+# TUMBAR=0 deja el modelo COMO VIENE. El contrato de este script —el eje fino
+# acaba en el alto— codifica "objeto plano visto desde arriba", que es lo que son
+# los bichos y las naves. Una estacion no: es una TORRE vertical vista en
+# oblicuo, y tumbarla la acuesta. No hay heuristica que distinga las dos cosas
+# mirando la caja, porque la diferencia no esta en el modelo sino en como se
+# mira; asi que se dice.
+TUMBAR = os.environ.get("TUMBAR", "1") != "0"
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
@@ -126,7 +133,10 @@ ext = maxi - mini
 # un juego cenital) y el eje LARGO acaba en +Y (que al exportar a glTF es -Z, el
 # "adelante" de Godot). Mirar solo el fino basta mientras el largo caiga solo.
 fino = int(np.argmin(ext))
-if fino == 0:
+if not TUMBAR:
+    print("SIN TUMBAR  TUMBAR=0: se respeta la orientacion de entrada (caja %.3f x %.3f x %.3f)"
+          % (ext[0], ext[1], ext[2]))
+elif fino == 0:
     # El Vorax entro asi: fino en X y largo en Z. Antes esto solo imprimia un
     # aviso y NO tumbaba nada, y como el aviso convivia con un "ya venia en el
     # plano" en la linea siguiente, el modelo se daba por bueno de pie. Lo cazo
