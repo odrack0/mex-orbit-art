@@ -598,7 +598,11 @@ Medido contra alta (rojo medio del píxel, que es el contrato de homologación):
 | **1,2** | **0,138** | 0,139 |
 | 2,5 | 0,163 | 0,139 |
 
-La Phoenix se hornea con **`HORNO_AMBIENTE=1.2`**. Y ojo: el resultado sigue siendo
+La Phoenix se hornea con **`HORNO_AMBIENTE=1.7`**.
+
+**Y se recalibra cada vez que cambia la textura.** Con la textura gris nueva, alta
+subió de 0,139 a 0,226 y el ambiente tuvo que pasar de 1,2 a 1,7: el dial no
+pertenece al modelo, pertenece a la **pareja modelo+textura**. Y ojo: el resultado sigue siendo
 una nave oscura, porque **alta también la dibuja oscura**. El `phoenix-v1.png` viejo
 era más claro por ser arte 2D de otra época con otra luz; homologar es parecerse al
 modelo, no al PNG que había antes.
