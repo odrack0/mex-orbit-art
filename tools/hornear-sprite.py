@@ -40,6 +40,12 @@ from mathutils import Vector
 argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida_dir, nombre = argv[0], argv[1], argv[2]
 LADO = int(argv[3]) if len(argv) > 3 else 512
+# La luz del horno, tambien por asset. Un bicho de albedo oscuro con vetas sale
+# bien con 3,2 y 0,28; una nave METALICA no: un metal sin entorno que reflejar se
+# apaga, y el Phoenix salia casi negro al lado de su propio arte 2D. Subir el
+# ambiente es darle algo que reflejar.
+HORNO_SOL = float(os.environ.get("HORNO_SOL", 3.2))
+HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.28))
 
 # ABSOLUTA, siempre. Blender resuelve un `render.filepath` RELATIVO contra su
 # propia idea de la ruta base, no contra el directorio desde el que se lanza: con
@@ -122,14 +128,14 @@ def emisiones(valor):
 
 # ---- 1. BASE: cuerpo iluminado, emision apagada ----
 sol_d = bpy.data.lights.new("sol", type="SUN")
-sol_d.energy = 3.2
+sol_d.energy = HORNO_SOL
 sol = bpy.data.objects.new("sol", sol_d)
 bpy.context.scene.collection.objects.link(sol)
 # Luz AXIAL, desde la camara: el sprite rota en el juego y una luz lateral
 # giraria con el. Es la regla 3 del contrato de render, y sigue vigente para el
 # sprite aunque el modelo ya no la necesite.
 sol.rotation_euler = (0.0, 0.0, 0.0)
-fondo.inputs[1].default_value = 0.28
+fondo.inputs[1].default_value = HORNO_AMBIENTE
 
 previos = emisiones(0.0)
 print("BASE (emision apagada para que no vaya dos veces)")

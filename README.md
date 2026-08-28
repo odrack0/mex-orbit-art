@@ -532,6 +532,7 @@ vez de en toda la superficie.
 | `CUERNO_DESDE` | 0,13 | 0,12 |
 | `GLOW_NUCLEO` | 0,09 | **0,22** |
 | `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** |
+| `HORNO_AMBIENTE` | 0,28 | 0,28 |
 | emisión derivada | 38-47 % de la textura | 16,5 % |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** |
 
@@ -580,3 +581,24 @@ salía con 2. Con el número dado se usa la **simetría** de la nave —partir p
 centro y cada lado en dos— y solo se aceptan cortes que dejen los dos lados con
 tamaño suficiente; sin esa condición el corte se va a los bins del borde, donde
 por construcción hay pocos vértices, y el grupo no llega a partirse.
+
+
+### El horno también tiene luz, y para un metal no vale la misma
+
+`HORNO_SOL` (3,2) y `HORNO_AMBIENTE` (0,28) valen para un bicho de albedo oscuro
+con vetas emisivas. Para una nave **metálica** no: un metal casi no tiene difuso,
+solo devuelve lo que hay alrededor, y sin entorno que reflejar se apaga. El Phoenix
+salía casi negro al lado de su propio render de alta.
+
+Medido contra alta (rojo medio del píxel, que es el contrato de homologación):
+
+| `HORNO_AMBIENTE` | media | alta |
+|---|---|---|
+| 0,28 | 0,115 | 0,139 |
+| **1,2** | **0,138** | 0,139 |
+| 2,5 | 0,163 | 0,139 |
+
+La Phoenix se hornea con **`HORNO_AMBIENTE=1.2`**. Y ojo: el resultado sigue siendo
+una nave oscura, porque **alta también la dibuja oscura**. El `phoenix-v1.png` viejo
+era más claro por ser arte 2D de otra época con otra luz; homologar es parecerse al
+modelo, no al PNG que había antes.
