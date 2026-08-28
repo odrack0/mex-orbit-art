@@ -150,12 +150,45 @@ popa = co[co[:, 1] < corte]
 print("POPA   Y < %.3f  ->  %d verts" % (corte, len(popa)))
 grupos = lobulos(popa[:, 0], N_TOBERAS)
 print("TOBERAS %d lobulos" % len(grupos))
-for i, m in enumerate(sorted(grupos, key=lambda g: popa[g][:, 0].mean())):
+ordenados = sorted(grupos, key=lambda g: popa[g][:, 0].mean())
+centros = [float(popa[m][:, 0].mean()) for m in ordenados]
+# Separacion entre toberas, para medir el ancho de cada una en su propia ventana.
+if len(centros) > 1:
+    paso = (centros[-1] - centros[0]) / float(len(centros) - 1)
+else:
+    paso = semiancho
+for i, m in enumerate(ordenados):
     c = popa[m]
     # El punto MAS TRASERO del lobulo, no su centro: la llama sale de la boca.
     trasero = c[c[:, 1] <= c[:, 1].min() + largo * 0.02]
     p = Vector((float(c[:, 0].mean()), float(trasero[:, 1].mean()), float(trasero[:, 2].mean())))
-    anclas.append(("tobera_%d" % (i + 1), p, len(c)))
+    # El ANCHO de la boca, medido en el punto mas trasero y por percentiles para
+    # que un vertice suelto no lo infle. Va en la ESCALA del marcador, que es un
+    # sitio estandar de glTF y llega al cliente sin inventar extensiones. Sirve
+    # para que la llama mida lo que mide su tobera: con la separacion entre
+    # toberas salian mas gruesas que las bocas de las que salen.
+    # El ancho se mide en una VENTANA alrededor del centro, sobre la banda de popa
+    # entera, y no sobre el lobulo que devolvio el corte: el corte del histograma
+    # parte por el medio la tobera de fuera —salian 0,052 contra 0,151 de la de
+    # dentro cuando en el render las cuatro son iguales— y ese ancho iba luego a
+    # la llama.
+    cerca = popa[(np.abs(popa[:, 0] - centros[i]) < paso * 0.5)
+                 & (popa[:, 1] <= trasero[:, 1].max())]
+    fuente = cerca if len(cerca) >= 30 else trasero
+    ancho = float(np.percentile(fuente[:, 0], 92) - np.percentile(fuente[:, 0], 8))
+    anclas.append(("tobera_%d" % (i + 1), p, len(c), max(ancho, 1e-4)))
+
+# Las toberas de una nave son IGUALES por construccion —se ve en el render—, asi
+# que se les da a todas la MEDIANA de lo medido. Es la mejor estimacion y ademas
+# aguanta un corte malo: midiendo una por una salian 0,054 y 0,134 para dos bocas
+# que en la imagen son la misma, porque el corte del histograma parte la de fuera.
+if len(anclas) > 1:
+    medios = sorted(a[3] for a in anclas)
+    n_m = len(medios)
+    mediana = medios[n_m // 2] if n_m % 2 else 0.5 * (medios[n_m // 2 - 1] + medios[n_m // 2])
+    print("TOBERAS ancho por mediana: %.3f  (medidos %s)"
+          % (mediana, ", ".join("%.3f" % m for m in medios)))
+    anclas = [(a[0], a[1], a[2], mediana) for a in anclas]
 
 # ---- CANIONES ----
 lateral = co[np.abs(co[:, 0]) > FRAC_LATERAL * semiancho]
@@ -168,16 +201,19 @@ for nombre, signo in (("canon_izq", -1.0), ("canon_der", 1.0)):
     # La punta DELANTERA del bloque: un canion es un tubo y su boca es el extremo.
     frente = c[c[:, 1] >= c[:, 1].max() - largo * 0.04]
     p = Vector((float(frente[:, 0].mean()), float(frente[:, 1].mean()), float(frente[:, 2].mean())))
-    anclas.append((nombre, p, len(c)))
+    ancho = float(np.percentile(frente[:, 0], 90) - np.percentile(frente[:, 0], 10))
+    anclas.append((nombre, p, len(c), max(ancho, 1e-4)))
 
-for nombre, p, cuantos in anclas:
+for nombre, p, cuantos, ancho in anclas:
     e = bpy.data.objects.new(nombre, None)
     e.empty_display_type = "PLAIN_AXES"
     e.empty_display_size = 0.05
     bpy.context.scene.collection.objects.link(e)
     e.location = p
+    e.scale = (ancho, ancho, ancho)
     e.parent = raiz if raiz is not obj else None
-    print("  %-10s (%+.3f, %+.3f, %+.3f)  de %d verts" % (nombre, p.x, p.y, p.z, cuantos))
+    print("  %-10s (%+.3f, %+.3f, %+.3f)  ancho %.3f  de %d verts"
+          % (nombre, p.x, p.y, p.z, ancho, cuantos))
 
 if not anclas:
     print("AVISO: no se encontro ni una tobera ni un canion. Revisa las fracciones.")
