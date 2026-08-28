@@ -606,3 +606,34 @@ pertenece al modelo, pertenece a la **pareja modelo+textura**. Y ojo: el resulta
 una nave oscura, porque **alta también la dibuja oscura**. El `phoenix-v1.png` viejo
 era más claro por ser arte 2D de otra época con otra luz; homologar es parecerse al
 modelo, no al PNG que había antes.
+
+## Dos casos que el Vorax destapó en la cadena 3D
+
+**El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la
+dimensión menor, y solo sabía hacerlo desde Y. El Vorax llegó con el fino en **X**, así que imprimió
+un aviso y **no tumbó nada** — y como ese aviso convive con un «ya venía en el plano» en la línea
+siguiente, el modelo se dio por bueno **de pie**. Lo cazó el validador, no el script.
+
+Ahora cubre las dos entradas. El contrato son dos cosas, no una: el eje fino acaba en **Z** (el alto
+de un juego cenital) y el largo en **+Y** (que al exportar a glTF es −Z, el «adelante» de Godot).
+Desde X hacen falta dos giros —+90 en Y y +90 en Z—; ninguno de 90° sobre un solo eje lleva dos ejes
+a la vez a donde se quiere.
+
+**Un bicho puede no tener alas.** `riguear-modelo.py` montaba `ala_izq`/`ala_der` y
+`cuerno_izq`/`cuerno_der` siempre. En un gusano no hay dónde: el perfil del Vorax no da un solo salto
+lateral (0,41 de ancho en la proa a 0,22 en la popa, sin escalón). Forzar la bisagra por encima del
+ancho máximo los habría creado igual, **sin un solo vértice que pese en ellos** — y un hueso muerto no
+avisa, se descubre el día que alguien intenta animarlo. Peor aún: la bisagra también acota los
+cuernos, así que subirla les habría dado la cabeza entera.
+
+Las alas se saltan si **ningún vértice pasa la bisagra** (la señal es la malla, no un parámetro), y
+los cuernos con `CUERNO_DESDE = 0`. Y el peso pasa a **cero**, no a la rampa: dejar la rampa haría que
+los vértices del borde pesaran en un hueso inexistente y al normalizar le robaran peso al cuerpo, que
+es como se aplasta una malla sin que nadie sepa por qué.
+
+| Vorax | valor | de dónde sale |
+|---|---|---|
+| tris | 14 998 | el crudo traía 28 126, el doble del presupuesto |
+| `BISAGRA` | 0,50 | por encima del ancho máximo (0,430) = sin alas |
+| `CUERNO_DESDE` | 0 | los dientes son un anillo, no un par simétrico |
+| `COLA_DESDE` / `COLA_SEG` | 0,78 / **6** | casi todo el cuerpo ondula, y una onda que recorre necesita más segmentos que un coletazo |

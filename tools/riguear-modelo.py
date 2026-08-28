@@ -91,24 +91,46 @@ bpy.ops.object.mode_set(mode="EDIT")
 raiz = arm.edit_bones.new("raiz")
 raiz.head, raiz.tail = Vector((0, 0, 0)), Vector((0, largo * 0.25, 0))
 
-y_ala = float(co[np.abs(co[:, 0]) > BISAGRA, 1].mean()) if (np.abs(co[:, 0]) > BISAGRA).any() else 0.0
-for nombre, signo in (("ala_izq", -1.0), ("ala_der", 1.0)):
-    b = arm.edit_bones.new(nombre)
-    b.head = Vector((BISAGRA * signo, y_ala, 0.0))
-    b.tail = Vector((BISAGRA * signo, y_ala + largo * 0.2, 0.0))
-    b.parent = raiz
+# ALAS, si las hay. Un gusano no tiene, y forzar los diales para fingir que si
+# es peor que no montarlas: con la bisagra por encima del ancho maximo los huesos
+# se crean igual, sin un solo vertice que pese en ellos, y quedan en el GLB como
+# partes moviles que no mueven nada. Un hueso muerto no avisa, se descubre el dia
+# que alguien intenta animarlo.
+#
+# La senial es la malla, no un parametro aparte: si ningun vertice pasa la
+# bisagra, ahi no hay ala que doblar.
+hay_alas = bool((np.abs(co[:, 0]) > BISAGRA).any())
+if hay_alas:
+    y_ala = float(co[np.abs(co[:, 0]) > BISAGRA, 1].mean())
+    for nombre, signo in (("ala_izq", -1.0), ("ala_der", 1.0)):
+        b = arm.edit_bones.new(nombre)
+        b.head = Vector((BISAGRA * signo, y_ala, 0.0))
+        b.tail = Vector((BISAGRA * signo, y_ala + largo * 0.2, 0.0))
+        b.parent = raiz
+else:
+    print("SIN ALAS  ningun vertice pasa la bisagra %.3f (ancho maximo %.3f)"
+          % (BISAGRA, float(np.abs(co[:, 0]).max())))
 
 # Los cuernos. La bisagra en X se MIDE de la malla (los dos lobulos del Vexor
 # pican en +-0.075) en vez de fijarse: otro bicho tendra los suyos en otro sitio.
+# CUERNOS, con CUERNO_DESDE <= 0 para saltarselos. Es el mismo criterio que las
+# alas: no se monta un hueso que no va a mover nada. En el Vorax la pieza movil
+# de la proa son los DIENTES, que no son un par simetrico partido por el signo de
+# X sino un anillo alrededor de la boca — otra forma, otra decision, y se toma
+# midiendo, no reutilizando la de al lado porque cae cerca.
 y_cuerno = y_proa - CUERNO_DESDE * largo
 banda_cuerno = max(1e-6, CUERNO_BANDA * largo)
-en_proa = (co[:, 1] > y_cuerno) & (np.abs(co[:, 0]) < BISAGRA)
-x_cuerno = float(np.abs(co[en_proa, 0]).mean()) if en_proa.any() else 0.06
-for nombre, signo in (("cuerno_izq", -1.0), ("cuerno_der", 1.0)):
-    b = arm.edit_bones.new(nombre)
-    b.head = Vector((x_cuerno * signo, y_cuerno, 0.0))
-    b.tail = Vector((x_cuerno * signo, y_cuerno + largo * 0.08, 0.0))
-    b.parent = raiz
+hay_cuernos = CUERNO_DESDE > 0.0
+if hay_cuernos:
+    en_proa = (co[:, 1] > y_cuerno) & (np.abs(co[:, 0]) < BISAGRA)
+    x_cuerno = float(np.abs(co[en_proa, 0]).mean()) if en_proa.any() else 0.06
+    for nombre, signo in (("cuerno_izq", -1.0), ("cuerno_der", 1.0)):
+        b = arm.edit_bones.new(nombre)
+        b.head = Vector((x_cuerno * signo, y_cuerno, 0.0))
+        b.tail = Vector((x_cuerno * signo, y_cuerno + largo * 0.08, 0.0))
+        b.parent = raiz
+else:
+    print("SIN CUERNOS  CUERNO_DESDE=%.2f" % CUERNO_DESDE)
 
 previo = raiz
 for k in range(COLA_SEG):
@@ -125,7 +147,10 @@ print("HUESOS %s" % [b.name for b in arm.bones])
 # El ala: 0 dentro del cuerpo, 1 fuera, con la transicion CENTRADA en la bisagra.
 # Esa banda es la que se estira, y es la que hace que no haya costura.
 ax = np.abs(co[:, 0])
-w_ala = suave((ax - (BISAGRA - BANDA * 0.5)) / BANDA)
+# Sin alas el peso es CERO, no la rampa: si se dejara la rampa, los vertices del
+# borde pesarian en un hueso que no existe y al normalizar le robarian peso al
+# cuerpo, que es como se aplasta una malla sin que nadie sepa por que.
+w_ala = suave((ax - (BISAGRA - BANDA * 0.5)) / BANDA) if hay_alas else np.zeros(n)
 w_izq = np.where(co[:, 0] < 0, w_ala, 0.0)
 w_der = np.where(co[:, 0] > 0, w_ala, 0.0)
 
@@ -139,7 +164,7 @@ w_cola = [rampas[k] - rampas[k + 1] for k in range(COLA_SEG)]
 # Los cuernos: rampa hacia la proa, y solo en la parte CENTRAL — de la bisagra
 # hacia fuera manda el ala, y un vertice que pesara en los dos se estiraria en
 # dos direcciones a la vez.
-w_cuerno = suave((co[:, 1] - y_cuerno) / banda_cuerno)
+w_cuerno = suave((co[:, 1] - y_cuerno) / banda_cuerno) if hay_cuernos else np.zeros(n)
 # Se cede el terreno al ala de forma CONTINUA, no con un corte en la bisagra: con
 # el corte, la franja |X| entre 0,19 y 0,30 pesaba en los dos y la suma llegaba a
 # 1,416 —el vertice se movia mas de la cuenta.
@@ -171,8 +196,13 @@ w_cola = [w / seguro for w in w_cola]
 print("  normalizado: suman 1 en todos")
 
 grupos = {b.name: obj.vertex_groups.new(name=b.name) for b in arm.bones}
-pesos = {"raiz": w_cuerpo, "ala_izq": w_izq, "ala_der": w_der,
-         "cuerno_izq": w_c_izq, "cuerno_der": w_c_der}
+# Solo los huesos que EXISTEN: `vertex_groups.new` sobre un nombre sin hueso
+# crea un grupo huerfano que el exportador arrastra al GLB.
+pesos = {"raiz": w_cuerpo}
+if hay_alas:
+    pesos.update({"ala_izq": w_izq, "ala_der": w_der})
+if hay_cuernos:
+    pesos.update({"cuerno_izq": w_c_izq, "cuerno_der": w_c_der})
 for k in range(COLA_SEG):
     pesos["cola_%d" % (k + 1)] = np.clip(w_cola[k], 0.0, 1.0)
 

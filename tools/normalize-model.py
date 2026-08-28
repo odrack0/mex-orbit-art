@@ -118,10 +118,26 @@ ext = maxi - mini
 # mientras el bicho fuese mas largo que ancho. Con el Vexor de alas abiertas
 # —1,91 de ancho contra 1,61 de largo— dejo de serlo, y el modelo entro de pie
 # diciendo "no hacia falta".
+# El contrato completo son DOS cosas, no una: el eje FINO acaba en Z (el alto de
+# un juego cenital) y el eje LARGO acaba en +Y (que al exportar a glTF es -Z, el
+# "adelante" de Godot). Mirar solo el fino basta mientras el largo caiga solo.
 fino = int(np.argmin(ext))
 if fino == 0:
-    print("AVISO: el eje fino es X. Este script solo sabe tumbar desde Y; revisalo a mano")
-if fino == 1:
+    # El Vorax entro asi: fino en X y largo en Z. Antes esto solo imprimia un
+    # aviso y NO tumbaba nada, y como el aviso convivia con un "ya venia en el
+    # plano" en la linea siguiente, el modelo se daba por bueno de pie. Lo cazo
+    # el validador, no el script.
+    #
+    # Hacen falta dos giros: +90 en Y lleva el fino de X a -Z, y +90 en Z lleva
+    # el largo de X a +Y. Uno solo no llega — no hay giro de 90 grados sobre un
+    # eje que mueva otros dos a la vez a donde se quiere.
+    R = (mathutils.Matrix.Rotation(math.radians(90), 4, "Z")
+         @ mathutils.Matrix.Rotation(math.radians(90), 4, "Y"))
+    for o in objs:
+        o.data.transform(R)
+        o.data.update()
+    print("TUMBADO  +90 en Y y +90 en Z (el eje fino era X, %.3f)" % ext[0])
+elif fino == 1:
     # La MISMA rotacion a todas las piezas: si cada una girase por su cuenta el
     # conjunto se desmontaria.
     R = mathutils.Matrix.Rotation(math.radians(-90), 4, "X")
