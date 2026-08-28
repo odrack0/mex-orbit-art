@@ -523,18 +523,19 @@ se calibraron con el Vexor. **No se heredan**: cada bicho se mide. El Vex lo dej
 claro — es más largo que ancho, al revés que el Vexor, y emite en un solo ojo en
 vez de en toda la superficie.
 
-| | Vexor | Vex | Ferox |
-|---|---|---|---|
-| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 | 1,071 × 1,903 × 0,567 |
-| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) | 12 000 (crudo a 31 181, decimado) |
-| `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** | **0,24 / 0,14** |
-| `COLA_DESDE` | 0,32 | **0,24** | **0,28** |
-| `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** |
-| `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 |
-| `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 |
-| emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) |
-| `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — |
+| | Vexor | Vex | Ferox | Skarnox |
+|---|---|---|---|---|
+| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 | 1,071 × 1,903 × 0,567 | 1,901 × 1,895 × 1,875 — **bola** |
+| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) | 12 000 (crudo a 31 181, decimado) | 12 000 (crudo a 28 166, decimado) |
+| `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** | **0,24 / 0,14** | sin alas (3,0) |
+| `COLA_DESDE` | 0,32 | **0,24** | **0,28** | 0 — sin cola |
+| `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** | 0 — solo raíz |
+| `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
+| `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 4,2** |
+| `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 | 0,28 |
+| emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
+| `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
 
 Cómo se sacó cada uno:
 
@@ -563,6 +564,17 @@ Cómo se sacó cada uno:
   van a **30° en el eje 1** (a +30 se pliegan al cuerpo, a −30 se abren en abanico,
   sin cruzarse; cada extremo cambia la silueta un 30 % a 190 px) y la cola a
   **12° en el eje 2** (el 0 no la mueve: 0,4 % de silueta).
+- **El Skarnox es una bola y su palanca de horno es el UMBRAL.** Ni la geometría ni
+  la concentración de la máscara delatan el cráter (radios 0,865–0,909, concentración
+  0,07): se localizó **rendiendo las seis vistas** — miraba a −Y, y el tumbado
+  estándar de −90 en X lo deja en el alto. Ojo: el eje «fino» de su caja (1,873 en Y,
+  un 1,5 % menor) es ruido — el tumbado acertó de casualidad; en una bola la
+  orientación se dice y se verifica con render. Y en el horno, `GLOW_NUCLEO`/`FUERZA`
+  no movían la media (0,196 → 0,201 con núcleo ×2,4: puntos calientes, no derrame)
+  porque `GLOW_UMBRAL=0,25` está por encima de lo que las grietas rinden **a pulso 1**
+  — el halo se calcula antes de multiplicar por el pico del pulso, mientras el bloom
+  de alta ve la emisión ya multiplicada. Con umbral 0,05, radio 0,20 y fuerza 4,2,
+  media queda en **0,235** contra 0,245 de alta con glow al pico (pulse 2,6).
 
 ### Naves: los anclajes de motores y cañones
 
