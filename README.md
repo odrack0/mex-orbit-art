@@ -532,8 +532,9 @@ vez de en toda la superficie.
 | `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** | 0 — solo raíz |
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 4,2** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 2,0** |
 | `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 | 0,28 |
+| ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
 
@@ -573,8 +574,14 @@ Cómo se sacó cada uno:
   no movían la media (0,196 → 0,201 con núcleo ×2,4: puntos calientes, no derrame)
   porque `GLOW_UMBRAL=0,25` está por encima de lo que las grietas rinden **a pulso 1**
   — el halo se calcula antes de multiplicar por el pico del pulso, mientras el bloom
-  de alta ve la emisión ya multiplicada. Con umbral 0,05, radio 0,20 y fuerza 4,2,
-  media queda en **0,235** contra 0,245 de alta con glow al pico (pulse 2,6).
+  de alta ve la emisión ya multiplicada. Y cuando la lava pidió más color, la
+  palanca fue la **ganancia de emisión en el normalizador** (1,0 → 2,0): doblar la
+  fuente obligó a bajar la fuerza del halo de 4,2 a **2,0** — el halo pertenece a
+  la pareja modelo+emisiva, igual que `HORNO_AMBIENTE` pertenece a la pareja
+  modelo+textura en la Phoenix. Con umbral 0,05, radio 0,20 y fuerza 2,0, media
+  queda en **0,265** contra 0,267 de alta con glow al pico (pulse 2,6). El resto
+  de su intensidad vive en el JSON: suelo del pulso en 1,2 (la lava no se apaga)
+  y el pase de `lava` que viaja, solo de alta.
 
 ### Naves: los anclajes de motores y cañones
 
