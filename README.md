@@ -226,6 +226,48 @@ ahí cada téxel del contorno se reparte entre varios píxeles de pantalla.
 Se comprueba mirando el verdor del borde opaco del atlas contra el del render sin tocar: si coinciden
 (−11,6 contra −12,4 en la base), lo que queda es el arte y no el croma.
 
+## Modelos 3D -> asset de juego: LA RECETA
+
+Lo que pedirle a Meshy, y por qué cada cosa:
+
+| ajuste | valor | por qué |
+|---|---|---|
+| **Remesh** | **sí, ~10-15 k tris** | Lo más importante. Sin él Meshy da una sopa de cáscaras solapadas y hay que decimar; el decimador no fusiona entre cáscaras y las deja hechas esquirlas. Con remesh, una superficie cerrada al presupuesto que pidas. |
+| **Modo Ultra** | **apagado** | Triplica los trozos sueltos (431 → 1340) para un detalle que se decima igual. |
+| Imagen | 3/4, **alas abiertas** | La pose de la imagen es la pose de reposo, y es la única que vas a tener. Se anima hacia adentro, nunca al revés. |
+| Visión múltiple | apagado | Necesita vistas laterales que no existen todavía. |
+| Texturas | 4096 | Se bajan aquí a 1024 (alta) o 512 (media). |
+| Licencia | privada | |
+
+Y la cadena, dos comandos:
+
+```bash
+# crudo -> master normalizado (sin decimar: el remesh ya vino al presupuesto)
+blender --background --factory-startup --python tools/normalize-model.py -- \
+    source/3d-models/crudo/vexor-texture-v3.glb source/3d-models/vexor-v3.glb 0 1024 r 1.0 0.0005
+
+# master -> asset de juego con esqueleto
+blender --background --factory-startup --python tools/riguear-modelo.py -- \
+    source/3d-models/vexor-v3.glb <cliente>/pruebas/vexor.glb 0.30 0.22 0.32 3
+```
+
+### Los dos diales, y cuál de los dos importa
+
+Medido con 30 bichos en pantalla, sobre gráficos integrados:
+
+| cambio | qué compra | qué cuesta |
+|---|---|---|
+| **512 → 1024 de textura** | **mucha nitidez** | 170 → 176 fps (nada) · VRAM 3 → 12 MB |
+| 10 k → 31 k triángulos | filos algo más suaves | 135 → 83 fps (−38%) |
+
+**Los polígonos cuestan fps; la textura cuesta VRAM.** Y en un bicho cuyo detalle
+vive en el mapa de normales, la textura es donde está el retorno. Por eso el
+asset va a 10 k tris con textura de 1024 y no al revés.
+
+A 12 MB por especie, los nueve bichos son 108 MB contra los 58 del bestiario en
+atlas de hoy. A 512 serían 27 MB. Ahí está el escalón de `quality.gd`: **alta =
+1024, media = 512, mismo GLB.**
+
 ## Modelos 3D -> asset de juego
 
 `tools/normalize-model.py` convierte lo que devuelve Meshy en algo que el cliente
