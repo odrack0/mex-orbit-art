@@ -45,6 +45,13 @@ MIN_LOBULO = int(argv[4]) if len(argv) > 4 else 60
 # entre la tobera de fuera y la de dentro de cada lado son poco profundos (129
 # vertices contra una media de 164) y el Phoenix salio con 2 en vez de 4.
 N_TOBERAS = int(argv[5]) if len(argv) > 5 else 0
+# Centros y ancho de las bocas, en X del modelo, separados por comas. Se pasan
+# cuando la deteccion automatica no cuadra con lo que se VE, que es lo normal en
+# una popa con anillos y tuberia entre toberas: `ver_anclajes.tscn` del cliente las
+# mide sobre el render —la proyeccion que usa el juego— y de ahi salen estos
+# numeros. Cuando la malla y la imagen discrepan, manda la imagen.
+TOBERAS_X = ([float(v) for v in argv[6].split(",")] if len(argv) > 6 and argv[6] else [])
+TOBERA_ANCHO = float(argv[7]) if len(argv) > 7 else 0.0
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
@@ -150,45 +157,76 @@ popa = co[co[:, 1] < corte]
 print("POPA   Y < %.3f  ->  %d verts" % (corte, len(popa)))
 grupos = lobulos(popa[:, 0], N_TOBERAS)
 print("TOBERAS %d lobulos" % len(grupos))
-ordenados = sorted(grupos, key=lambda g: popa[g][:, 0].mean())
-centros = [float(popa[m][:, 0].mean()) for m in ordenados]
-# Separacion entre toberas, para medir el ancho de cada una en su propia ventana.
-if len(centros) > 1:
-    paso = (centros[-1] - centros[0]) / float(len(centros) - 1)
-else:
-    paso = semiancho
-for i, m in enumerate(ordenados):
-    c = popa[m]
-    # El punto MAS TRASERO del lobulo, no su centro: la llama sale de la boca.
-    trasero = c[c[:, 1] <= c[:, 1].min() + largo * 0.02]
-    p = Vector((float(c[:, 0].mean()), float(trasero[:, 1].mean()), float(trasero[:, 2].mean())))
-    # El ANCHO de la boca, medido en el punto mas trasero y por percentiles para
-    # que un vertice suelto no lo infle. Va en la ESCALA del marcador, que es un
-    # sitio estandar de glTF y llega al cliente sin inventar extensiones. Sirve
-    # para que la llama mida lo que mide su tobera: con la separacion entre
-    # toberas salian mas gruesas que las bocas de las que salen.
-    # El ancho se mide en una VENTANA alrededor del centro, sobre la banda de popa
-    # entera, y no sobre el lobulo que devolvio el corte: el corte del histograma
-    # parte por el medio la tobera de fuera —salian 0,052 contra 0,151 de la de
-    # dentro cuando en el render las cuatro son iguales— y ese ancho iba luego a
-    # la llama.
-    cerca = popa[(np.abs(popa[:, 0] - centros[i]) < paso * 0.5)
-                 & (popa[:, 1] <= trasero[:, 1].max())]
-    fuente = cerca if len(cerca) >= 30 else trasero
-    ancho = float(np.percentile(fuente[:, 0], 92) - np.percentile(fuente[:, 0], 8))
-    anclas.append(("tobera_%d" % (i + 1), p, len(c), max(ancho, 1e-4)))
+# Las bocas se miden por OCUPACION en una rebanada, no por densidad de vertices.
+# La diferencia no es cosmetica: contando vertices, la malla mete en el saco los
+# anillos, los soportes y la tuberia que hay entre toberas, y el reparto salia
+# asimetrico —centros -0,219 / -0,125 / +0,128 / +0,207 para cuatro campanas que en
+# el render estan en -0,233 / -0,094 / +0,090 / +0,229— y el ancho corto, 0,103
+# contra 0,13. La ocupacion es lo que ve el ojo, que es de quien es el problema.
+#
+# Y la rebanada NO se toma al ras: ahi las campanas se tocan de dos en dos (es
+# justo lo que se veia en el juego, dos chorros gordos). Se sube hasta la primera
+# rebanada donde salgan separadas.
+PASO_BIN = 0.005
 
-# Las toberas de una nave son IGUALES por construccion —se ve en el render—, asi
-# que se les da a todas la MEDIANA de lo medido. Es la mejor estimacion y ademas
-# aguanta un corte malo: midiendo una por una salian 0,054 y 0,134 para dos bocas
-# que en la imagen son la misma, porque el corte del histograma parte la de fuera.
-if len(anclas) > 1:
-    medios = sorted(a[3] for a in anclas)
-    n_m = len(medios)
-    mediana = medios[n_m // 2] if n_m % 2 else 0.5 * (medios[n_m // 2 - 1] + medios[n_m // 2])
-    print("TOBERAS ancho por mediana: %.3f  (medidos %s)"
-          % (mediana, ", ".join("%.3f" % m for m in medios)))
-    anclas = [(a[0], a[1], a[2], mediana) for a in anclas]
+
+def bocas_en(margen):
+    """Grupos de X ocupados en una rebanada a `margen` de la popa."""
+    corte_y = float(lo[1]) + margen
+    reb = co[(co[:, 1] >= corte_y - largo * 0.01) & (co[:, 1] <= corte_y + largo * 0.01)]
+    if len(reb) < 20:
+        return []
+    bins = max(8, int((hi[0] - lo[0]) / PASO_BIN))
+    cuenta, bordes = np.histogram(reb[:, 0], bins=bins)
+    grupos, actual = [], []
+    for i, c in enumerate(cuenta):
+        if c > 0:
+            actual.append(i)
+        elif actual:
+            grupos.append(actual)
+            actual = []
+    if actual:
+        grupos.append(actual)
+    salida = []
+    for g in grupos:
+        a, b = float(bordes[g[0]]), float(bordes[g[-1] + 1])
+        if b - a >= PASO_BIN * 4:
+            salida.append((0.5 * (a + b), b - a))
+    return salida
+
+
+bocas = []
+if TOBERAS_X:
+    ancho_dado = TOBERA_ANCHO if TOBERA_ANCHO > 0.0 else 0.10
+    bocas = [(x, ancho_dado) for x in TOBERAS_X]
+    print("BOCAS dadas a mano: %s  ancho %.3f"
+          % (", ".join("%+.3f" % x for x in TOBERAS_X), ancho_dado))
+for k in ([] if bocas else range(0, 40)):
+    cand = bocas_en(largo * 0.004 * k)
+    if len(cand) >= max(2, N_TOBERAS if N_TOBERAS > 0 else 2):
+        bocas = cand
+        print("BOCAS rebanada a %.3f de la popa" % (largo * 0.004 * k))
+        break
+if not bocas:
+    bocas = bocas_en(largo * 0.02)
+
+if N_TOBERAS > 0 and len(bocas) > N_TOBERAS:
+    bocas = sorted(bocas, key=lambda b: -b[1])[:N_TOBERAS]
+bocas.sort()
+
+anchos = sorted(b[1] for b in bocas)
+n_a = len(anchos)
+ANCHO = (anchos[n_a // 2] if n_a % 2 else 0.5 * (anchos[n_a // 2 - 1] + anchos[n_a // 2])) if n_a else 0.1
+print("TOBERAS %d bocas  centros %s  ancho por mediana %.3f (medidos %s)"
+      % (len(bocas), ", ".join("%+.3f" % b[0] for b in bocas), ANCHO,
+         ", ".join("%.3f" % a for a in anchos)))
+
+for i, (cx, _w) in enumerate(bocas):
+    cerca = popa[np.abs(popa[:, 0] - cx) < ANCHO * 0.5]
+    fuente = cerca if len(cerca) >= 20 else popa
+    trasero = fuente[fuente[:, 1] <= fuente[:, 1].min() + largo * 0.02]
+    p = Vector((cx, float(trasero[:, 1].mean()), float(trasero[:, 2].mean())))
+    anclas.append(("tobera_%d" % (i + 1), p, len(fuente), ANCHO))
 
 # ---- CANIONES ----
 lateral = co[np.abs(co[:, 0]) > FRAC_LATERAL * semiancho]
