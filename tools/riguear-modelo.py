@@ -38,6 +38,11 @@ BISAGRA = float(argv[2]) if len(argv) > 2 else 0.30
 BANDA = float(argv[3]) if len(argv) > 3 else 0.22
 COLA_DESDE = float(argv[4]) if len(argv) > 4 else 0.32
 COLA_SEG = int(argv[5]) if len(argv) > 5 else 3
+# Los cuernos, como fraccion del largo medida DESDE LA PROA. Medido sobre el
+# Vexor: la zona son 944 verts (5,0% de la malla) en dos lobulos simetricos con
+# un valle claro en el centro, que empiezan a Y=0.60 de una proa en 0.806.
+CUERNO_DESDE = float(argv[6]) if len(argv) > 6 else 0.13
+CUERNO_BANDA = float(argv[7]) if len(argv) > 7 else 0.075
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
@@ -93,6 +98,18 @@ for nombre, signo in (("ala_izq", -1.0), ("ala_der", 1.0)):
     b.tail = Vector((BISAGRA * signo, y_ala + largo * 0.2, 0.0))
     b.parent = raiz
 
+# Los cuernos. La bisagra en X se MIDE de la malla (los dos lobulos del Vexor
+# pican en +-0.075) en vez de fijarse: otro bicho tendra los suyos en otro sitio.
+y_cuerno = y_proa - CUERNO_DESDE * largo
+banda_cuerno = max(1e-6, CUERNO_BANDA * largo)
+en_proa = (co[:, 1] > y_cuerno) & (np.abs(co[:, 0]) < BISAGRA)
+x_cuerno = float(np.abs(co[en_proa, 0]).mean()) if en_proa.any() else 0.06
+for nombre, signo in (("cuerno_izq", -1.0), ("cuerno_der", 1.0)):
+    b = arm.edit_bones.new(nombre)
+    b.head = Vector((x_cuerno * signo, y_cuerno, 0.0))
+    b.tail = Vector((x_cuerno * signo, y_cuerno + largo * 0.08, 0.0))
+    b.parent = raiz
+
 previo = raiz
 for k in range(COLA_SEG):
     b = arm.edit_bones.new("cola_%d" % (k + 1))
@@ -119,26 +136,43 @@ rampas = [suave((bordes[k] - co[:, 1]) / max(1e-6, banda_cola)) for k in range(C
 rampas.append(np.zeros(n))
 w_cola = [rampas[k] - rampas[k + 1] for k in range(COLA_SEG)]
 
-w_cuerpo = np.clip(1.0 - w_izq - w_der - rampas[0], 0.0, 1.0)
+# Los cuernos: rampa hacia la proa, y solo en la parte CENTRAL — de la bisagra
+# hacia fuera manda el ala, y un vertice que pesara en los dos se estiraria en
+# dos direcciones a la vez.
+w_cuerno = suave((co[:, 1] - y_cuerno) / banda_cuerno)
+# Se cede el terreno al ala de forma CONTINUA, no con un corte en la bisagra: con
+# el corte, la franja |X| entre 0,19 y 0,30 pesaba en los dos y la suma llegaba a
+# 1,416 —el vertice se movia mas de la cuenta.
+w_cuerno = w_cuerno * (1.0 - w_ala)
+w_c_izq = np.where(co[:, 0] < 0, w_cuerno, 0.0)
+w_c_der = np.where(co[:, 0] > 0, w_cuerno, 0.0)
+
+w_cuerpo = np.clip(1.0 - w_izq - w_der - rampas[0] - w_c_izq - w_c_der, 0.0, 1.0)
 
 # La suma por vertice tiene que ser 1. Si algun vertice se queda sin peso, la
 # piel lo colapsa al origen del hueso y la malla se aplasta — que es exactamente
 # lo que hizo la primera version con la cola.
-total = w_cuerpo + w_izq + w_der + sum(w_cola)
+total = w_cuerpo + w_izq + w_der + w_c_izq + w_c_der + sum(w_cola)
 print("PESOS  suma por vertice: min %.3f  max %.3f  media %.3f"
       % (total.min(), total.max(), total.mean()))
 huerfanos = int((total < 0.5).sum())
 if huerfanos:
-    print("  AVISO: %d vertices con menos de 0,5 de peso total (%.1f%%) — se van a aplastar"
+    print("  AVISO: %d vertices con menos de 0,5 de peso total (%.1f%%) — se aplastarian"
           % (huerfanos, 100.0 * huerfanos / n))
-    # se normaliza: mas vale repartir mal que dejar vertices sueltos
-    seguro = np.maximum(total, 1e-6)
-    w_cuerpo, w_izq, w_der = w_cuerpo / seguro, w_izq / seguro, w_der / seguro
-    w_cola = [w / seguro for w in w_cola]
-    print("  normalizado: ahora suman 1 en todos")
+
+# Se normaliza SIEMPRE, no solo cuando falta peso. Al meter los cuernos aparecio
+# el caso contrario —vertices sumando 1,416, que se mueven mas de la cuenta— y el
+# guardian no lo veia porque solo miraba el minimo. Un peso que no suma 1 esta mal
+# por los dos lados.
+seguro = np.maximum(total, 1e-6)
+w_cuerpo, w_izq, w_der = w_cuerpo / seguro, w_izq / seguro, w_der / seguro
+w_c_izq, w_c_der = w_c_izq / seguro, w_c_der / seguro
+w_cola = [w / seguro for w in w_cola]
+print("  normalizado: suman 1 en todos")
 
 grupos = {b.name: obj.vertex_groups.new(name=b.name) for b in arm.bones}
-pesos = {"raiz": w_cuerpo, "ala_izq": w_izq, "ala_der": w_der}
+pesos = {"raiz": w_cuerpo, "ala_izq": w_izq, "ala_der": w_der,
+         "cuerno_izq": w_c_izq, "cuerno_der": w_c_der}
 for k in range(COLA_SEG):
     pesos["cola_%d" % (k + 1)] = np.clip(w_cola[k], 0.0, 1.0)
 
