@@ -289,16 +289,30 @@ for mat in usados:
         # No es que el bicho no brillara: es que la herramienta no sabia mirar.
         # Un modelo con emision secundaria habria pasado por aqui sin emision y
         # sin un solo aviso.
-        if CANAL in ("r", "g", "b"):
-            idx = {"r": 0, "g": 1, "b": 2}[CANAL]
-            otros = [i for i in (0, 1, 2) if i != idx]
-            mask = np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
-        elif CANAL in ("c", "m", "y"):
-            # c = cian (g+b), m = magenta (r+b), y = amarillo (r+g)
-            dos, falta = {"c": ((1, 2), 0), "m": ((0, 2), 1), "y": ((0, 1), 2)}[CANAL]
-            mask = np.clip(np.minimum(px[:, dos[0]], px[:, dos[1]]) - px[:, falta], 0.0, 1.0)
-        else:
-            raise SystemExit("canal '%s' desconocido: usa r/g/b o c/m/y" % CANAL)
+        def mascara_de(canal):
+            if canal in ("r", "g", "b"):
+                idx = {"r": 0, "g": 1, "b": 2}[canal]
+                otros = [i for i in (0, 1, 2) if i != idx]
+                return np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
+            if canal in ("c", "m", "y"):
+                # c = cian (g+b), m = magenta (r+b), y = amarillo (r+g)
+                dos, falta = {"c": ((1, 2), 0), "m": ((0, 2), 1), "y": ((0, 1), 2)}[canal]
+                return np.clip(np.minimum(px[:, dos[0]], px[:, dos[1]]) - px[:, falta], 0.0, 1.0)
+            raise SystemExit("canal '%s' desconocido: usa r/g/b, c/m/y o una suma como c+m" % canal)
+
+        # VARIOS COLORES con "c+m": se toma el MAXIMO de sus mascaras, no la suma.
+        # Un pixel es del acento que mas domine, no de los dos a la vez; sumarlas
+        # haria brillar de mas lo que cae entre ambos.
+        #
+        # Hizo falta con la estacion, que tiene DOS acentos: el rotulo magenta
+        # (p99 0,298) y las ventanas cian (p99 0,153). Con un solo canal, uno de
+        # los dos se queda apagado — y pedir el canal con mas cobertura era peor:
+        # el azul domina en el 92,2% de la textura porque el casco entero es
+        # azul-gris, asi que habria encendido la torre entera.
+        partes = [c.strip() for c in CANAL.split("+") if c.strip()]
+        mask = mascara_de(partes[0])
+        for extra in partes[1:]:
+            mask = np.maximum(mask, mascara_de(extra))
 
         emi = np.zeros_like(px)
         emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
