@@ -279,5 +279,35 @@ esc.view_settings.gamma = 1.0
 print("NORMAL (normal de superficie, sin gestion de color)")
 render(os.path.join(salida_dir, nombre + "-base-normal.png"))
 
+# ---- anclajes en ESPACIO DE TEXTURA, para el JSON de media y baja ----
+# Media no carga el modelo, asi que sus toberas y caniones viven en pixeles de la
+# textura. Hasta ahora eran los del arte 2D viejo y no tenian por que caer donde
+# el modelo pone las suyas: los caniones del Phoenix estaban a 17 px de su sitio.
+# El horno SI conoce la proyeccion que acaba de usar, asi que los convierte el.
+marcas = [o for o in bpy.data.objects
+          if o.type == "EMPTY" and o.name.startswith(("tobera", "canon"))]
+if marcas:
+    ppu = LADO / cd.ortho_scale                      # pixeles por unidad de mundo
+    # Cuanto hay que escalar la llama para que su PENACHO (el 70% de su textura, y
+    # el ciclo de empuje llega a 0,70) mida lo que mide la boca.
+    div = 64.0 * 0.70 * 0.70
+    mot, can = [], []
+    for o in sorted(marcas, key=lambda m: m.location.x):
+        x = (o.location.x - centro.x) * ppu
+        y = -(o.location.y - centro.y) * ppu          # en la textura, +Y va hacia abajo
+        if o.name.startswith("tobera"):
+            mot.append('{"x": %.0f, "y": %.0f, "scale": %.3f}'
+                       % (x, y, max(o.scale.x, 1e-4) * ppu / div))
+        else:
+            can.append('{"x": %.0f, "y": %.0f}' % (x, y))
+    print("")
+    print("Al JSON, anclajes en pixeles de ESTA textura:")
+    print('  "engines": [%s],' % ", ".join(mot))
+    print('  "cannons": [%s],' % ", ".join(can))
+else:
+    print("")
+    print("(sin marcadores en el GLB: si es una nave, hornea el que salio de")
+    print(" marcar-anclajes o los anclajes de media se quedaran a ojo)")
+
 print("\nHORNEADO %s a %d px" % (nombre, LADO))
 print("Al JSON del bicho:  texture -> -base.png · emissive -> -emissive.png · normal -> -base-normal.png")
