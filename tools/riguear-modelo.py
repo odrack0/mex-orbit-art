@@ -44,6 +44,18 @@ COLA_SEG = int(argv[5]) if len(argv) > 5 else 3
 CUERNO_DESDE = float(argv[6]) if len(argv) > 6 else 0.13
 CUERNO_BANDA = float(argv[7]) if len(argv) > 7 else 0.075
 
+# MODO RADIAL, por variable de entorno para no alargar mas la fila de
+# posicionales. RADIAL=N monta N brazos alrededor del centro en vez de alas y
+# cola: es la forma del Vorax nuevo, una estrella de tentaculos.
+#
+# Los angulos NO se reparten a 360/N. Se MIDEN de la malla, porque un modelo
+# generado no sale simetrico: los ocho brazos del Vorax caen en 36, 84, 102, 122,
+# 146, 188, 286 y 342 grados. Repartirlos a ojo habria puesto huesos entre dos
+# brazos y ningun vertice pesaria del todo en ellos.
+RADIAL = int(os.environ.get("RADIAL", "0"))
+RADIAL_DESDE = float(os.environ.get("RADIAL_DESDE", "0.45"))   # radio, en fraccion del maximo
+RADIAL_ARCO = float(os.environ.get("RADIAL_ARCO", "26"))       # medio ancho angular de un brazo
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
 comprobar_salida(entrada, salida)
@@ -76,7 +88,8 @@ print("MALLA %s  %d verts  caja (%.3f, %.3f, %.3f)" % (obj.name, n, *(hi - lo)))
 y_popa, y_proa = float(lo[1]), float(hi[1])
 largo = y_proa - y_popa
 y_cola = y_popa + COLA_DESDE * largo
-bordes = [y_cola - (y_cola - y_popa) * k / float(COLA_SEG) for k in range(COLA_SEG + 1)]
+bordes = ([y_cola - (y_cola - y_popa) * k / float(COLA_SEG) for k in range(COLA_SEG + 1)]
+          if COLA_SEG > 0 else [y_popa])
 
 # ---- el esqueleto ----
 arm = bpy.data.armatures.new("esq")
@@ -90,6 +103,42 @@ bpy.ops.object.mode_set(mode="EDIT")
 # predecibles en vez de tener que adivinar el roll de cada hueso.
 raiz = arm.edit_bones.new("raiz")
 raiz.head, raiz.tail = Vector((0, 0, 0)), Vector((0, largo * 0.25, 0))
+
+# ---- brazos radiales ----
+angulos_brazo = []
+if RADIAL > 0:
+    rad_v = np.hypot(co[:, 0], co[:, 1])
+    r_max = float(rad_v.max())
+    r0 = RADIAL_DESDE * r_max
+    fuera = rad_v > r0
+    ang_v = np.degrees(np.arctan2(co[fuera, 1], co[fuera, 0])) % 360.0
+    # Histograma CIRCULAR: sin envolver, un brazo a 358 grados se parte en dos y
+    # sale como dos brazos flacos en vez de uno.
+    h, _ = np.histogram(ang_v, bins=180, range=(0, 360))
+    k = np.array([1, 2, 3, 4, 5, 4, 3, 2, 1], float)
+    k /= k.sum()
+    hs = np.convolve(np.r_[h[-4:], h, h[:4]], k, mode="same")[4:-4]
+    picos = [(i * 2.0, hs[i]) for i in range(180)
+             if hs[i] >= hs[(i - 1) % 180] and hs[i] >= hs[(i + 1) % 180]]
+    picos.sort(key=lambda t: -t[1])
+    for a, _v in picos:
+        if len(angulos_brazo) >= RADIAL:
+            break
+        # Se fusionan las crestas a menos de 15 grados: un brazo grueso da dos.
+        if all(min(abs(a - b), 360 - abs(a - b)) > 15 for b in angulos_brazo):
+            angulos_brazo.append(a)
+    angulos_brazo.sort()
+    if len(angulos_brazo) < RADIAL:
+        print("AVISO: se pidieron %d brazos y la malla solo da %d picos claros"
+              % (RADIAL, len(angulos_brazo)))
+    for j, a in enumerate(angulos_brazo):
+        ux, uy = math.cos(math.radians(a)), math.sin(math.radians(a))
+        b = arm.edit_bones.new("brazo_%d" % (j + 1))
+        b.head = Vector((ux * r0, uy * r0, 0.0))
+        b.tail = Vector((ux * r_max * 0.95, uy * r_max * 0.95, 0.0))
+        b.parent = raiz
+    print("RADIAL  %d brazos desde r=%.3f (max %.3f): %s"
+          % (len(angulos_brazo), r0, r_max, ["%.0f" % a for a in angulos_brazo]))
 
 # ALAS, si las hay. Un gusano no tiene, y forzar los diales para fingir que si
 # es peor que no montarlas: con la bisagra por encima del ancho maximo los huesos
@@ -132,8 +181,14 @@ if hay_cuernos:
 else:
     print("SIN CUERNOS  CUERNO_DESDE=%.2f" % CUERNO_DESDE)
 
+# COLA, con COLA_SEG <= 0 para saltarsela. Tercer interruptor con el mismo
+# criterio que alas y cuernos, y hacia falta: intentar apagarla con los diales
+# —un COLA_DESDE minusculo— no la apaga, deja `cola_1` cogiendo el peso entero
+# encima del de `raiz`. La suma por vertice salio 2,000 exacto, que es la firma
+# de dos huesos reclamando lo mismo al 100%.
+hay_cola = COLA_SEG > 0
 previo = raiz
-for k in range(COLA_SEG):
+for k in range(COLA_SEG if hay_cola else 0):
     b = arm.edit_bones.new("cola_%d" % (k + 1))
     b.head = Vector((0.0, bordes[k], 0.0))
     b.tail = Vector((0.0, bordes[k] - (bordes[k] - bordes[k + 1]) * 0.9, 0.0))
@@ -154,12 +209,37 @@ w_ala = suave((ax - (BISAGRA - BANDA * 0.5)) / BANDA) if hay_alas else np.zeros(
 w_izq = np.where(co[:, 0] < 0, w_ala, 0.0)
 w_der = np.where(co[:, 0] > 0, w_ala, 0.0)
 
+# Los brazos: producto de dos rampas, radial y angular. Un vertice pertenece a un
+# brazo si esta LEJOS del centro Y dentro de su arco; con solo una de las dos, el
+# hueso se llevaria un anillo entero o una cuna que llega hasta el centro.
+w_brazo = []
+if angulos_brazo:
+    rad_v = np.hypot(co[:, 0], co[:, 1])
+    r_max = float(rad_v.max())
+    r0 = RADIAL_DESDE * r_max
+    w_r = suave((rad_v - r0) / max(1e-6, r_max - r0) * 2.0)
+    ang_v = np.degrees(np.arctan2(co[:, 1], co[:, 0])) % 360.0
+    for a in angulos_brazo:
+        d = np.abs(((ang_v - a + 180.0) % 360.0) - 180.0)
+        w_brazo.append(w_r * suave((RADIAL_ARCO - d) / max(1e-6, RADIAL_ARCO * 0.6)))
+    # Dos brazos vecinos pueden solaparse (los del Vorax caen a 18 grados uno de
+    # otro). Se reparte entre ellos en vez de dejar que sumen mas de 1: un vertice
+    # que pesa 1,4 se mueve mas de la cuenta, que es el mismo fallo que tuvieron
+    # los cuernos.
+    suma_b = np.sum(w_brazo, axis=0)
+    exceso = np.maximum(suma_b, 1.0)
+    w_brazo = [w / exceso for w in w_brazo]
+
 # La cola: una rampa por frontera, y el peso de cada segmento es la diferencia
 # entre su rampa y la del siguiente. Asi los pesos suman 1 por construccion.
-banda_cola = (y_cola - y_popa) / float(COLA_SEG) * 0.6
-rampas = [suave((bordes[k] - co[:, 1]) / max(1e-6, banda_cola)) for k in range(COLA_SEG + 1)]
-rampas.append(np.zeros(n))
-w_cola = [rampas[k] - rampas[k + 1] for k in range(COLA_SEG)]
+if hay_cola:
+    banda_cola = (y_cola - y_popa) / float(COLA_SEG) * 0.6
+    rampas = [suave((bordes[k] - co[:, 1]) / max(1e-6, banda_cola)) for k in range(COLA_SEG + 1)]
+    rampas.append(np.zeros(n))
+    w_cola = [rampas[k] - rampas[k + 1] for k in range(COLA_SEG)]
+else:
+    rampas = [np.zeros(n)]
+    w_cola = []
 
 # Los cuernos: rampa hacia la proa, y solo en la parte CENTRAL — de la bisagra
 # hacia fuera manda el ala, y un vertice que pesara en los dos se estiraria en
@@ -172,12 +252,14 @@ w_cuerno = w_cuerno * (1.0 - w_ala)
 w_c_izq = np.where(co[:, 0] < 0, w_cuerno, 0.0)
 w_c_der = np.where(co[:, 0] > 0, w_cuerno, 0.0)
 
-w_cuerpo = np.clip(1.0 - w_izq - w_der - rampas[0] - w_c_izq - w_c_der, 0.0, 1.0)
+w_cuerpo = np.clip(1.0 - w_izq - w_der - rampas[0] - w_c_izq - w_c_der
+                   - (np.sum(w_brazo, axis=0) if w_brazo else 0.0), 0.0, 1.0)
 
 # La suma por vertice tiene que ser 1. Si algun vertice se queda sin peso, la
 # piel lo colapsa al origen del hueso y la malla se aplasta — que es exactamente
 # lo que hizo la primera version con la cola.
-total = w_cuerpo + w_izq + w_der + w_c_izq + w_c_der + sum(w_cola)
+total = (w_cuerpo + w_izq + w_der + w_c_izq + w_c_der + sum(w_cola)
+         + (np.sum(w_brazo, axis=0) if w_brazo else 0.0))
 print("PESOS  suma por vertice: min %.3f  max %.3f  media %.3f"
       % (total.min(), total.max(), total.mean()))
 huerfanos = int((total < 0.5).sum())
@@ -193,6 +275,7 @@ seguro = np.maximum(total, 1e-6)
 w_cuerpo, w_izq, w_der = w_cuerpo / seguro, w_izq / seguro, w_der / seguro
 w_c_izq, w_c_der = w_c_izq / seguro, w_c_der / seguro
 w_cola = [w / seguro for w in w_cola]
+w_brazo = [w / seguro for w in w_brazo]
 print("  normalizado: suman 1 en todos")
 
 grupos = {b.name: obj.vertex_groups.new(name=b.name) for b in arm.bones}
@@ -203,8 +286,10 @@ if hay_alas:
     pesos.update({"ala_izq": w_izq, "ala_der": w_der})
 if hay_cuernos:
     pesos.update({"cuerno_izq": w_c_izq, "cuerno_der": w_c_der})
-for k in range(COLA_SEG):
+for k in range(len(w_cola)):
     pesos["cola_%d" % (k + 1)] = np.clip(w_cola[k], 0.0, 1.0)
+for j in range(len(w_brazo)):
+    pesos["brazo_%d" % (j + 1)] = np.clip(w_brazo[j], 0.0, 1.0)
 
 for nombre, w in pesos.items():
     idx = np.nonzero(w > 0.001)[0]

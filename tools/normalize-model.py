@@ -23,7 +23,11 @@ convierten en asset:
 
 Uso:
   blender --background --factory-startup --python normalize-model.py -- \
-      <entrada.glb> <salida.glb> [tris] [lado_textura] [canal r|g|b] [ganancia]
+      <entrada.glb> <salida.glb> [tris] [lado_textura] [canal r|g|b|c|m|y] [ganancia]
+
+  El canal es el COLOR de lo que brilla. Primarios r/g/b, y secundarios c/m/y
+  para cian, magenta y amarillo — un color secundario tiene dos canales altos y
+  ninguno domina al otro, asi que pedirlo por primario no encuentra nada.
 """
 import bpy, sys, os, math, mathutils
 import numpy as np
@@ -273,9 +277,28 @@ for mat in usados:
         px = np.empty(LADO_REAL * LADO_REAL * 4, dtype=np.float32)
         base.image.pixels.foreach_get(px)
         px = px.reshape(-1, 4)
-        idx = {"r": 0, "g": 1, "b": 2}[CANAL]
-        otros = [i for i in (0, 1, 2) if i != idx]
-        mask = np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
+        # PRIMARIOS (r/g/b): el canal contra el mayor de los otros dos.
+        # SECUNDARIOS (c/m/y): el MENOR de sus dos canales contra el que falta.
+        #
+        # Los secundarios hicieron falta con el Vorax de cristales cian, y el
+        # motivo es aritmetico: el cian es verde Y azul altos a la vez, asi que
+        # ninguno domina al otro y `g - max(r,b)` sale casi cero. Medido en su
+        # albedo: por canal, el verde cazaba un 6,3% con p99 de 0,031 —ruido— y
+        # el azul un 0,0%; como cian, un 40% con p99 de 0,569.
+        #
+        # No es que el bicho no brillara: es que la herramienta no sabia mirar.
+        # Un modelo con emision secundaria habria pasado por aqui sin emision y
+        # sin un solo aviso.
+        if CANAL in ("r", "g", "b"):
+            idx = {"r": 0, "g": 1, "b": 2}[CANAL]
+            otros = [i for i in (0, 1, 2) if i != idx]
+            mask = np.clip(px[:, idx] - np.maximum(px[:, otros[0]], px[:, otros[1]]), 0.0, 1.0)
+        elif CANAL in ("c", "m", "y"):
+            # c = cian (g+b), m = magenta (r+b), y = amarillo (r+g)
+            dos, falta = {"c": ((1, 2), 0), "m": ((0, 2), 1), "y": ((0, 1), 2)}[CANAL]
+            mask = np.clip(np.minimum(px[:, dos[0]], px[:, dos[1]]) - px[:, falta], 0.0, 1.0)
+        else:
+            raise SystemExit("canal '%s' desconocido: usa r/g/b o c/m/y" % CANAL)
 
         emi = np.zeros_like(px)
         emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]

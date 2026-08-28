@@ -637,3 +637,28 @@ es como se aplasta una malla sin que nadie sepa por qué.
 | `BISAGRA` | 0,50 | por encima del ancho máximo (0,430) = sin alas |
 | `CUERNO_DESDE` | 0 | los dientes son un anillo, no un par simétrico |
 | `COLA_DESDE` / `COLA_SEG` | 0,78 / **6** | casi todo el cuerpo ondula, y una onda que recorre necesita más segmentos que un coletazo |
+
+## Emisión de color SECUNDARIO, y el rig radial
+
+**Un color secundario no lo ve la extracción por canal.** La máscara era
+`canal − max(los otros dos)`, y el cian es verde **y** azul altos a la vez: ninguno domina al otro, así
+que sale ~0. Medido en el Vorax de cristales: por canal, el verde cazaba un 6,3% con p99 de 0,031
+—ruido— y el azul un 0,0%. Como cian (`min(g,b) − r`): un 40% con p99 de 0,569.
+
+No es que el bicho no brillara: **la herramienta no sabía mirar**, y habría pasado por la cadena sin
+emisión y sin un solo aviso. Ahora el canal acepta `c/m/y` además de `r/g/b`.
+
+**Y un bicho puede ser radial.** `riguear-modelo.py` sabía de alas, cola y cuernos. El Vorax es una
+estrella de ocho tentáculos: con `RADIAL=8` monta un anillo de huesos hermanos colgados de la raíz.
+Los ángulos **se miden** de la malla con un histograma angular circular —el envolvente importa: sin él
+un brazo a 358° se parte en dos— y salen irregulares: 36, 84, 102, 122, 146, 188, 286 y 342. Repartir
+360/8 habría puesto huesos entre dos brazos.
+
+El peso de un brazo es el producto de dos rampas, **radial y angular**: con solo una, el hueso se
+lleva un anillo entero o una cuña que llega al centro. Y los brazos vecinos se reparten el solape en
+vez de sumar más de 1 — el mismo fallo que tuvieron los cuernos.
+
+**Tercer interruptor: la cola.** Intentar apagarla con los diales no la apaga; deja `cola_1` cogiendo
+peso entero encima del de `raiz`, y la suma por vértice salió **2,000 exacto** — la firma de dos huesos
+reclamando lo mismo al 100%. Ahora `COLA_SEG = 0` la salta, como `BISAGRA` alta salta las alas y
+`CUERNO_DESDE = 0` los cuernos.
