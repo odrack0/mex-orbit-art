@@ -514,3 +514,37 @@ Tres cosas que costaron una pasada cada una y no son obvias:
   relativo contra su propia ruta base, no contra el directorio de lanzamiento: con
   `exports/horno` el render se fue a un sitio fantasma, el script dijo que había
   horneado y los PNG se quedaron igual. Sin error ninguno.
+
+
+### Los diales son POR BICHO, no del pipeline
+
+Los valores por defecto de `hornear-sprite.py` y las bisagras de `riguear-modelo.py`
+se calibraron con el Vexor. **No se heredan**: cada bicho se mide. El Vex lo dejó
+claro — es más largo que ancho, al revés que el Vexor, y emite en un solo ojo en
+vez de en toda la superficie.
+
+| | Vexor | Vex |
+|---|---|---|
+| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 |
+| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) |
+| `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** |
+| `COLA_DESDE` | 0,32 | **0,24** |
+| `CUERNO_DESDE` | 0,13 | 0,12 |
+| `GLOW_NUCLEO` | 0,09 | **0,22** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** |
+| emisión derivada | 38-47 % de la textura | 16,5 % |
+| `cuernos_grados` (cliente) | 14 | **0 — no se lee** |
+
+Cómo se sacó cada uno:
+
+- **Las bisagras, del perfil de la malla.** El ancho por banda de Y da el salto:
+  en el Vex, `|X|` p95 pasa de 0,101 a 0,749 entre Y −0,599 y −0,479, así que ahí
+  empiezan las alas y ahí acaba la cola (`COLA_DESDE` = 0,24 del largo).
+- **`GLOW_*`, barriendo contra la medición.** El Vex emite en un solo ojo, así que
+  subir el núcleo casi no mueve la media (0,09 → 0,22 solo dio 0,201 → 0,205): la
+  palanca es el halo. Con radio 0,09 y fuerza 3,8 media queda en **0,231** contra
+  los **0,233** de alta.
+- **`cuernos_grados` = 0 porque se midió.** A 35° el cuerno del Vex desplaza su
+  centroide **0,51 px** contra los 2,28 del Vexor, y a su tamaño real de 141 px la
+  pose y el reposo son indistinguibles. Sus cuernos son más verticales: el giro no
+  cambia la silueta. Animar lo que no se ve es gastar por nada.
