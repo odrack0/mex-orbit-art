@@ -548,3 +548,35 @@ Cómo se sacó cada uno:
   centroide **0,51 px** contra los 2,28 del Vexor, y a su tamaño real de 141 px la
   pose y el reposo son indistinguibles. Sus cuernos son más verticales: el giro no
   cambia la silueta. Animar lo que no se ve es gastar por nada.
+
+### Naves: los anclajes de motores y cañones
+
+Una nave necesita dos cosas que un bicho no: por dónde escupen los motores y por
+dónde sale el láser. En 2D son puntos en píxeles de la textura y funcionan porque
+las llamas cuelgan del sprite y giran con él. **En 3D el sprite ya no gira** —gira
+el modelo dentro del viewport— así que unas coordenadas de textura se quedarían
+clavadas en pantalla mientras la nave da la vuelta.
+
+`tools/marcar-anclajes.py` mete en el GLB nodos vacíos `tobera_1..N` y
+`canon_izq`/`canon_der` con su posición **en unidades del modelo**, que es lo único
+que sobrevive a un cambio de encuadre. Es la convención que `validar-modelo.py` ya
+comprobaba desde antes de que existiera la herramienta.
+
+```bash
+blender --background --factory-startup --python tools/marcar-anclajes.py -- \
+    source/3d-models/phoenix.glb <cliente>/assets/ships/phoenix.glb 0.09 0.75 60 4
+```
+
+Las posiciones se **miden**: de cada tobera se toma su punto más trasero (la llama
+sale de la boca, no del centro de masa) y de cada cañón la punta delantera (un
+cañón es un tubo). Medido en el Phoenix: toberas en X −0,262 / −0,125 / +0,125 /
++0,258, que en proporción son los mismos cuatro motores que el JSON 2D tenía en
+−58 / −25 / 24 / 57.
+
+**El número de toberas se pasa como argumento** y no se adivina. Contarlas por los
+valles del histograma falló dos veces: el valle entre la tobera de fuera y la de
+dentro de cada lado tiene 129 vértices contra una media de 164, así que el Phoenix
+salía con 2. Con el número dado se usa la **simetría** de la nave —partir por el
+centro y cada lado en dos— y solo se aceptan cortes que dejen los dos lados con
+tamaño suficiente; sin esa condición el corte se va a los bins del borde, donde
+por construcción hay pocos vértices, y el grupo no llega a partirse.
