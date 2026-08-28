@@ -469,3 +469,48 @@ construcción.
 ## Estado
 
 Repo recién creado.
+
+
+### El halo horneado: por qué media lleva glow dentro del PNG
+
+En calidad **alta** el brillo del rojo lo hace el `Environment` del `SubViewport`
+con `glow_enabled`: lo que pasa de 1 se **derrama** a los píxeles vecinos. En
+**media** no hay entorno, hay un PNG — y sin halo horneado el resultado no era
+más oscuro, era **de otro carácter**: mismo brillo medio, pero media con
+manchones planos reventados y alta con el rojo vivo y halo.
+
+Medido sobre el mismo bicho (rojo medio del píxel y % de píxeles por encima de
+0,8, recortando a 1 en los dos lados porque es lo que la pantalla da):
+
+| | rojo medio | reventados |
+|---|---|---|
+| media, antes | 0,370 | 19,1 % |
+| **media, con halo horneado** | **0,373** | **10,1 %** |
+| alta con glow (la referencia) | 0,377 | 8,7 % |
+
+El 1,4 % que queda es diferencia de **encuadre** entre las dos imágenes, no de
+acabado: la silueta de media ocupa 98 687 px y la de alta 79 200. Afinar más sería
+perseguir ruido de la propia medición.
+
+**Los cuatro diales** (`GLOW_*` en `hornear-sprite.py`, todos con variable de
+entorno del mismo nombre para poder barrerlos sin editar):
+
+| dial | valor | qué hace |
+|---|---|---|
+| `GLOW_NUCLEO` | 0,09 | atenúa el núcleo. El horneado sale **más caliente** que la emisión de Godot al mismo pulso; sin bajarlo, media revienta el doble |
+| `GLOW_UMBRAL` | 0,25 | desde dónde brilla, sobre el color **premultiplicado** |
+| `GLOW_RADIO` | 0,06 | cuánto se extiende, en fracción del lado |
+| `GLOW_FUERZA` | 1,8 | cuánto se devuelve como halo |
+
+Tres cosas que costaron una pasada cada una y no son obvias:
+
+- **El halo sale de la emisión original y el núcleo se atenúa después.** Al revés,
+  bajar el núcleo dejaba la imagen por debajo del umbral y el halo desaparecía.
+  Es además lo físico: un bloom reparte energía, no la quita.
+- **El alfa tiene que crecer con el halo.** Cae fuera de la silueta, donde el
+  render trae alfa 0, y el cliente monta esta capa en blend **aditivo**, que
+  multiplica por alfa. Sin devolvérselo, el halo se multiplica por cero.
+- **La ruta de salida se pasa a absoluta.** Blender resuelve un `render.filepath`
+  relativo contra su propia ruta base, no contra el directorio de lanzamiento: con
+  `exports/horno` el render se fue a un sitio fantasma, el script dijo que había
+  horneado y los PNG se quedaron igual. Sin error ninguno.

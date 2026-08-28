@@ -41,6 +41,13 @@ argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida_dir, nombre = argv[0], argv[1], argv[2]
 LADO = int(argv[3]) if len(argv) > 3 else 512
 
+# ABSOLUTA, siempre. Blender resuelve un `render.filepath` RELATIVO contra su
+# propia idea de la ruta base, no contra el directorio desde el que se lanza: con
+# `exports/horno` como salida el render se fue a un sitio fantasma, el script
+# dijo que habia horneado y los PNG del repo se quedaron como estaban. No dio
+# ningun error; solo no hizo nada.
+salida_dir = os.path.abspath(salida_dir)
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
 comprobar_salida(entrada, os.path.join(salida_dir, nombre + "-base.png"))
@@ -128,7 +135,88 @@ previos = emisiones(0.0)
 print("BASE (emision apagada para que no vaya dos veces)")
 render(os.path.join(salida_dir, nombre + "-base.png"))
 
-# ---- 2. EMISIVA: solo lo que brilla ----
+# ---- glow para el pase emisivo ----
+# Homologa media con alta. En ALTA el brillo lo hace el `Environment` del
+# SubViewport con `glow_enabled`, que DERRAMA lo que pasa de 1 a los pixeles
+# vecinos. En MEDIA no hay entorno: hay un PNG. Si el halo no se hornea, media se
+# queda con el nucleo recortado —manchones planos reventados— y alta con el rojo
+# vivo y halo. Misma luminosidad media, distinto acabado; esto iguala el acabado.
+#
+# Los tres diales espejan los del cliente (entity_node._construir_malla_3d):
+#   umbral 0.9  <- glow_hdr_threshold      fuerza 1.0 <- glow_intensity
+#   tamanio     <- no tiene equivalente exacto; se calibro midiendo (ver README)
+GLOW_UMBRAL = float(os.environ.get("GLOW_UMBRAL", 0.25))
+GLOW_RADIO = float(os.environ.get("GLOW_RADIO", 0.06))   # fraccion del lado
+GLOW_FUERZA = float(os.environ.get("GLOW_FUERZA", 1.8))
+# El nucleo del horneado sale mas caliente que la emision de ALTA en Godot: al
+# mismo pulso, media reventaba el 19,1% de sus pixeles y alta el 8,3%. Homologar
+# el acabado es bajar el nucleo A LO QUE DA ALTA y devolver esa energia como halo,
+# que es justo lo que hace un bloom: no quema mas, reparte.
+GLOW_NUCLEO = float(os.environ.get("GLOW_NUCLEO", 0.09))
+
+
+def _desenfoque(a, radio):
+    """Gauss aproximado por tres cajas seguidas, con sumas acumuladas.
+
+    Tres pasadas de caja convergen a una gaussiana y cuestan O(n) en vez de
+    O(n*radio); con 512 px y numpy es instantaneo y no hace falta scipy.
+    """
+    r = max(1, int(radio))
+    for _ in range(3):
+        for eje in (0, 1):
+            a = np.swapaxes(a, 0, eje)
+            pad = np.concatenate([
+                np.repeat(a[:1], r + 1, axis=0), a, np.repeat(a[-1:], r, axis=0)], axis=0)
+            ac = np.cumsum(pad, axis=0)
+            a = (ac[2 * r + 1:] - ac[:-(2 * r + 1)]) / float(2 * r + 1)
+            a = np.swapaxes(a, 0, eje)
+    return a
+
+
+def hornear_halo(ruta):
+    """Anade a la capa emisiva el halo que en ALTA pone el glow del Environment.
+
+    Homologa el ACABADO, que es lo que quedaba distinto. Con la misma luminosidad
+    media, media tenia manchones planos reventados (19,1% de pixeles a tope) y
+    alta el rojo vivo con halo (8,7%). El brillo ya casaba; el caracter no.
+
+    Se trabaja sobre el color PREMULTIPLICADO porque es lo que se ve: el cliente
+    monta esta capa en blend ADITIVO, donde la aportacion es rgb*a. Sumar el halo
+    ahi y recomponer el alfa despues es lo unico que lo deja bien; hacerlo sobre
+    el rgb suelto pinta halo donde el alfa lo iba a borrar.
+    """
+    img = bpy.data.images.load(ruta)
+    w, h = img.size
+    px = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)
+    rgb, alfa = px[:, :, :3], px[:, :, 3:4]
+
+    visible = rgb * alfa
+    # El halo sale de la emision ORIGINAL y el nucleo se atenua DESPUES. Al reves
+    # —que fue el primer intento— bajar el nucleo dejaba la imagen por debajo del
+    # umbral y el halo desaparecia: se medio 12,9% de reventon y ni un pixel de
+    # halo fuera de la silueta. Ademas es lo fisico: en ALTA el bloom lee la
+    # emision entera, y bajar el nucleo es repartir esa energia, no quitarla.
+    altas = np.maximum(visible - GLOW_UMBRAL, 0.0)
+    halo = _desenfoque(altas, GLOW_RADIO * min(w, h)) * GLOW_FUERZA
+    nueva = visible * GLOW_NUCLEO + halo
+
+    # El alfa tiene que crecer con el halo: cae FUERA de la silueta, donde el
+    # render trae alfa 0, y el blend aditivo multiplica por alfa. Sin esto el halo
+    # se multiplicaria por cero y no existiria.
+    luz = nueva.max(axis=2, keepdims=True)
+    na = np.clip(np.maximum(alfa, luz), 0.0, 1.0)
+    px[:, :, :3] = np.where(na > 1e-4, nueva / np.maximum(na, 1e-4), 0.0)
+    px[:, :, 3:4] = na
+
+    img.pixels = np.clip(px, 0.0, 1.0).ravel().tolist()
+    img.filepath_raw = ruta
+    img.file_format = "PNG"
+    img.save()
+    print("  halo: nucleo %.2f umbral %.2f radio %.3f fuerza %.2f -> alfa %.1f%%"
+          % (GLOW_NUCLEO, GLOW_UMBRAL, GLOW_RADIO, GLOW_FUERZA, 100.0 * (na > 0.02).mean()))
+
+
+# ---- 2. EMISIVA: solo lo que brilla, CON el halo de alta ----
 for m in bpy.data.materials:
     if m.use_nodes:
         b = next((n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
@@ -137,7 +225,11 @@ for m in bpy.data.materials:
 sol_d.energy = 0.0
 fondo.inputs[1].default_value = 0.0
 print("EMISIVA (sin luces, mundo negro)")
-render(os.path.join(salida_dir, nombre + "-emissive.png"))
+_emi = os.path.join(salida_dir, nombre + "-emissive.png")
+render(_emi)
+# El halo va SOLO aqui. En el pase de normales seria corrupcion, no brillo, y en
+# el base iria dos veces: el cliente ya suma esta capa encima.
+hornear_halo(_emi)
 
 # ---- 3. NORMAL en espacio de pantalla ----
 # Se sustituye el material por una emision que pinta la normal como color, en vez
