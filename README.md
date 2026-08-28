@@ -523,18 +523,18 @@ se calibraron con el Vexor. **No se heredan**: cada bicho se mide. El Vex lo dej
 claro — es más largo que ancho, al revés que el Vexor, y emite en un solo ojo en
 vez de en toda la superficie.
 
-| | Vexor | Vex |
-|---|---|---|
-| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 |
-| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) |
-| `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** |
-| `COLA_DESDE` | 0,32 | **0,24** |
-| `CUERNO_DESDE` | 0,13 | 0,12 |
-| `GLOW_NUCLEO` | 0,09 | **0,22** |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** |
-| `HORNO_AMBIENTE` | 0,28 | 0,28 |
-| emisión derivada | 38-47 % de la textura | 16,5 % |
-| `cuernos_grados` (cliente) | 14 | **0 — no se lee** |
+| | Vexor | Vex | Ferox |
+|---|---|---|---|
+| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 | 1,071 × 1,903 × 0,567 |
+| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) | 12 000 (crudo a 31 181, decimado) |
+| `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** | **0,24 / 0,14** |
+| `COLA_DESDE` | 0,32 | **0,24** | **0,28** |
+| `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** |
+| `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 |
+| `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 |
+| emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) |
+| `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — |
 
 Cómo se sacó cada uno:
 
@@ -549,6 +549,20 @@ Cómo se sacó cada uno:
   centroide **0,51 px** contra los 2,28 del Vexor, y a su tamaño real de 141 px la
   pose y el reposo son indistinguibles. Sus cuernos son más verticales: el giro no
   cambia la silueta. Animar lo que no se ve es gastar por nada.
+- **El Ferox y la cobertura que asusta sin razón.** `normalize-model.py` reporta
+  que con canal `r` emite el **80,6 %** de su textura — huele a la trampa de la
+  estación (encender el casco entero), pero medido no lo es: el marfil del cuerpo
+  es apenas r-dominante (máscara ~0,04, emisiva resultante ~0,02) y los acentos
+  reales —ojos y vetas rojas, albedo 0,72/0,19/0,21— son el **5,4 %** por encima
+  de 0,35 con p99 de 0,62. La cifra de cobertura sola no dice nada: hay que mirar
+  la **distribución** de la máscara antes de tocar el canal o la ganancia. Con los
+  `GLOW_*` por defecto media homologa sin tocar nada: rojo medio 0,464 contra
+  0,474 de alta con glow al pico del pulso.
+- **Sus cuchillas son las alas, y la bisagra tiene el valle en |X| 0,22–0,26**: el
+  cuerpo acaba en 0,20 y el lóbulo de la cuchilla va de 0,26 a 0,54. En el cliente
+  van a **30° en el eje 1** (a +30 se pliegan al cuerpo, a −30 se abren en abanico,
+  sin cruzarse; cada extremo cambia la silueta un 30 % a 190 px) y la cola a
+  **12° en el eje 2** (el 0 no la mueve: 0,4 % de silueta).
 
 ### Naves: los anclajes de motores y cañones
 
