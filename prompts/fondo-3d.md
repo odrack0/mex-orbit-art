@@ -21,10 +21,14 @@ Este pedido lo cierra.
 **Tres atlas** (uno por capa), cada uno **2048×2048 = rejilla 2×2 con 4 variantes** de nube.
 Requisitos duros de cada celda (1024×1024):
 
-- La nube **aislada y centrada**, con el borde desvanecido a **alfa 0 total** en los últimos
-  ~120 px de cada lado de la celda. Ni un píxel opaco tocando el borde: es lo que hace invisible
-  el mosaico.
-- Fondo de la celda 100% transparente (PNG con alfa), sin viñeta, sin marca.
+- **Se generan sobre NEGRO PURO, no con transparencia.** Los generadores no dan alfa gradual
+  fiable para gas (recortes duros, halos), y el margen es justo la instrucción que ignoran. El
+  alfa lo deriva `tools/nebula-alpha.py` de la luminancia — para una nube que emite luz es el alfa
+  físicamente correcto — y ese mismo tool **impone el margen de 120 px por código**, celda a
+  celda, garantizado. Misma filosofía que el croma de las naves: la IA rinde donde es buena y el
+  post asegura el contrato.
+- La nube **aislada y centrada** en su celda, dejando aire hacia los bordes (el tool funde lo que
+  invada, pero una nube pegada al borde queda recortada: mejor centrada de origen).
 - Las 4 variantes claramente distintas en silueta (el código las sortea por tile y las gira en
   pasos de 90°).
 
@@ -34,43 +38,47 @@ Requisitos duros de cada celda (1024×1024):
 | `nebula-mid-atlas.png` | media (−2950) | Nebulosa cian/turquesa (la familia del 1-1, luz `0xA3FFFF`), cuerpo suave con algo de veta |
 | `nebula-near-atlas.png` | cercana (−2400) | Nube más densa y con detalle interno, cian con vetas violetas (`#A78BFA` de la paleta), la que más se desplaza al volar |
 
-### Los tres prompts, listos (pegar en Gemini / Recraft)
+### Los tres prompts, listos (pegar en Gemini / Recraft) — sobre NEGRO
 
 **`nebula-far-atlas.png`:**
 
-> A 2x2 sprite sheet of 4 different faint space dust wisps, each wisp isolated and centered in its
-> own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
-> transparency well before the cell borders (at least 120px of fully transparent margin per cell).
-> Extremely subtle dark blue-grey gas wisps, barely-there volumetric dust, very low contrast and
-> very dark — this is the deepest background layer of a space game and must almost disappear. Each
-> of the 4 wisps clearly different in silhouette. No stars, no planets, no watermark, no vignette.
-> PNG with alpha, 2048x2048.
+> A 2x2 grid of 4 different faint space dust wisps on a PURE BLACK background, each wisp isolated
+> and centered in its own 1024x1024 quadrant with generous black space around it, never touching
+> the quadrant edges. Extremely subtle dark blue-grey gas wisps, barely-there volumetric dust,
+> very low contrast — this is the deepest background layer of a space game and must almost
+> disappear. Each of the 4 wisps clearly different in silhouette. No stars, no planets, no
+> watermark, no vignette, no grid lines. 2048x2048.
 
 **`nebula-mid-atlas.png`:**
 
-> A 2x2 sprite sheet of 4 different wispy space nebula clouds, each cloud isolated and centered in
-> its own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
-> transparency well before the cell borders (at least 120px of fully transparent margin per cell).
-> Soft volumetric cyan-turquoise gas clouds with faint violet undertones, dark space game art
-> style, subtle and calm — gameplay must read on top. Each of the 4 clouds clearly different in
-> silhouette. No stars, no planets, no watermark, no vignette. PNG with alpha, 2048x2048.
+> A 2x2 grid of 4 different wispy space nebula clouds on a PURE BLACK background, each cloud
+> isolated and centered in its own 1024x1024 quadrant with generous black space around it, never
+> touching the quadrant edges. Soft volumetric cyan-turquoise gas clouds with faint violet
+> undertones, dark space game art style, subtle and calm — gameplay must read on top. Each of the
+> 4 clouds clearly different in silhouette. No stars, no planets, no watermark, no vignette, no
+> grid lines. 2048x2048.
 
 **`nebula-near-atlas.png`:**
 
-> A 2x2 sprite sheet of 4 different dense space nebula clouds, each cloud isolated and centered in
-> its own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
-> transparency well before the cell borders (at least 120px of fully transparent margin per cell).
-> Denser volumetric cyan-turquoise clouds with rich internal detail and distinct violet streaks
-> (#A78BFA accents), the closest and most visible nebula layer of a dark space game, still dark
-> enough for gameplay to read on top. Each of the 4 clouds clearly different in silhouette. No
-> stars, no planets, no watermark, no vignette. PNG with alpha, 2048x2048.
+> A 2x2 grid of 4 different dense space nebula clouds on a PURE BLACK background, each cloud
+> isolated and centered in its own 1024x1024 quadrant with generous black space around it, never
+> touching the quadrant edges. Denser volumetric cyan-turquoise clouds with rich internal detail
+> and distinct violet streaks (#A78BFA accents), the closest and most visible nebula layer of a
+> dark space game, still dark enough for gameplay to read on top. Each of the 4 clouds clearly
+> different in silhouette. No stars, no planets, no watermark, no vignette, no grid lines.
+> 2048x2048.
 
 ### Post-proceso y enchufe
 
-1. Guardar crudos en `source/renders/nebula-<capa>-atlas.png`; verificar el alfa del borde
-   (`py tools/find-anchors.py` no aplica — basta un vistazo al canal alfa, o
-   `python -c "..."` sumando alfa en el marco de 120 px: debe dar 0).
-2. Exportar a `mex-orbit-client/assets/world/layers/` con el mismo nombre.
+1. Guardar el crudo (sobre negro) en `source/renders/nebula-<capa>-atlas.png`.
+2. Derivar el alfa e imponer el margen:
+   ```bash
+   py tools/nebula-alpha.py source/renders/nebula-mid-atlas.png \
+       ../mex-orbit-client/assets/world/layers/nebula-mid-atlas.png
+   ```
+   El tool imprime la cobertura por celda y avisa de variantes VACIAS (<2%, regenerar) o que
+   INVADEN el margen (>60%, regenerar más centrada). El margen de 120 px queda garantizado por
+   código — no depende de que la IA lo respete.
 3. En `data/maps/1-1.json`, cada entrada de `tiles_far`/`tiles_near` pasa a:
    ```json
    { "tex": "res://assets/world/layers/nebula-mid-atlas.png",
