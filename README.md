@@ -533,7 +533,7 @@ vez de en toda la superficie.
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
 | `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 0,9** |
-| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,35 / 0,65 | 1,0 / 0,45 | 1,6 / 0,65 | 1,6 / 0,65 |
+| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,08 / 0,30 | 0,80 / 0,18 | 1,28 / 0,50 | 1,28 / 0,40 |
 | ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
@@ -636,19 +636,29 @@ de Blender y la fuerza multiplicaba casi-nada, por eso los valores viejos parece
 de otra escala), **la curva FILMIC exacta de Godot sobre el pase BASE**
 (`HORNO_FILMIC`, encendida por defecto: el filmic con blanco 1 levanta los medios
 0,5 → 0,69, y sin ella perseguir la diferencia con ambiente lavaba el contraste
-sin llegar), y defaults `HORNO_SOL=1.6` / `HORNO_AMBIENTE=0.65` — 1,6 y no 1,0
-porque el sol del sprite es axial y el del cliente rasante a −48°.
+sin llegar), y defaults `HORNO_SOL=1.28` / `HORNO_AMBIENTE=0.5` (eran 1.6/0.65 con
+el sol blanco 1.0; con el sol cian a 0.8 el axial escala a 0.8×1.6=1.28 y el ambiente
+sigue al del cliente, 0.5) — el sol del sprite es axial y el del cliente rasante a −54°.
 
-Calibrado por bicho contra `medir_emision.tscn` (media / alta, al pico del pulso):
+Calibrado por bicho contra `medir_emision.tscn` (media / alta, al pico del pulso).
+**Recalibrado ago-2026 al PUERTO DEL LEGACY** (mundo pasa a sol cian 0xA3FFFF a 0.8 y
+ambiente naranja 0xFF855C a 0.5): el sol cian baja el rojo de la cara iluminada de
+alta y el ambiente naranja (rojo 1.0, contra el 0.35 del azul viejo) lo sube en la
+base de media, asi que `HORNO_AMBIENTE` bajo mucho en todos. El sol se escalo por la
+energia (x0.8) y el ambiente se re-barrio contra `medir_emision`:
 
 | | `HORNO_SOL` | `HORNO_AMBIENTE` | media | alta |
 |---|---|---|---|---|
-| Vexor | 1,35 | 0,65 | 0,479 | 0,459 |
-| Vex | 1,0 | 0,45 | 0,276 | 0,286 |
-| Vorax | 1,0 | 0,55 | 0,243 | 0,236 |
-| Ferox | 1,6 | 0,65 | 0,631 | 0,600 |
-| Skarnox | 1,6 | 0,65 | 0,450 | 0,450 |
-| Phoenix | 1,6 | **0,35** | 0,301 | 0,288 |
+| Vexor | 1,08 | 0,30 | 0,463 | 0,451 |
+| Vex | 0,80 | 0,18 | 0,252 | 0,248 |
+| Vorax | 0,80 | 0,23 | 0,230 | 0,222 |
+| Ferox | 1,28 | 0,50 | 0,681 | 0,648 |
+| Skarnox | 1,28 | 0,40 | 0,458 | 0,438 |
+| Phoenix | 1,28 | **0,15** | 0,265 | 0,260 |
+
+Los valores VIEJOS (luz blanca): Vexor 1,35/0,65 · Vex 1,0/0,45 · Vorax 1,0/0,55 ·
+Ferox 1,6/0,65 · Skarnox 1,6/0,65 · Phoenix 1,6/0,35. El halo (`GLOW_*`) NO cambio:
+es la forma de la emision, independiente de la luz del mundo.
 
 **Para un metal el ambiente va al revés que antes.** Un metal casi no tiene
 difuso: devuelve lo que hay alrededor. En la era del fondo gris-0,05 la Phoenix
@@ -663,9 +673,9 @@ Y ojo: homologar es parecerse al modelo en alta, no al PNG que había antes.
 `HORNO_ELEVACION=30` (la cámara oblicua del cliente, con el encuadre de
 `extension_vista` — las ocho esquinas proyectadas, no la huella) y
 `HORNO_LUZ=mundo` (no rota, así que la regla de la luz axial no aplica y lleva
-el sol direccional real, azimut 315 y elevación −48). Su casco es metálico por
-textura, así que el ambiente le baja hasta **0,15** — con 0,65 media salía un
-75 % más clara que alta. El halo va apagado (`GLOW_FUERZA=0`, igual que su
+el sol direccional real, azimut 315 y elevación −54, `HORNO_SOL=0.8` = el sol del
+cliente 1:1, no el axial ×1.6). Su casco es metálico por textura, así que el ambiente
+le baja hasta **0,15** — con más, media salía mucho más clara que alta. El halo va apagado (`GLOW_FUERZA=0`, igual que su
 `glow: false` de alta) y `GLOW_NUCLEO=3.0` hace de ganancia: cuece en la capa
 emisiva el `emision: 3.0` del modelo, porque el pulso 2D no lo multiplica.
 Homologado en el juego contra alta: 0,0749 contra 0,0809 en el mismo recorte.

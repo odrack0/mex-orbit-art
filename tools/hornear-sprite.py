@@ -40,16 +40,23 @@ from mathutils import Vector
 argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida_dir, nombre = argv[0], argv[1], argv[2]
 LADO = int(argv[3]) if len(argv) > 3 else 512
-# La luz del horno ESPEJA la del cliente (AssetDefs: sol 1.0 rasante, ambiente
-# 0.65 azul grisaceo, tonemap FILMIC). Los defaults 1.6/0.65 se calibraron con el
-# Ferox contra medir_emision.tscn cuando el mundo subio de 0.28 lineal a 0.65
-# filmic: el sol axial del sprite mete mas que el rasante del cliente, por eso
-# 1.6 y no 1.0 (la vieja equivalencia "3.2 = 1.0" era de la era lineal con el
-# ambiente en gris 0.05 por defecto, que metia casi nada).
+# La luz del horno ESPEJA la del cliente. PUERTO DEL LEGACY (DarkOrbit, ago-2026):
+# el mundo paso a sol CIAN 0xA3FFFF a 0.8 y ambiente NARANJA CALIDO 0xFF855C a 0.5
+# (AssetDefs.LUZ_MUNDO_*), tonemap FILMIC. El horno lo replica: color del sol y del
+# fondo iguales a los del cliente (mismo triplete, la homologacion ajusta la escala),
+# HORNO_SOL = sol_del_bicho x 1.6 por el axial (0.8 x 1.6 = 1.28) y HORNO_AMBIENTE =
+# ambiente_del_cliente (0.5). Los defaults 1.6/0.65 eran del sol blanco 1.0 / ambiente
+# azul 0.65; con el sol cian el rojo de la cara iluminada CAE (cian tiene poco rojo) y
+# el ambiente naranja lo devuelve en sombra, asi que la pareja se re-homologa contra
+# medir_emision.tscn, no se hereda.
 # Siguen siendo POR ASSET: una nave metalica necesita mas ambiente que reflejar
 # (el Phoenix salia casi negro al lado de su propio arte 2D).
-HORNO_SOL = float(os.environ.get("HORNO_SOL", 1.6))
-HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.65))
+HORNO_SOL = float(os.environ.get("HORNO_SOL", 1.28))
+HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.5))
+# Colores de la luz del mundo, espejo de AssetDefs.LUZ_MUNDO_COLOR / _AMBIENTE_COLOR.
+# Mismo triplete que el cliente (Color.html no linealiza: guarda el sRGB tal cual).
+HORNO_SOL_COLOR = (0.6392, 1.0, 1.0)          # cian 0xA3FFFF
+HORNO_AMBIENTE_COLOR = (1.0, 0.5216, 0.3608)  # naranja calido 0xFF855C
 
 # ABSOLUTA, siempre. Blender resuelve un `render.filepath` RELATIVO contra su
 # propia idea de la ruta base, no contra el directorio desde el que se lanza: con
@@ -137,10 +144,10 @@ bpy.context.scene.world = mundo
 fondo = mundo.node_tree.nodes["Background"]
 # El COLOR del fondo espeja el ambiente del cliente (AssetDefs.LUZ_MUNDO_AMBIENTE_COLOR).
 # Sin esta linea el nodo se queda en el gris 0.05 por defecto de Blender y la
-# fuerza multiplica casi-nada: HORNO_AMBIENTE=0.65 metia 0.03 efectivo mientras
-# Godot metia 0.65 sobre su azul grisaceo — la pareja estaba desparejada de
-# ESCALA y cada bicho la compensaba a mano (la Phoenix llego a 1.7 por esto).
-fondo.inputs[0].default_value = (0.35, 0.40, 0.55, 1.0)
+# fuerza multiplica casi-nada: HORNO_AMBIENTE metia 0.03 efectivo mientras Godot
+# metia el suyo sobre su color — la pareja estaba desparejada de ESCALA y cada bicho
+# la compensaba a mano (la Phoenix llego a 1.7 por esto).
+fondo.inputs[0].default_value = HORNO_AMBIENTE_COLOR + (1.0,)
 
 
 def render(ruta):
@@ -166,6 +173,9 @@ def emisiones(valor):
 # ---- 1. BASE: cuerpo iluminado, emision apagada ----
 sol_d = bpy.data.lights.new("sol", type="SUN")
 sol_d.energy = HORNO_SOL
+# CIAN, espejo del sol del cliente (LUZ_MUNDO_COLOR). Sin esto el sol sale blanco y
+# la cara iluminada de media queda con mas rojo que la de alta, que tinta de cian.
+sol_d.color = HORNO_SOL_COLOR
 sol = bpy.data.objects.new("sol", sol_d)
 bpy.context.scene.collection.objects.link(sol)
 # Luz AXIAL, desde la camara: el sprite rota en el juego y una luz lateral
@@ -174,15 +184,15 @@ bpy.context.scene.collection.objects.link(sol)
 #
 # HORNO_LUZ=mundo, para un prop que NO ROTA (la estacion): entonces la regla no
 # aplica y lo correcto es la luz direccional real del cliente — azimut 315 y
-# elevacion -48 (AssetDefs.LUZ_MUNDO_*) — o el sprite de media no comparte
+# elevacion -54 (AssetDefs.LUZ_MUNDO_*) — o el sprite de media no comparte
 # sombras con la malla de alta.
 if os.environ.get("HORNO_LUZ", "axial") == "mundo":
     # Direccion del sol del cliente en el espacio del master: Godot
-    # RotY(315)*RotX(-48) sobre -Z da (0.473, -0.743, -0.473); Godot->Blender
+    # RotY(315)*RotX(-54) sobre -Z da (0.416, -0.809, -0.416); Godot->Blender
     # permuta (x, y, z) -> (x, -z, y).
-    d_blender = Vector((0.473, 0.473, -0.743))
+    d_blender = Vector((0.416, 0.416, -0.809))
     sol.rotation_euler = d_blender.to_track_quat("-Z", "Y").to_euler()
-    print("LUZ del mundo (azimut 315, elevacion -48), no axial")
+    print("LUZ del mundo (azimut 315, elevacion -54), no axial")
 else:
     sol.rotation_euler = (0.0, 0.0, 0.0)
 fondo.inputs[1].default_value = HORNO_AMBIENTE
