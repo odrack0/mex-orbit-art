@@ -532,8 +532,8 @@ vez de en toda la superficie.
 | `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** | 0 — solo raíz |
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,6** |
-| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,35 / 0,65 | 1,0 / 0,45 | 1,6 / 0,65 | **0,4 / 0,1625 — luz propia** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,9** |
+| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,35 / 0,65 | 1,0 / 0,45 | 1,6 / 0,65 | **0,24 / 0,0975 — luz propia** |
 | ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
@@ -586,11 +586,12 @@ Cómo se sacó cada uno:
   seis vistas confirman el cráter al alto sin girar nada. El resto
   de su intensidad vive en el JSON: suelo del pulso en 1,2 (la lava no se apaga),
   el pase de `lava` que viaja (solo de alta), y desde ago-2026 el bloque **`luz`**
-  — la excepción por bicho a la luz del mundo: el Skarnox va a **un cuarto** del
-  mundo (sol 0,25, ambiente 0,1625) para leerse autoiluminado. El horno lo espeja
-  (sol 0,4 = 0,25 × 1,6 axial, ambiente igual) y con la base oscura el halo tuvo
-  que volver a subir a **1,6**: el derrame del glow pesa más cuanto menos luz
-  exterior hay. Media 0,332 contra 0,333 de alta.
+  — la excepción por bicho a la luz del mundo: el Skarnox va al **15 %** del
+  mundo (sol 0,15, ambiente 0,0975) para leerse autoiluminado — el barrido fue
+  1,0 → 0,5 → 0,25 → 0,15, con 0/0 probado y descartado. El horno lo espeja
+  (sol 0,24 = 0,15 × 1,6 axial, ambiente igual) y con la base oscura el halo tuvo
+  que volver a subir a **1,9**: el derrame del glow pesa más cuanto menos luz
+  exterior hay. Media 0,319 contra 0,312 de alta.
 
 ### Naves: los anclajes de motores y cañones
 
