@@ -40,12 +40,16 @@ from mathutils import Vector
 argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida_dir, nombre = argv[0], argv[1], argv[2]
 LADO = int(argv[3]) if len(argv) > 3 else 512
-# La luz del horno, tambien por asset. Un bicho de albedo oscuro con vetas sale
-# bien con 3,2 y 0,28; una nave METALICA no: un metal sin entorno que reflejar se
-# apaga, y el Phoenix salia casi negro al lado de su propio arte 2D. Subir el
-# ambiente es darle algo que reflejar.
-HORNO_SOL = float(os.environ.get("HORNO_SOL", 3.2))
-HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.28))
+# La luz del horno ESPEJA la del cliente (AssetDefs: sol 1.0 rasante, ambiente
+# 0.65 azul grisaceo, tonemap FILMIC). Los defaults 1.6/0.65 se calibraron con el
+# Ferox contra medir_emision.tscn cuando el mundo subio de 0.28 lineal a 0.65
+# filmic: el sol axial del sprite mete mas que el rasante del cliente, por eso
+# 1.6 y no 1.0 (la vieja equivalencia "3.2 = 1.0" era de la era lineal con el
+# ambiente en gris 0.05 por defecto, que metia casi nada).
+# Siguen siendo POR ASSET: una nave metalica necesita mas ambiente que reflejar
+# (el Phoenix salia casi negro al lado de su propio arte 2D).
+HORNO_SOL = float(os.environ.get("HORNO_SOL", 1.6))
+HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.65))
 
 # ABSOLUTA, siempre. Blender resuelve un `render.filepath` RELATIVO contra su
 # propia idea de la ruta base, no contra el directorio desde el que se lanza: con
@@ -104,6 +108,12 @@ mundo = bpy.data.worlds.new("w")
 mundo.use_nodes = True
 bpy.context.scene.world = mundo
 fondo = mundo.node_tree.nodes["Background"]
+# El COLOR del fondo espeja el ambiente del cliente (AssetDefs.LUZ_MUNDO_AMBIENTE_COLOR).
+# Sin esta linea el nodo se queda en el gris 0.05 por defecto de Blender y la
+# fuerza multiplica casi-nada: HORNO_AMBIENTE=0.65 metia 0.03 efectivo mientras
+# Godot metia 0.65 sobre su azul grisaceo — la pareja estaba desparejada de
+# ESCALA y cada bicho la compensaba a mano (la Phoenix llego a 1.7 por esto).
+fondo.inputs[0].default_value = (0.35, 0.40, 0.55, 1.0)
 
 
 def render(ruta):
@@ -137,9 +147,42 @@ bpy.context.scene.collection.objects.link(sol)
 sol.rotation_euler = (0.0, 0.0, 0.0)
 fondo.inputs[1].default_value = HORNO_AMBIENTE
 
+# La MISMA curva de tono que el cliente. Alta tonemapea FILMIC (ver
+# AssetDefs.ambiente_mundo); el render de aqui sale Raw (lineal), asi que sin
+# esta curva la pareja quedaba con curvas DISTINTAS y el ambiente no alcanzaba:
+# el filmic de Godot con blanco 1 levanta los medios (0,5 -> 0,69), y perseguir
+# eso con HORNO_AMBIENTE lavaba el contraste sin llegar (0,559 contra 0,600).
+# Es la formula exacta de Godot (tonemap_filmic, exposure_bias 2, blanco 1).
+HORNO_FILMIC = os.environ.get("HORNO_FILMIC", "1") != "0"
+
+
+def filmic_godot(x, blanco=1.0):
+    A, B, C, D, E, F = 0.88, 0.60, 0.10, 0.20, 0.01, 0.30
+    def t(v):
+        return (v * (A * v + C * B) + D * E) / (v * (A * v + B) + D * F) - E / F
+    return t(x) / t(blanco)
+
+
+def aplicar_filmic(ruta):
+    img = bpy.data.images.load(ruta)
+    w, h = img.size
+    px = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)
+    px[:, :, :3] = np.clip(filmic_godot(np.maximum(px[:, :, :3], 0.0)), 0.0, 1.0)
+    img.pixels = px.ravel().tolist()
+    img.filepath_raw = ruta
+    img.file_format = "PNG"
+    img.save()
+    print("  filmic de Godot aplicado (curva del cliente)")
+
+
 previos = emisiones(0.0)
 print("BASE (emision apagada para que no vaya dos veces)")
-render(os.path.join(salida_dir, nombre + "-base.png"))
+_base = os.path.join(salida_dir, nombre + "-base.png")
+render(_base)
+# Solo el BASE: la capa emisiva va en blend aditivo ENCIMA y su energia la
+# gobiernan los GLOW_*; tonemapearla aqui la aplastaria dos veces.
+if HORNO_FILMIC:
+    aplicar_filmic(_base)
 
 # ---- glow para el pase emisivo ----
 # Homologa media con alta. En ALTA el brillo lo hace el `Environment` del

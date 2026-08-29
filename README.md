@@ -533,7 +533,7 @@ vez de en toda la superficie.
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
 | `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,2** |
-| `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 | 0,28 |
+| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,35 / 0,65 | 1,0 / 0,45 | 1,6 / 0,65 | 1,6 / 0,65 |
 | ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
@@ -620,29 +620,37 @@ tamaño suficiente; sin esa condición el corte se va a los bins del borde, dond
 por construcción hay pocos vértices, y el grupo no llega a partirse.
 
 
-### El horno también tiene luz, y para un metal no vale la misma
+### El horno también tiene luz, y ahora ESPEJA la del cliente
 
-`HORNO_SOL` (3,2) y `HORNO_AMBIENTE` (0,28) valen para un bicho de albedo oscuro
-con vetas emisivas. Para una nave **metálica** no: un metal casi no tiene difuso,
-solo devuelve lo que hay alrededor, y sin entorno que reflejar se apaga. El Phoenix
-salía casi negro al lado de su propio render de alta.
+**Desde el cambio de luz del mundo (ago-2026)** el horno replica el rig del
+cliente (`AssetDefs.ambiente_mundo`): fondo del color del ambiente (azul grisáceo
+0,35/0,40/0,55 — antes el nodo Background se quedaba en el gris 0,05 por defecto
+de Blender y la fuerza multiplicaba casi-nada, por eso los valores viejos parecen
+de otra escala), **la curva FILMIC exacta de Godot sobre el pase BASE**
+(`HORNO_FILMIC`, encendida por defecto: el filmic con blanco 1 levanta los medios
+0,5 → 0,69, y sin ella perseguir la diferencia con ambiente lavaba el contraste
+sin llegar), y defaults `HORNO_SOL=1.6` / `HORNO_AMBIENTE=0.65` — 1,6 y no 1,0
+porque el sol del sprite es axial y el del cliente rasante a −48°.
 
-Medido contra alta (rojo medio del píxel, que es el contrato de homologación):
+Calibrado por bicho contra `medir_emision.tscn` (media / alta, al pico del pulso):
 
-| `HORNO_AMBIENTE` | media | alta |
-|---|---|---|
-| 0,28 | 0,115 | 0,139 |
-| **1,2** | **0,138** | 0,139 |
-| 2,5 | 0,163 | 0,139 |
+| | `HORNO_SOL` | `HORNO_AMBIENTE` | media | alta |
+|---|---|---|---|---|
+| Vexor | 1,35 | 0,65 | 0,479 | 0,459 |
+| Vex | 1,0 | 0,45 | 0,276 | 0,286 |
+| Vorax | 1,0 | 0,55 | 0,243 | 0,236 |
+| Ferox | 1,6 | 0,65 | 0,631 | 0,600 |
+| Skarnox | 1,6 | 0,65 | 0,471 | 0,447 |
+| Phoenix | 1,6 | **0,35** | 0,301 | 0,288 |
 
-La Phoenix se hornea con **`HORNO_AMBIENTE=1.7`**.
-
-**Y se recalibra cada vez que cambia la textura.** Con la textura gris nueva, alta
-subió de 0,139 a 0,226 y el ambiente tuvo que pasar de 1,2 a 1,7: el dial no
-pertenece al modelo, pertenece a la **pareja modelo+textura**. Y ojo: el resultado sigue siendo
-una nave oscura, porque **alta también la dibuja oscura**. El `phoenix-v1.png` viejo
-era más claro por ser arte 2D de otra época con otra luz; homologar es parecerse al
-modelo, no al PNG que había antes.
+**Para un metal el ambiente va al revés que antes.** Un metal casi no tiene
+difuso: devuelve lo que hay alrededor. En la era del fondo gris-0,05 la Phoenix
+necesitaba `HORNO_AMBIENTE=1.7` para no salir negra; con el fondo ya del color
+del ambiente real refleja de sobra y el dial baja a **0,35** — menos que un
+bicho, porque en Godot el metal ni siquiera ve el ambiente de color (no hay
+mapa de reflexión) y en Blender sí. El dial sigue siendo de la **pareja
+modelo+textura** y se recalibra con cada cambio de cualquiera de los dos.
+Y ojo: homologar es parecerse al modelo en alta, no al PNG que había antes.
 
 ## Dos casos que el Vorax destapó en la cadena 3D
 
