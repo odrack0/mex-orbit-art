@@ -34,17 +34,36 @@ Requisitos duros de cada celda (1024×1024):
 | `nebula-mid-atlas.png` | media (−2950) | Nebulosa cian/turquesa (la familia del 1-1, luz `0xA3FFFF`), cuerpo suave con algo de veta |
 | `nebula-near-atlas.png` | cercana (−2400) | Nube más densa y con detalle interno, cian con vetas violetas (`#A78BFA` de la paleta), la que más se desplaza al volar |
 
-### Prompt base (pegar en Gemini / Recraft, uno por capa ajustando la identidad)
+### Los tres prompts, listos (pegar en Gemini / Recraft)
+
+**`nebula-far-atlas.png`:**
+
+> A 2x2 sprite sheet of 4 different faint space dust wisps, each wisp isolated and centered in its
+> own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
+> transparency well before the cell borders (at least 120px of fully transparent margin per cell).
+> Extremely subtle dark blue-grey gas wisps, barely-there volumetric dust, very low contrast and
+> very dark — this is the deepest background layer of a space game and must almost disappear. Each
+> of the 4 wisps clearly different in silhouette. No stars, no planets, no watermark, no vignette.
+> PNG with alpha, 2048x2048.
+
+**`nebula-mid-atlas.png`:**
 
 > A 2x2 sprite sheet of 4 different wispy space nebula clouds, each cloud isolated and centered in
 > its own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
 > transparency well before the cell borders (at least 120px of fully transparent margin per cell).
 > Soft volumetric cyan-turquoise gas clouds with faint violet undertones, dark space game art
-> style, subtle and calm (gameplay must read on top), no stars, no planets, no watermark, PNG with
-> alpha, 2048x2048.
+> style, subtle and calm — gameplay must read on top. Each of the 4 clouds clearly different in
+> silhouette. No stars, no planets, no watermark, no vignette. PNG with alpha, 2048x2048.
 
-(Para `far`: "very faint dark blue-grey dust wisps, extremely subtle". Para `near`: "denser cloud
-with more internal detail and violet streaks".)
+**`nebula-near-atlas.png`:**
+
+> A 2x2 sprite sheet of 4 different dense space nebula clouds, each cloud isolated and centered in
+> its own 1024x1024 quadrant on a fully TRANSPARENT background, edges fading smoothly to complete
+> transparency well before the cell borders (at least 120px of fully transparent margin per cell).
+> Denser volumetric cyan-turquoise clouds with rich internal detail and distinct violet streaks
+> (#A78BFA accents), the closest and most visible nebula layer of a dark space game, still dark
+> enough for gameplay to read on top. Each of the 4 clouds clearly different in silhouette. No
+> stars, no planets, no watermark, no vignette. PNG with alpha, 2048x2048.
 
 ### Post-proceso y enchufe
 
