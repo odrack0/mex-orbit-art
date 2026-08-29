@@ -532,8 +532,8 @@ vez de en toda la superficie.
 | `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** | 0 — solo raíz |
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,9** |
-| `HORNO_SOL` / `HORNO_AMBIENTE` | 1,35 / 0,65 | 1,0 / 0,45 | 1,6 / 0,65 | **0,24 / 0,0975 — luz propia** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,75** |
+| `HORNO_SOL` / `HORNO_AMBIENTE` | **0,675 / 0,325 — luz 50 %** | 1,0 / 0,45 | 1,6 / 0,65 | **0,32 / 0,13 — luz 20 %** |
 | ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
 | `cuernos_grados` (cliente) | 14 | **0 — no se lee** | — | — |
@@ -586,12 +586,13 @@ Cómo se sacó cada uno:
   seis vistas confirman el cráter al alto sin girar nada. El resto
   de su intensidad vive en el JSON: suelo del pulso en 1,2 (la lava no se apaga),
   el pase de `lava` que viaja (solo de alta), y desde ago-2026 el bloque **`luz`**
-  — la excepción por bicho a la luz del mundo: el Skarnox va al **15 %** del
-  mundo (sol 0,15, ambiente 0,0975) para leerse autoiluminado — el barrido fue
-  1,0 → 0,5 → 0,25 → 0,15, con 0/0 probado y descartado. El horno lo espeja
-  (sol 0,24 = 0,15 × 1,6 axial, ambiente igual) y con la base oscura el halo tuvo
-  que volver a subir a **1,9**: el derrame del glow pesa más cuanto menos luz
-  exterior hay. Media 0,319 contra 0,312 de alta.
+  — la excepción por bicho a la luz del mundo: el Skarnox va al **20 %** del
+  mundo (sol 0,20, ambiente 0,13) para leerse autoiluminado — el barrido fue
+  1,0 → 0,5 → 0,25 → 0,15 → 0,20, con 0/0 probado y descartado. El horno lo
+  espeja (sol 0,32 = 0,20 × 1,6 axial, ambiente igual) y con la base oscura el
+  halo sube a **1,75**: el derrame del glow pesa más cuanto menos luz exterior
+  hay. Media 0,326 contra 0,322 de alta. El bloque ya lo usan también el Vexor
+  (50 %: las vetas rojas ganan protagonismo) y la Phoenix (65 %).
 
 ### Naves: los anclajes de motores y cañones
 
@@ -642,12 +643,12 @@ Calibrado por bicho contra `medir_emision.tscn` (media / alta, al pico del pulso
 
 | | `HORNO_SOL` | `HORNO_AMBIENTE` | media | alta |
 |---|---|---|---|---|
-| Vexor | 1,35 | 0,65 | 0,479 | 0,459 |
+| Vexor (luz 50 %) | 0,675 | 0,325 | 0,366 | 0,384 |
 | Vex | 1,0 | 0,45 | 0,276 | 0,286 |
 | Vorax | 1,0 | 0,55 | 0,243 | 0,236 |
 | Ferox | 1,6 | 0,65 | 0,631 | 0,600 |
-| Skarnox | 1,6 | 0,65 | 0,471 | 0,447 |
-| Phoenix | 1,6 | **0,35** | 0,301 | 0,288 |
+| Skarnox (luz 20 %) | 0,32 | 0,13 | 0,326 | 0,322 |
+| Phoenix (luz 65 %) | 1,04 | 0,227 | 0,228 | 0,228 |
 
 **Para un metal el ambiente va al revés que antes.** Un metal casi no tiene
 difuso: devuelve lo que hay alrededor. En la era del fondo gris-0,05 la Phoenix
