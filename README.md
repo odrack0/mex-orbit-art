@@ -525,14 +525,14 @@ vez de en toda la superficie.
 
 | | Vexor | Vex | Ferox | Skarnox |
 |---|---|---|---|---|
-| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 | 1,071 × 1,903 × 0,567 | 1,901 × 1,895 × 1,875 — **bola** |
-| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) | 12 000 (crudo a 31 181, decimado) | 12 000 (crudo a 28 166, decimado) |
+| caja (ancho × largo × alto) | 1,911 × 1,611 × 0,590 | 1,526 × 1,916 × 0,548 | 1,071 × 1,903 × 0,567 | 1,906 × 1,786 × 1,353 — **bola achatada** |
+| triángulos | 10 254 (remesh ya al presupuesto) | 12 000 (crudo a 31 148, decimado) | 12 000 (crudo a 31 181, decimado) | 10 150 (remesh ya al presupuesto) |
 | `BISAGRA` / `BANDA` del ala | 0,30 / 0,22 | **0,18 / 0,16** | **0,24 / 0,14** | sin alas (3,0) |
 | `COLA_DESDE` | 0,32 | **0,24** | **0,28** | 0 — sin cola |
 | `CUERNO_DESDE` | 0,13 | 0,12 | **0 — sin cuernos** | 0 — solo raíz |
 | `GLOW_NUCLEO` | 0,09 | **0,22** | 0,09 | 0,09 |
 | `GLOW_UMBRAL` | 0,25 | 0,25 | 0,25 | **0,05** |
-| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 2,0** |
+| `GLOW_RADIO` / `GLOW_FUERZA` | 0,06 / 1,8 | **0,09 / 3,8** | 0,06 / 1,8 | **0,20 / 1,2** |
 | `HORNO_AMBIENTE` | 0,28 | 0,28 | 0,28 | 0,28 |
 | ganancia de emisión | 1,0 | 1,0 | 1,0 | **2,0** |
 | emisión derivada | 38-47 % de la textura | 16,5 % | 5,4 % real (ver abajo) | grietas + núcleo, p99 0,54 |
@@ -578,8 +578,12 @@ Cómo se sacó cada uno:
   palanca fue la **ganancia de emisión en el normalizador** (1,0 → 2,0): doblar la
   fuente obligó a bajar la fuerza del halo de 4,2 a **2,0** — el halo pertenece a
   la pareja modelo+emisiva, igual que `HORNO_AMBIENTE` pertenece a la pareja
-  modelo+textura en la Phoenix. Con umbral 0,05, radio 0,20 y fuerza 2,0, media
-  queda en **0,265** contra 0,267 de alta con glow al pico (pulse 2,6). El resto
+  modelo+textura en la Phoenix. El remesh v2 (textura más caliente: p99 0,671
+  contra 0,537) lo volvió a demostrar: la misma fuerza pasó de homologar a
+  sobrarse un 22 % y bajó a **1,2** — media 0,369 contra 0,367 de alta con glow
+  al pico (pulse 2,6). El v2 además ya no es bola perfecta (alto 1,353): entró
+  «ya en el plano» con eje fino real y las seis vistas confirmaron el cráter al
+  alto sin girar nada. El resto
   de su intensidad vive en el JSON: suelo del pulso en 1,2 (la lava no se apaga)
   y el pase de `lava` que viaja, solo de alta.
 
