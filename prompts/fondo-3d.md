@@ -102,9 +102,19 @@ Entra como `exports/map-1-1.png` reemplazando al actual (mismo enchufe de siempr
 
 ## 3. Opcional (pulido, no bloquea el cierre de F3)
 
-- **`planet-b` a 1024×1024**: es el planeta más cercano (p_factor 5) y el 512 se queda corto al
-  hacer zoom. Mismo prompt de `planetas.md`, doble resolución.
-- Los otros planetas y el sol aguantan a 512.
+**`planet-b` a 1024**: es el planeta más cercano (p_factor 5) y el 512 se queda corto al hacer
+zoom. Misma identidad de `planetas.md`, fuente al doble para exportar 1024 limpio:
+
+> A single gas giant planet seen from space, perfectly centered, fully round. Deep violet and
+> indigo swirling cloud bands with faint turquoise storm accents, subtle atmospheric rim glow on
+> all edges (light from directly above the camera, no side terminator). Very high detail, video
+> game background asset render. Flat solid chroma green background (#00B140), no vignette, no
+> other objects, 2048x2048.
+
+→ `source/renders/planeta-b-v2.png` → `py -3 tools/chroma-key.py` → export **1024** →
+`assets/world/layers/planet-b.png` (mismo nombre: reemplaza, cero cambios de JSON).
+
+Los otros planetas y el sol aguantan a 512.
 
 ## Aceptación (bestiario, `-Calidad alta`)
 
