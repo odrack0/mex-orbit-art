@@ -652,6 +652,19 @@ mapa de reflexión) y en Blender sí. El dial sigue siendo de la **pareja
 modelo+textura** y se recalibra con cada cambio de cualquiera de los dos.
 Y ojo: homologar es parecerse al modelo en alta, no al PNG que había antes.
 
+**La ESTACIÓN es el caso extremo de todo lo anterior**, y estrenó dos diales:
+`HORNO_ELEVACION=30` (la cámara oblicua del cliente, con el encuadre de
+`extension_vista` — las ocho esquinas proyectadas, no la huella) y
+`HORNO_LUZ=mundo` (no rota, así que la regla de la luz axial no aplica y lleva
+el sol direccional real, azimut 315 y elevación −48). Su casco es metálico por
+textura, así que el ambiente le baja hasta **0,15** — con 0,65 media salía un
+75 % más clara que alta. El halo va apagado (`GLOW_FUERZA=0`, igual que su
+`glow: false` de alta) y `GLOW_NUCLEO=3.0` hace de ganancia: cuece en la capa
+emisiva el `emision: 3.0` del modelo, porque el pulso 2D no lo multiplica.
+Homologado en el juego contra alta: 0,0749 contra 0,0809 en el mismo recorte.
+Su atlas de video queda como respaldo con la luz vieja: solo se monta si el
+GLB no carga.
+
 ## Dos casos que el Vorax destapó en la cadena 3D
 
 **El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la

@@ -85,17 +85,44 @@ centro = Vector(tuple((lo + hi) * 0.5))
 radio = float(max(hi[0] - lo[0], hi[1] - lo[1])) * 0.5
 print("CAJA  %.3f x %.3f x %.3f" % tuple(hi - lo))
 
+# La camara es cenital para bichos y naves, pero un PROP puede mirarse oblicuo:
+# la estacion va a HORNO_ELEVACION=30 (EST_ELEVACION del cliente) porque una
+# torre en cenital es un punto. A 90 (defecto) todo queda exactamente como antes.
+HORNO_ELEVACION = float(os.environ.get("HORNO_ELEVACION", 90.0))
+
 diana = bpy.data.objects.new("d", None)
 bpy.context.scene.collection.objects.link(diana)
 diana.location = centro
 cd = bpy.data.cameras.new("c")
 cd.type = "ORTHO"
-cd.ortho_scale = radio * 2.06       # un pelin de aire, como el margen del atlas
 cam = bpy.data.objects.new("c", cd)
 bpy.context.scene.collection.objects.link(cam)
-cam.location = centro + Vector((0.0, 0.0, radio * 8.0))
-cam.rotation_euler = (0.0, 0.0, 0.0)   # cenital puro, mirando -Z
+el = math.radians(HORNO_ELEVACION)
+# El cliente mira desde su +Z horizontal, que en el espacio del master de Blender
+# es -Y (glTF permuta: Blender +Y -> Godot -Z). A 90 grados esto degenera al
+# cenital de siempre.
+cam.location = centro + Vector((0.0, -math.cos(el), math.sin(el))) * (radio * 8.0)
+cam.rotation_euler = (math.pi / 2.0 - el, 0.0, 0.0)
 bpy.context.scene.camera = cam
+
+if HORNO_ELEVACION >= 89.0:
+    cd.ortho_scale = radio * 2.06   # un pelin de aire, como el margen del atlas
+else:
+    # Encuadre OBLICUO: la huella ya no es lo que se ve — la altura entra en
+    # pantalla. Es `extension_vista` del cliente: se proyectan las ocho esquinas
+    # de la caja al plano de la camara y manda la mayor. Mismo margen 1.15
+    # (EST_MARGEN) que usa world.gd para la estacion.
+    ejes_cam = cam.rotation_euler.to_matrix()
+    dx, dy = ejes_cam.col[0], ejes_cam.col[1]
+    ext = 0.0
+    for cx in (lo[0], hi[0]):
+        for cy in (lo[1], hi[1]):
+            for cz in (lo[2], hi[2]):
+                p = Vector((cx, cy, cz)) - centro
+                ext = max(ext, abs(p.dot(dx)), abs(p.dot(dy)))
+    cd.ortho_scale = ext * 2.0 * 1.15
+    print("ENCUADRE oblicuo a %.0f grados: extension %.3f (huella %.3f)"
+          % (HORNO_ELEVACION, ext, radio))
 
 esc = bpy.context.scene
 esc.render.engine = "BLENDER_EEVEE"
@@ -144,7 +171,20 @@ bpy.context.scene.collection.objects.link(sol)
 # Luz AXIAL, desde la camara: el sprite rota en el juego y una luz lateral
 # giraria con el. Es la regla 3 del contrato de render, y sigue vigente para el
 # sprite aunque el modelo ya no la necesite.
-sol.rotation_euler = (0.0, 0.0, 0.0)
+#
+# HORNO_LUZ=mundo, para un prop que NO ROTA (la estacion): entonces la regla no
+# aplica y lo correcto es la luz direccional real del cliente — azimut 315 y
+# elevacion -48 (AssetDefs.LUZ_MUNDO_*) — o el sprite de media no comparte
+# sombras con la malla de alta.
+if os.environ.get("HORNO_LUZ", "axial") == "mundo":
+    # Direccion del sol del cliente en el espacio del master: Godot
+    # RotY(315)*RotX(-48) sobre -Z da (0.473, -0.743, -0.473); Godot->Blender
+    # permuta (x, y, z) -> (x, -z, y).
+    d_blender = Vector((0.473, 0.473, -0.743))
+    sol.rotation_euler = d_blender.to_track_quat("-Z", "Y").to_euler()
+    print("LUZ del mundo (azimut 315, elevacion -48), no axial")
+else:
+    sol.rotation_euler = (0.0, 0.0, 0.0)
 fondo.inputs[1].default_value = HORNO_AMBIENTE
 
 # La MISMA curva de tono que el cliente. Alta tonemapea FILMIC (ver
