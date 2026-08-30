@@ -114,7 +114,33 @@ zoom. Misma identidad de `planetas.md`, fuente al doble para exportar 1024 limpi
 → `source/renders/planeta-b-v2.png` → `py -3 tools/chroma-key.py` → export **1024** →
 `assets/world/layers/planet-b.png` (mismo nombre: reemplaza, cero cambios de JSON).
 
-Los otros planetas y el sol aguantan a 512.
+**`planet-a` v2 (lejano, helado — export 1024):**
+
+> A single planet seen from space, perfectly centered, fully round. Frozen ice planet with pale
+> cyan-blue surface, thin white cloud bands, subtle atmospheric rim glow on all edges (light from
+> directly above the camera, no side terminator). Very high detail, video game background asset
+> render. Flat solid chroma green background (#00B140), no vignette, no other objects, 2048x2048.
+
+**`planet-c` v2 (rocoso oscuro — export 1024):**
+
+> A single rocky planet seen from space, perfectly centered, fully round. Dark charcoal rocky
+> surface with faint orange-ember crack lines and thin gray atmosphere, subtle rim glow on all
+> edges (light from directly above the camera, no side terminator). Very high detail, video game
+> background asset render. Flat solid chroma green background (#00B140), no vignette, no other
+> objects, 2048x2048.
+
+**`sol` v2 (export 1024 — sobre NEGRO, no croma: el sol se dibuja en blend aditivo y ahí el negro
+es transparencia gratis; un croma verde contaminaría el halo suave):**
+
+> A single bright star sun seen from space, perfectly centered on a PURE BLACK background.
+> Brilliant white-cyan core with a soft turquoise corona and long subtle radial light rays fading
+> smoothly into pure black well before the image edges, gentle glow falloff, no lens flare
+> artifacts, no planets, no watermark, no vignette. Video game background asset render, 2048x2048.
+
+→ planetas: `source/renders/planeta-{a,c}-v2.png` → `chroma-key.py` → export 1024 →
+`assets/world/layers/planet-{a,c}.png`. Sol: `source/renders/sol-v2.png` → export 1024 tal cual →
+`assets/world/layers/sun.png` (el negro no necesita recorte en aditivo). Mismos nombres:
+reemplazan, cero cambios de JSON. El `flare-ghost` de 128 aguanta: es un blob suave.
 
 ## Aceptación (bestiario, `-Calidad alta`)
 
