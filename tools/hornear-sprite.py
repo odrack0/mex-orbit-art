@@ -56,7 +56,11 @@ HORNO_AMBIENTE = float(os.environ.get("HORNO_AMBIENTE", 0.5))
 # Colores de la luz del mundo, espejo de AssetDefs.LUZ_MUNDO_COLOR / _AMBIENTE_COLOR.
 # Mismo triplete que el cliente (Color.html no linealiza: guarda el sRGB tal cual).
 HORNO_SOL_COLOR = (0.6392, 1.0, 1.0)          # cian 0xA3FFFF
-HORNO_AMBIENTE_COLOR = (1.0, 0.5216, 0.3608)  # naranja calido 0xFF855C
+# Overridable por entorno (HORNO_AMBIENTE_COLOR=r,g,b en 0..1): el color del
+# ambiente pertenece a la luz del mundo VIGENTE en el cliente, y cambia con ella.
+_amb = os.environ.get("HORNO_AMBIENTE_COLOR", "")
+HORNO_AMBIENTE_COLOR = (tuple(float(v) for v in _amb.split(",")) if _amb
+                        else (1.0, 0.5216, 0.3608))  # naranja calido 0xFF855C
 
 # ABSOLUTA, siempre. Blender resuelve un `render.filepath` RELATIVO contra su
 # propia idea de la ruta base, no contra el directorio desde el que se lanza: con
