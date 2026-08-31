@@ -50,7 +50,23 @@ N_TOBERAS = int(argv[5]) if len(argv) > 5 else 0
 # una popa con anillos y tuberia entre toberas: `ver_anclajes.tscn` del cliente las
 # mide sobre el render —la proyeccion que usa el juego— y de ahi salen estos
 # numeros. Cuando la malla y la imagen discrepan, manda la imagen.
-TOBERAS_X = ([float(v) for v in argv[6].split(",")] if len(argv) > 6 and argv[6] else [])
+# Cada boca es "x" o "x@z". La forma con @z existe para las popas en ANILLO (la
+# Phoenix v2: seis campanas en circulo): la silueta cenital solo ve la fila de
+# abajo y proyecta los pares superiores encima de los inferiores, asi que medir
+# solo en X monto cuatro llamas en linea sobre una popa de seis bocas. Con @z la
+# boca lleva su altura medida de la malla (medir_campanas agrupa la banda de popa
+# en el plano X-Z); sin @z todo queda como antes.
+TOBERAS_X = []
+TOBERAS_Z = []
+if len(argv) > 6 and argv[6]:
+    for v in argv[6].split(","):
+        if "@" in v:
+            vx, vz = v.split("@")
+            TOBERAS_X.append(float(vx))
+            TOBERAS_Z.append(float(vz))
+        else:
+            TOBERAS_X.append(float(v))
+            TOBERAS_Z.append(None)
 TOBERA_ANCHO = float(argv[7]) if len(argv) > 7 else 0.0
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -198,9 +214,13 @@ def bocas_en(margen):
 bocas = []
 if TOBERAS_X:
     ancho_dado = TOBERA_ANCHO if TOBERA_ANCHO > 0.0 else 0.10
-    bocas = [(x, ancho_dado) for x in TOBERAS_X]
+    # La z viaja DENTRO de la tupla: el sort de mas abajo reordena por x y una
+    # lista paralela se quedaria desapareada.
+    bocas = [(x, ancho_dado, z) for x, z in zip(TOBERAS_X, TOBERAS_Z)]
     print("BOCAS dadas a mano: %s  ancho %.3f"
           % (", ".join("%+.3f" % x for x in TOBERAS_X), ancho_dado))
+    if any(z is not None for z in TOBERAS_Z):
+        print("      con altura (@z): popa en anillo, no en fila")
 for k in ([] if bocas else range(0, 40)):
     cand = bocas_en(largo * 0.004 * k)
     if len(cand) >= max(2, N_TOBERAS if N_TOBERAS > 0 else 2):
@@ -221,11 +241,19 @@ print("TOBERAS %d bocas  centros %s  ancho por mediana %.3f (medidos %s)"
       % (len(bocas), ", ".join("%+.3f" % b[0] for b in bocas), ANCHO,
          ", ".join("%.3f" % a for a in anchos)))
 
-for i, (cx, _w) in enumerate(bocas):
-    cerca = popa[np.abs(popa[:, 0] - cx) < ANCHO * 0.5]
+for i, b in enumerate(bocas):
+    cx = b[0]
+    cz = b[2] if len(b) > 2 else None
+    sel = np.abs(popa[:, 0] - cx) < ANCHO * 0.5
+    if cz is not None:
+        # Popa en anillo: la vecindad se acota tambien en Z, o la boca de arriba
+        # cogeria los vertices de la de abajo (proyectan en la misma X).
+        sel = sel & (np.abs(popa[:, 2] - cz) < ANCHO * 0.5)
+    cerca = popa[sel]
     fuente = cerca if len(cerca) >= 20 else popa
     trasero = fuente[fuente[:, 1] <= fuente[:, 1].min() + largo * 0.02]
-    p = Vector((cx, float(trasero[:, 1].mean()), float(trasero[:, 2].mean())))
+    z_final = float(cz) if cz is not None else float(trasero[:, 2].mean())
+    p = Vector((cx, float(trasero[:, 1].mean()), z_final))
     anclas.append(("tobera_%d" % (i + 1), p, len(fuente), ANCHO))
 
 # ---- CANIONES ----
