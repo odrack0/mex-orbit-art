@@ -3,27 +3,29 @@
 para el cliente.
 
 Meshy devuelve el modelo DE PIE (interpreta la imagen como un poster: el largo
-del bicho queda en Z) y sin presupuesto: 2 M de triangulos y texturas de 2048
-para algo que se dibuja a 178 px. Este script hace las cinco cosas que lo
-convierten en asset:
+del bicho queda en Z). Este script hace las cuatro cosas que lo convierten en
+asset:
 
   1. TUMBARLO  -90 en X. El largo pasa a +Y, que al exportar a glTF es -Z, que
      es el "adelante" de Godot. La proa acaba mirando donde debe sin tocar nada
      mas.
   2. PIVOTE    al centro de la caja. Descentrado, la nave orbita en vez de virar.
-  3. DECIMAR   a un presupuesto. Medido: 15 000 tris son indistinguibles de los
-     dos millones a tamanio de juego, porque el detalle vive en el mapa de
-     normales, no en los poligonos.
-  4. TEXTURAS  a 512. Tres mapas de 2048 son 48 MB de VRAM para un bicho cuyo
+  3. TEXTURAS  a 512. Tres mapas de 2048 son 48 MB de VRAM para un bicho cuyo
      atlas entero cuesta 11,7.
-  5. EMISION   Meshy pinta las vetas y los nucleos en el ALBEDO y deja
+  4. EMISION   Meshy pinta las vetas y los nucleos en el ALBEDO y deja
      Emission Strength en 0, o sea que no brillan. Se saca por dominancia de
      canal —la misma heuristica que extract-emissive.py— pero UNA vez, horneada
      en su propia textura, en vez de adivinarla en cada render.
 
+El presupuesto de poligonos ya NO se resuelve aqui (31-ago-2026): el remesh se
+mudo al propio Meshy, que lo hace en el modelado y no como una pasada ciega
+despues. Decimar aqui era una segunda mano sobre un trabajo que Meshy ya habia
+hecho — si el remesh de Meshy no basta, se ajusta ALLA, no con un decimador
+agregado en este script.
+
 Uso:
   blender --background --factory-startup --python normalize-model.py -- \
-      <entrada.glb> <salida.glb> [tris] [lado_textura] [canal r|g|b|c|m|y] [ganancia]
+      <entrada.glb> <salida.glb> [lado_textura] [canal r|g|b|c|m|y] [ganancia]
 
   El canal es el COLOR de lo que brilla. Primarios r/g/b, y secundarios c/m/y
   para cian, magenta y amarillo — un color secundario tiene dos canales altos y
@@ -35,12 +37,11 @@ from mathutils import Vector
 
 argv = sys.argv[sys.argv.index("--") + 1:]
 entrada, salida = argv[0], argv[1]
-TRIS = int(argv[2]) if len(argv) > 2 else 15000
-LADO = int(argv[3]) if len(argv) > 3 else 512
-CANAL = (argv[4] if len(argv) > 4 else "r").lower()
-GANANCIA = float(argv[5] if len(argv) > 5 else 1.0)
-# Distancia de soldadura antes de decimar. 0 la desactiva.
-SOLDAR = float(argv[6]) if len(argv) > 6 else 0.0005
+LADO = int(argv[2]) if len(argv) > 2 else 512
+CANAL = (argv[3] if len(argv) > 3 else "r").lower()
+GANANCIA = float(argv[4] if len(argv) > 4 else 1.0)
+# Distancia de soldadura de costuras del export crudo. 0 la desactiva.
+SOLDAR = float(argv[5]) if len(argv) > 5 else 0.0005
 # TUMBAR=0 deja el modelo COMO VIENE. El contrato de este script —el eje fino
 # acaba en el alto— codifica "objeto plano visto desde arriba", que es lo que son
 # los bichos y las naves. Una estacion no: es una TORRE vertical vista en
@@ -193,16 +194,13 @@ if len(objs) > 1:
               % (o.name[:18], tris_de(o), ctr[0], ctr[1], ctr[2],
                  hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]))
 
-# ---- 2b. SOLDAR antes de decimar ----
+# ---- 2b. SOLDAR costuras ----
 # Meshy no entrega una superficie sino cientos de cascaras solapadas —1773 en el
-# Vexor de alas abiertas— y el decimador Collapse no fusiona ENTRE cascaras: se
-# come cada trozo por su cuenta hasta dejar esquirlas. Ese era el "se ve roto"
-# que costo media sesion perseguir por Godot, por el mapa de normales y por las
-# caras traseras.
+# Vexor de alas abiertas—, y sin fusionarlas el mapa de normales y las caras
+# traseras salen rotas (el "se ve roto" que costo media sesion perseguir).
 #
 # Soldar los vertices coincidentes de las costuras convierte las 1773 cascaras en
-# UNA, y solo cuesta el 6% de los vertices. Despues el decimador tiene una
-# superficie con la que trabajar.
+# UNA, y solo cuesta el 6% de los vertices.
 #
 # La distancia esta medida: a 0,0005 quedan 1 cascara y la malla se conserva; a
 # 0,002 ya funde el 64% de los vertices y empieza a comerse detalle real.
@@ -221,22 +219,12 @@ if SOLDAR > 0:
                  100.0 * (v0 - len(o.data.vertices)) / max(1, v0)))
     tris0 = sum(tris_de(o) for o in objs)
 
-# ---- 3. decimar, REPARTIENDO el presupuesto ----
-# Un ratio unico por pieza dejaria a un ala de 2 000 triangulos igual de densa
-# que un cuerpo de 200 000. El presupuesto se reparte en proporcion a lo que
-# cada pieza traia, asi que todas bajan al mismo ritmo.
-if TRIS and tris0 > TRIS:
-    ratio = TRIS / float(tris0)
-    for o in objs:
-        mod = o.modifiers.new("dec", "DECIMATE")
-        mod.ratio = ratio
-
-# ---- 4. texturas ----
+# ---- 3. texturas ----
 for img in bpy.data.images:
     if img.size[0] > LADO:
         img.scale(LADO, LADO)
 
-# ---- 5. emision, material por material ----
+# ---- 4. emision, material por material ----
 # Con el modelo partido puede venir un material por pieza. Cada uno necesita su
 # emision, pero si comparten la MISMA textura de albedo la mascara se calcula una
 # sola vez: derivarla por material duplicaria la imagen en el GLB.

@@ -242,9 +242,9 @@ Lo que pedirle a Meshy, y por qué cada cosa:
 Y la cadena, dos comandos:
 
 ```bash
-# crudo -> master normalizado (sin decimar: el remesh ya vino al presupuesto)
+# crudo -> master normalizado (sin decimar: el remesh vive en Meshy, no aqui)
 blender --background --factory-startup --python tools/normalize-model.py -- \
-    source/3d-models/crudo/vexor-texture-v3.glb source/3d-models/vexor-v3.glb 0 1024 r 1.0 0.0005
+    source/3d-models/crudo/vexor-texture-v3.glb source/3d-models/vexor-v3.glb 1024 r 1.0 0.0005
 
 # master -> asset de juego con esqueleto
 blender --background --factory-startup --python tools/riguear-modelo.py -- \
@@ -273,6 +273,14 @@ atlas de hoy. A 512 serían 27 MB. Ahí está el escalón de `quality.gd`: **alt
 `tools/normalize-model.py` convierte lo que devuelve Meshy en algo que el cliente
 puede comer. **No es un paso de limpieza opcional: el crudo incumple el contrato
 por los cuatro costados** y el primer Vexor lo enseñó de golpe.
+
+**HISTÓRICO (el ejemplo de abajo ya no corre tal cual).** En esta primera pasada
+el script todavía decimaba (el tercer argumento era un presupuesto de triángulos):
+el crudo de Meshy no traía el remesh resuelto y hacía falta una segunda mano local,
+en dos pasos (master de trabajo, luego asset de juego). Desde el 31-ago-2026 el
+remesh se resuelve EN Meshy y el decimador salió del script entero — ver «El
+remesh vive en Meshy» en las trampas de abajo. El ejemplo se deja porque explica
+por qué existe el contrato del script, no como receta vigente.
 
 ```bash
 # crudo -> master de trabajo
