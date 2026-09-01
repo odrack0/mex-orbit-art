@@ -30,6 +30,10 @@ brand/        # identidad (nota: el nombre del juego es temporal — nada de log
 
 ## Vídeos en bucle -> atlas animado
 
+> **RETIRADO el 1-sep-2026.** El cliente es 3D en los tres niveles de calidad y la malla es el
+> único cuerpo de cada entidad: no se hornean PNG de media/baja ni se sacan atlas de vídeo.
+> Esta sección queda como historia de cómo se calibró; sus herramientas ya no están en `tools/`.
+
 `tools/video-atlas.py` convierte un vídeo con croma verde en la rejilla de fotogramas que monta el
 cliente. El master vive en `source/renders/<Nombre>.mp4`: sin él no se puede reexportar a otros fps
 ni a otra resolución.
@@ -481,6 +485,10 @@ Repo recién creado.
 
 ### El halo horneado: por qué media lleva glow dentro del PNG
 
+> **RETIRADO el 1-sep-2026.** El cliente es 3D en los tres niveles de calidad y la malla es el
+> único cuerpo de cada entidad: no se hornean PNG de media/baja ni se sacan atlas de vídeo.
+> Esta sección queda como historia de cómo se calibró; sus herramientas ya no están en `tools/`.
+
 En calidad **alta** el brillo del rojo lo hace el `Environment` del `SubViewport`
 con `glow_enabled`: lo que pasa de 1 se **derrama** a los píxeles vecinos. En
 **media** no hay entorno, hay un PNG — y sin halo horneado el resultado no era
@@ -525,6 +533,10 @@ Tres cosas que costaron una pasada cada una y no son obvias:
 
 
 ### Los diales son POR BICHO, no del pipeline
+
+> **RETIRADO el 1-sep-2026.** El cliente es 3D en los tres niveles de calidad y la malla es el
+> único cuerpo de cada entidad: no se hornean PNG de media/baja ni se sacan atlas de vídeo.
+> Esta sección queda como historia de cómo se calibró; sus herramientas ya no están en `tools/`.
 
 Los valores por defecto de `hornear-sprite.py` y las bisagras de `riguear-modelo.py`
 se calibraron con el Vexor. **No se heredan**: cada bicho se mide. El Vex lo dejó
@@ -636,6 +648,10 @@ por construcción hay pocos vértices, y el grupo no llega a partirse.
 
 
 ### El horno también tiene luz, y ahora ESPEJA la del cliente
+
+> **RETIRADO el 1-sep-2026.** El cliente es 3D en los tres niveles de calidad y la malla es el
+> único cuerpo de cada entidad: no se hornean PNG de media/baja ni se sacan atlas de vídeo.
+> Esta sección queda como historia de cómo se calibró; sus herramientas ya no están en `tools/`.
 
 **Desde el cambio de luz del mundo (ago-2026)** el horno replica el rig del
 cliente (`AssetDefs.ambiente_mundo`): fondo del color del ambiente (azul grisáceo
