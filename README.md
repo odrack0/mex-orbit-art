@@ -421,6 +421,25 @@ hay que poner `rotation_mode = "XYZ"` (el importador deja los objetos en
 cuaternión y el exportador tira la animación entera sin avisar), y cada pieza con
 su propia Action sale como una animación **separada**.
 
+**Cuando NO hay trozos que repartir: `partir-centro.py` (1-sep-2026).** El remesh de Meshy
+suelda las cáscaras en **una sola** —el portal remesheado entra como un objeto de 40 720 tris—
+y ahí `partir-en-piezas.py` no tiene nada que asignar. El portal necesita que gire el vórtice y
+el aro se quede quieto, así que sí hay que **cortar**: por el radio del centroide de cada
+triángulo, en el plano del disco (los dos ejes anchos; el fino es la normal).
+
+```bash
+blender --background --factory-startup --python tools/partir-centro.py -- \
+    source/3d-models/portal.glb <cliente>/assets/world/portal.glb 0.56
+```
+
+Un corte circular sobre el eje de giro es **invariante al giro**: la costura es un círculo que
+rota sobre sí mismo, y no se ve. **Dónde cortar se mide, no se adivina**: el histograma radial
+de triángulos (25 cubos) del portal tiene el disco fino entre r 0,12 y 0,56 (~250 tris por cubo,
+con el agujero del medio por debajo de 0,12) y el aro salta a 1051 en 0,56 y sigue subiendo. El
+corte va en el último cubo bajo; fuera del valle, una pieza se lleva un pedazo de la otra y el
+giro lo delata. Salen `aro` (37 362 tris) y `centro` (3 358) con el mismo material; el cliente
+busca el hijo `centro` y le pone el giro (`portal_node.gd`).
+
 ### Animación por clave de forma: `tools/animar-alas.py`
 
 Meshy da malla estática. Las alas se pliegan con una **clave de forma**, no con
@@ -724,7 +743,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
-| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | — | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces en rampa + giro sobre su eje, 2,1 s |
+| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,56** → `aro` 37 362 + `centro` 3 358 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces en rampa + gira **solo el centro** (el vórtice), 2,1 s |
 
 **Deuda aceptada por el usuario:** siete de los once llegaron sin remesh (en negrita), entre 2 y 7
 veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada uno en el 1-1, y la
