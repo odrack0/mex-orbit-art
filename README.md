@@ -421,24 +421,26 @@ hay que poner `rotation_mode = "XYZ"` (el importador deja los objetos en
 cuaternión y el exportador tira la animación entera sin avisar), y cada pieza con
 su propia Action sale como una animación **separada**.
 
-**Cuando NO hay trozos que repartir: `partir-centro.py` (1-sep-2026).** El remesh de Meshy
-suelda las cáscaras en **una sola** —el portal remesheado entra como un objeto de 40 720 tris—
-y ahí `partir-en-piezas.py` no tiene nada que asignar. El portal necesita que gire el vórtice y
-el aro se quede quieto, así que sí hay que **cortar**: por el radio del centroide de cada
-triángulo, en el plano del disco (los dos ejes anchos; el fino es la normal).
+**Partir por RADIO: `partir-centro.py` (1-sep-2026).** El portal necesita que el vórtice
+aparezca y gire y el aro se quede quieto, y Meshy lo entrega en un solo objeto. Es el mismo
+principio de `partir-en-piezas.py` —repartir **islas enteras** (trozos conectados por aristas),
+sin cortar nada— con otro criterio: una isla va al centro si su vértice más interior queda por
+debajo de un radio, medido en el plano del disco (los dos ejes anchos; el fino es la normal).
 
 ```bash
 blender --background --factory-startup --python tools/partir-centro.py -- \
-    source/3d-models/portal.glb <cliente>/assets/world/portal.glb 0.56
+    source/3d-models/portal.glb <cliente>/assets/world/portal.glb 0.52
 ```
 
-Un corte circular sobre el eje de giro es **invariante al giro**: la costura es un círculo que
-rota sobre sí mismo, y no se ve. **Dónde cortar se mide, no se adivina**: el histograma radial
-de triángulos (25 cubos) del portal tiene el disco fino entre r 0,12 y 0,56 (~250 tris por cubo,
-con el agujero del medio por debajo de 0,12) y el aro salta a 1051 en 0,56 y sigue subiendo. El
-corte va en el último cubo bajo; fuera del valle, una pieza se lleva un pedazo de la otra y el
-giro lo delata. Salen `aro` (37 362 tris) y `centro` (3 358) con el mismo material; el cliente
-busca el hijo `centro` y le pone el giro (`portal_node.gd`).
+La primera versión **cortaba triángulos** por su centroide (r 0,56) y el borde interior del aro
+salió en dientes de sierra (reportado en vivo): el disco del vórtice entra por debajo del anillo
+hasta r 0,65 con triángulos largos y planos —292 cruzaban el corte, de r 0,40 a 0,65— y partirlos
+por la mitad repartía cada uno entre las dos piezas. **Dónde cortar se mide, no se adivina**: el
+objeto son 1018 islas; todas las que entran en el disco (rmin < 0,52) son finas (z +0,00..+0,04)
+y ninguna pasa de r 0,66, y el aro empieza en r 0,56 (salta ×5 en el histograma radial) sin que
+ninguna isla suya baje de 0,52. El corte va en 0,52, en el valle, lejos de los dos. Salen `aro`
+(37 116 tris) y `centro` (3 604, 94 islas) con el mismo material; el cliente busca el hijo `centro`
+y le pone el giro y la aparición (`portal_node.gd`).
 
 ### Animación por clave de forma: `tools/animar-alas.py`
 
@@ -743,7 +745,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
-| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,56** → `aro` 37 362 + `centro` 3 358 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + el **centro** (el vórtice, oculto en reposo) aparece creciendo y girando, 2,1 s |
+| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas enteras) → `aro` 37 116 + `centro` 3 604 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + el **centro** (el vórtice, oculto en reposo) aparece creciendo y girando, 2,1 s |
 
 **Deuda aceptada por el usuario:** siete de los once llegaron sin remesh (en negrita), entre 2 y 7
 veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada uno en el 1-1, y la

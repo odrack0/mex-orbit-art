@@ -1,25 +1,31 @@
-# Parte un prop de UNA malla en dos piezas por RADIO: `centro` (lo que queda
-# dentro del corte) y `aro` (lo de fuera), para que el cliente pueda girar una
-# sin la otra. Nacio para el portal (1-sep-2026): Meshy lo entrega en una sola
-# cascara y el encendido pide que gire el vortice y el anillo se quede quieto.
+# Parte un prop de UN objeto en dos piezas por RADIO: `centro` (lo que entra
+# por dentro del corte) y `aro` (el resto), para que el cliente pueda girar o
+# esconder una sin la otra. Nacio para el portal (1-sep-2026): Meshy lo entrega
+# en un solo objeto y el encendido pide que el vortice aparezca y gire y el
+# anillo se quede quieto.
 #
-# El corte es por el CENTROIDE de cada triangulo, medido en el plano del disco
-# (los dos ejes anchos; el fino es la normal) y como fraccion del radio de la
-# huella. Un corte circular sobre un eje de giro es invariante al giro: la
-# costura que deja es un circulo que rota sobre si mismo, asi que no se ve.
+# Se reparten ISLAS ENTERAS (trozos conectados por aristas), como hace
+# partir-en-piezas.py con las alas: una isla va al centro si su vertice mas
+# interior queda por debajo de RADIO (fraccion del radio de la huella, medido
+# en el plano del disco: los dos ejes anchos; el fino es la normal). Nada se
+# corta, asi que no hay costura dentada.
 #
-# Donde cortar se MIDE, no se adivina: el histograma radial de triangulos del
-# portal (25 cubos) tiene el disco fino entre r 0,12 y 0,56 (~250 tris por
-# cubo) y el aro desde 0,56 (salta a 1051 y sigue subiendo). El corte va en el
-# ultimo cubo bajo. Con RADIO fuera del valle, una de las dos piezas se lleva
-# un pedazo de la otra y el giro lo delata.
+# La primera version cortaba por el CENTROIDE de cada triangulo (r 0,56) y
+# dejaba el borde interior del aro en dientes de sierra: el disco del vortice
+# entra por debajo del anillo hasta r 0,65 con triangulos largos y planos (292
+# cruzaban el corte, de r 0,40 a 0,65), y partirlos por la mitad repartia cada
+# uno entre las dos piezas. Medido: el objeto son 1018 islas, todas las que
+# entran en el disco (rmin < 0,52) son finas (z +0,00..+0,04) y ninguna pasa
+# de r 0,66; el aro empieza en r 0,56 (salto x5 en el histograma radial) y
+# ninguna isla suya baja de 0,52. Por eso el corte va en 0,52: en el valle,
+# lejos de los dos.
 #
 #   blender --background --factory-startup --python tools/partir-centro.py -- \
-#       source/3d-models/portal.glb <cliente>/assets/world/portal.glb 0.56
+#       source/3d-models/portal.glb <cliente>/assets/world/portal.glb 0.52
 #
-# Las dos piezas comparten material y textura (se copian, no se duplican en el
-# GLB: glTF deduplica por referencia). Sale con la misma receta de export que
-# normalize-model.py (GLB, Y arriba, tangentes) — es el asset de juego.
+# Las dos piezas comparten material y textura (glTF las referencia, no las
+# duplica). Sale con la misma receta de export que normalize-model.py (GLB, Y
+# arriba, tangentes) — es el asset de juego.
 import bpy, bmesh, os, sys
 import numpy as np
 
@@ -33,7 +39,7 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=entrada)
 objs = [o for o in bpy.data.objects if o.type == "MESH"]
 if len(objs) != 1:
-    sys.exit("RECHAZAR: partir-centro espera UNA malla, hay %d (%s)" % (len(objs), [o.name for o in objs]))
+    sys.exit("RECHAZAR: partir-centro espera UN objeto, hay %d (%s)" % (len(objs), [o.name for o in objs]))
 src = objs[0]
 
 # la transformacion se acumula A MANO (Blender headless no evalua el depsgraph)
@@ -45,23 +51,51 @@ fino = int(np.argmin(ext))
 ejes = [i for i in range(3) if i != fino]
 c = (lo + hi) / 2
 radio = max(ext[ejes[0]], ext[ejes[1]]) / 2
+rv = np.hypot(v[:, ejes[0]] - c[ejes[0]], v[:, ejes[1]] - c[ejes[1]]) / radio
 print("caja %s · eje fino %s · radio de huella %.3f · corte en r=%.2f (%.3f)"
       % (np.round(ext, 3), "XYZ"[fino], radio, RADIO, RADIO * radio))
+
+# islas por conectividad de aristas, y a que pieza va cada cara
+bm0 = bmesh.new()
+bm0.from_mesh(src.data)
+bm0.faces.ensure_lookup_table()
+al_centro = np.zeros(len(bm0.faces), bool)
+visto = np.zeros(len(bm0.faces), bool)
+n_islas = 0
+n_centro = 0
+for f0 in bm0.faces:
+    if visto[f0.index]:
+        continue
+    n_islas += 1
+    pila = [f0]
+    visto[f0.index] = True
+    caras = []
+    while pila:
+        f = pila.pop()
+        caras.append(f.index)
+        for e in f.edges:
+            for g in e.link_faces:
+                if not visto[g.index]:
+                    visto[g.index] = True
+                    pila.append(g)
+    caras = np.array(caras)
+    rmin = min(rv[vt.index] for i in caras for vt in bm0.faces[i].verts)
+    if rmin < RADIO:
+        al_centro[caras] = True
+        n_centro += 1
+bm0.free()
+print("islas %d · al centro %d" % (n_islas, n_centro))
 
 
 def pieza(nombre, dentro):
     bm = bmesh.new()
     bm.from_mesh(src.data)
+    bm.faces.ensure_lookup_table()
     # coordenadas de mundo sobre la propia malla: la pieza sale con transform identidad
     for vt in bm.verts:
         p = m[:3, :3] @ np.array(vt.co[:]) + m[:3, 3]
         vt.co = p.tolist()
-    fuera = []
-    for f in bm.faces:
-        cen = np.mean([vt.co[:] for vt in f.verts], axis=0)
-        r = np.hypot(cen[ejes[0]] - c[ejes[0]], cen[ejes[1]] - c[ejes[1]]) / radio
-        if (r < RADIO) != dentro:
-            fuera.append(f)
+    fuera = [f for f in bm.faces if al_centro[f.index] != dentro]
     bmesh.ops.delete(bm, geom=fuera, context="FACES")
     me = bpy.data.meshes.new(nombre)
     bm.to_mesh(me)
