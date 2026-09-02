@@ -763,7 +763,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Gravit | r | — | **30 422** | −90 X | ninguno (disco, perfil sin lóbulos) | |
 | Gravon | r | — | **42 606** | −90 X | ninguno (disco) | trae normal y MR propios |
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
-| Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
+| Skarn | r | — | **19 177** (2-sep: remesh de Meshy + `hornear-normales.py` desde el alto de 3 032 364; antes 104 424) | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientation`; en el bestiario no se distingue del de 104 k |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
 | Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas + losa + astillas + largo) → `aro` 36 544 + `centro` 4 176 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + destello, 2,1 s; el **centro** (el vórtice) va oculto siempre desde el 2-sep (`encendido.vortice: false`, la animación no gustó) |
 
