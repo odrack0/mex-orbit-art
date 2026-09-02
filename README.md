@@ -731,6 +731,14 @@ veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada 
 caja a 50 k con una por cada bicho caído. Está medido que 10 k → 31 k cuesta un 38 % de fps; si el
 fps baja, la salida es reexportarlos de Meshy con el remesh puesto, no decimarlos aquí.
 
+**Medido en vivo esa misma tarde (iGPU AMD, 1080p, ALTA): los fps no bajaron y la memoria de
+textura se quedó en ~350 MB.** Léase con cuidado: el juego corre con VSync a 60, así que el fps no
+se mueve hasta que el frame pase de 16,7 ms — el 38 % del banco se midió con VSync apagado. Lo que
+dice el dato es que la iGPU sigue por debajo de 16,7 ms con los siete pesados dentro: el margen se
+está gastando, no es que no exista. La memoria cuadra: once entidades × 3 mapas de 1024 (~12 MB
+cada una, ~130 MB el catálogo) — los seis nuevos ocupan lo que los atlas viejos liberaron por la
+mañana (106 MB); el resto es el fondo.
+
 **`UMBRAL` es un dial nuevo del normalizador** (variable de entorno, 0 = como siempre): por debajo
 de esa dominancia la máscara es 0 y por encima se reescala a 0..1. Nace del Mordax, que ES del
 color de su acento (cuerpo rojo oscuro, venas rojo vivo — máscara p50 0,18, cinco veces el marfil
