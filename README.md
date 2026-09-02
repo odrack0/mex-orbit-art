@@ -792,6 +792,31 @@ campana lisa en los cuatro (discos y bolas, sin lóbulos de ala ni cola) y el an
 tiene N picos limpios que justifiquen un radial. Su vida es el pulso de emisión; si alguno pide
 gesto, se mide como dice el skill (simular sin riguear, rendir a tamaño de juego).
 
+## Horneado alto → bajo: el detalle de 100 k en una malla de 12 k (2-sep-2026)
+
+Los bichos nuevos «solo se ven bien por encima de 100 k caras». Dos cosas antes de aceptarlo: en el
+juego un bicho mide 124–248 px de lado (`screen_size`), o sea unos cuatro triángulos por píxel a
+100 k, y Godot genera LODs al importar — el fps no lo delata, la memoria y la carga sí. Y el paso
+que resuelve esto es el clásico que **Meshy no tiene** (lo dice él mismo: remesh sí, bake no): hornear
+el relieve del modelo alto en un **mapa de normales** sobre su remesh bajo.
+
+```bash
+blender --background --factory-startup --python tools/hornear-normales.py --     <alto.glb> <bajo.glb> <salida.glb> [lado=2048] [extrusion=0.02] [rayo=0.1]
+```
+
+`alto` es el crudo de Meshy a 100 k; `bajo` su remesh de Meshy a 10–20 k (mismo generado, mismo
+espacio); la salida es el bajo con el mapa horneado colgado de su Normal Map, listo para
+`normalize-model.py` como cualquier crudo. `decimar:N` en vez de `bajo` decima el alto para PROBAR
+sin remesh (mismas UV; solo para medir). Cycles en CPU, 8 muestras: el Skarn de 104 424 tris se hornea
+en **2,1 s** sobre 12 000. El script rechaza un mapa plano (desviación < 0,005: los modelos no se
+solapan o el rayo es corto). `extrusion` (la jaula) y `rayo` (alcance) van en unidades del modelo y
+son punto de partida, no dial cerrado.
+
+**Medido en el bestiario**, retrato de ALTA con recorte central ×2: el Skarn a 12 k + normales es
+indistinguible del de 104 k — placas, grietas de lava y cristales iguales. Regla que queda: un bicho
+que «necesita» 100 k se remeshea en Meshy a 12–15 k y se hornea aquí; los 100 k se quedan en
+`crudo/` como fuente del bake.
+
 ## Dos casos que el Vorax destapó en la cadena 3D
 
 **El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la
