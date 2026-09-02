@@ -28,6 +28,7 @@ Uso:
       <entrada.glb> <salida.glb> [lado_textura] [canal r|g|b|c|m|y] [ganancia]
 
   El canal es el COLOR de lo que brilla. Primarios r/g/b, y secundarios c/m/y
+  (y `l` = luminancia, para luces palidas sobre cuerpo oscuro; pide UMBRAL)
   para cian, magenta y amarillo — un color secundario tiene dos canales altos y
   ninguno domina al otro, asi que pedirlo por primario no encuentra nada.
 """
@@ -303,7 +304,15 @@ for mat in usados:
                 # c = cian (g+b), m = magenta (r+b), y = amarillo (r+g)
                 dos, falta = {"c": ((1, 2), 0), "m": ((0, 2), 1), "y": ((0, 1), 2)}[canal]
                 return np.clip(np.minimum(px[:, dos[0]], px[:, dos[1]]) - px[:, falta], 0.0, 1.0)
-            raise SystemExit("canal '%s' desconocido: usa r/g/b, c/m/y o una suma como c+m" % canal)
+            if canal == "l":
+                # LUMINANCIA: luces palidas (cian-blanco, blanco) sobre un cuerpo
+                # oscuro, que por color dominante no se separan (drony, 2-sep-2026:
+                # p99 del cian 0,08, y las lentes al 0,8% de la textura por encima
+                # de 0,5 de luminancia). Va SIEMPRE con UMBRAL (0,4-0,5): sin el, el
+                # cuerpo entero emite un poco. El color de la emision es el del
+                # propio pixel, asi que la luz sale del color que Meshy pinto.
+                return 0.2126 * px[:, 0] + 0.7152 * px[:, 1] + 0.0722 * px[:, 2]
+            raise SystemExit("canal '%s' desconocido: usa r/g/b, c/m/y, l (luminancia) o una suma como c+m" % canal)
 
         # VARIOS COLORES con "c+m": se toma el MAXIMO de sus mascaras, no la suma.
         # Un pixel es del acento que mas domine, no de los dos a la vez; sumarlas
