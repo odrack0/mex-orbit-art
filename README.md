@@ -706,6 +706,43 @@ Homologado en el juego contra alta: 0,0749 contra 0,0809 en el mismo recorte.
 Su atlas de video queda como respaldo con la luz vieja: solo se monta si el
 GLB no carga.
 
+## El catálogo entero por la cadena solo-malla (1-sep-2026)
+
+El usuario reexportó de Meshy los once crudos (remesh + retexturizado) el mismo día en que el
+cliente pasó a «todo 3D» y la malla quedó como único cuerpo. Entraron los once; estos son los
+diales con los que salió cada uno, para que la próxima vuelta no vuelva a medir lo que ya está medido:
+
+| | canal | `UMBRAL` | tris | tumbado | rig | nota |
+|---|---|---|---|---|---|---|
+| Vex | r | — | 10 434 | −90 X | alas 0,18/0,16 · cola 0,24 · cuernos | igual que antes |
+| Vexor | r | — | 9 802 | −90 X | alas 0,30/0,22 · cola 0,32 · cuernos | 47,9 % emite (38–47 % antes) |
+| Vorax | c | — | 10 194 | −90 X | RADIAL=8 (36, 82, 102, 122, 146, 188, 286, 342°) | mismos ángulos que la v1: misma forma |
+| Ferox | r | — | 10 386 | −90 X | alas 0,24/0,14 · cola 0,28 · sin cuernos | 90,4 % «emite» — la cobertura benigna de siempre |
+| Phoenix | r | — | **101 860** | −90 X | 6 toberas en anillo `x@z` (rebanada **0,06**: a 0,10 se pegan de dos en dos) · 2 cañones | bocas encendidas 80F0FF 0,6/0,25/0,5 |
+| Gravit | r | — | **30 422** | −90 X | ninguno (disco, perfil sin lóbulos) | |
+| Gravon | r | — | **42 606** | −90 X | ninguno (disco) | trae normal y MR propios |
+| Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
+| Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
+| Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
+| Portal | c | — | **40 720** | −90 X | — | encendido pendiente (animación del GLB) |
+
+**Deuda aceptada por el usuario:** siete de los once llegaron sin remesh (en negrita), entre 2 y 7
+veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada uno en el 1-1, y la
+caja a 50 k con una por cada bicho caído. Está medido que 10 k → 31 k cuesta un 38 % de fps; si el
+fps baja, la salida es reexportarlos de Meshy con el remesh puesto, no decimarlos aquí.
+
+**`UMBRAL` es un dial nuevo del normalizador** (variable de entorno, 0 = como siempre): por debajo
+de esa dominancia la máscara es 0 y por encima se reescala a 0..1. Nace del Mordax, que ES del
+color de su acento (cuerpo rojo oscuro, venas rojo vivo — máscara p50 0,18, cinco veces el marfil
+del Ferox): la trampa de la estación, pero sin un segundo color al que huir. Con `UMBRAL=0.3`
+quedan las venas (p90 0,31, p99 0,80). Es la tercera herramienta contra la cobertura que engaña,
+junto al canal secundario (`c`) y a la suma (`c+m`).
+
+**Gravit, Gravon, Mordax y Skarn van SIN esqueleto**: el perfil `|X| p95` por bandas es una
+campana lisa en los cuatro (discos y bolas, sin lóbulos de ala ni cola) y el anillo exterior no
+tiene N picos limpios que justifiquen un radial. Su vida es el pulso de emisión; si alguno pide
+gesto, se mide como dice el skill (simular sin riguear, rendir a tamaño de juego).
+
 ## Dos casos que el Vorax destapó en la cadena 3D
 
 **El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la

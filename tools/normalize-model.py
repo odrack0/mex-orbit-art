@@ -42,6 +42,13 @@ CANAL = (argv[3] if len(argv) > 3 else "r").lower()
 GANANCIA = float(argv[4] if len(argv) > 4 else 1.0)
 # Distancia de soldadura de costuras del export crudo. 0 la desactiva.
 SOLDAR = float(argv[5]) if len(argv) > 5 else 0.0005
+# UMBRAL (env): por debajo de esta dominancia la mascara es 0, y por encima se
+# reescala a 0..1. Es para el cuerpo que ES del color de su acento: el Mordax
+# es rojo oscuro con venas rojo vivo, y con la mascara a secas el cuerpo entero
+# emitia (p50 0,18, cinco veces el marfil del Ferox) — la trampa de la estacion
+# pero sin un segundo color al que huir. Con 0,3 solo quedan las venas (p90
+# 0,31, p99 0,80). 0 = sin umbral, el comportamiento de siempre.
+UMBRAL = float(os.environ.get("UMBRAL", "0"))
 # TUMBAR=0 deja el modelo COMO VIENE. El contrato de este script —el eje fino
 # acaba en el alto— codifica "objeto plano visto desde arriba", que es lo que son
 # los bichos y las naves. Una estacion no: es una TORRE vertical vista en
@@ -311,6 +318,8 @@ for mat in usados:
         mask = mascara_de(partes[0])
         for extra in partes[1:]:
             mask = np.maximum(mask, mascara_de(extra))
+        if UMBRAL > 0.0:
+            mask = np.clip((mask - UMBRAL) / (1.0 - UMBRAL), 0.0, 1.0)
 
         emi = np.zeros_like(px)
         emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
