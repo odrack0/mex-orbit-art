@@ -764,7 +764,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Gravon | r | — | **42 606** | −90 X | ninguno (disco) | trae normal y MR propios |
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **9 884** (2-sep: remesh de Meshy a 4,9 k quads + `hornear-normales.py` desde el alto de 3 032 364; antes 104 424, y a 19 177 se veía igual) | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientation`; en el bestiario no se distingue del de 104 k |
-| Drony | **l** (luminancia) con `UMBRAL=0.45`, ganancia 1,5: la textura no trae color saturado (cian p99 0,08), solo lentes cian pálido al 0,9 % | — | **12 383** (2-sep: remesh de Meshy + `hornear-normales.py` desde el alto de 1 909 904) | −90 X (entraba de pie; casi cúbico, 98 %: verificar orientación en el retrato) | ninguno (dron de una pieza) | especie mecánica nueva, migración BD 2026.09.02.1 |
+| Drony | c con `UMBRAL=0.25` (franjas cian saturado: 9,3 % de la textura, p99 0,98; el umbral apaga el leve tinte cian del cuerpo) | — | **11 811** (2-sep, v2: remesh de Meshy + `hornear-normales.py` desde el alto de 1 934 372) | ya en el plano (esfera) | ninguno (dron de una pieza) | especie mecánica, migración BD 2026.09.02.1. La v1 (prompt de texto) salió sin luces; la v2 nació del contrato del concepto 3D de `prompts/README.md` y en el retrato es el concepto |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
 | Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas + losa + astillas + largo) → `aro` 36 544 + `centro` 4 176 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + destello, 2,1 s; el **centro** (el vórtice) va oculto siempre desde el 2-sep (`encendido.vortice: false`, la animación no gustó) |
 
@@ -834,6 +834,12 @@ lentes, `normalize-model.py` ganó el canal **`l`** (luminancia): emite lo que e
 va SIEMPRE con umbral (0,4–0,5), o el cuerpo entero emite un poco. En el retrato el Drony sale como
 bola gris con un destello: la textura no tiene lo que el concepto pide, y eso se resuelve en Meshy
 (texturizar con la imagen del concepto como referencia, o repintar el emisivo a mano), no aquí.
+
+**Resuelto la misma tarde (v2):** el concepto rehecho con el contrato de `prompts/README.md`
+(luces como parches planos de cian saturado, cuerpo gris plomo, luz pareja) dio una textura con el
+cian al 9,3 % y p99 0,98 — extraído por canal `c` sin ganancia, con `UMBRAL=0.25`. En el retrato las
+franjas brillan como en el concepto. La lección: el emisivo se decide en la imagen de Gemini, no en
+Meshy ni en la ganancia del normalizador.
 
 **Corrección de la comparación del Skarn**: las tres capturas «idénticas» de esa tarde eran la
 misma imagen del 1-sep (el bestiario de hoy escribe `autotest-<bicho>.png` sin sufijo de calidad;
