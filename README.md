@@ -724,7 +724,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
-| Portal | c | — | **40 720** | −90 X | — | encendido pendiente (animación del GLB) |
+| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | — | el cliente lo gira a tres cuartos (`orientacion.pan` 35) y lo apoya en el plano; encendido = luces en rampa + giro sobre su eje, 2,1 s |
 
 **Deuda aceptada por el usuario:** siete de los once llegaron sin remesh (en negrita), entre 2 y 7
 veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada uno en el 1-1, y la
