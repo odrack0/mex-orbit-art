@@ -806,7 +806,11 @@ blender --background --factory-startup --python tools/hornear-normales.py --    
 
 `alto` es el crudo de Meshy a 100 k; `bajo` su remesh de Meshy a 10–20 k (mismo generado, mismo
 espacio); la salida es el bajo con el mapa horneado colgado de su Normal Map, listo para
-`normalize-model.py` como cualquier crudo. `decimar:N` en vez de `bajo` decima el alto para PROBAR
+`normalize-model.py` como cualquier crudo. **Dónde va cada uno:** el remesh texturizado en
+`source/3d-models/crudo/<bicho>.glb` (donde siempre) y el alto de 1,5–3 M, que sale de Meshy SIN
+textura (solo se usa su geometría), en `source/3d-models/crudo/alto/<bicho>.glb`; `crudo/` entero
+está fuera de git, así que ninguno de los dos se versiona: lo versionado es el master que sale de
+normalizar. `decimar:N` en vez de `bajo` decima el alto para PROBAR
 sin remesh (mismas UV; solo para medir). Cycles en CPU, 8 muestras: el Skarn de 104 424 tris se hornea
 en **2,1 s** sobre 12 000. El script rechaza un mapa plano (desviación < 0,005: los modelos no se
 solapan o el rayo es corto). `extrusion` (la jaula) y `rayo` (alcance) van en unidades del modelo y
