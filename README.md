@@ -435,12 +435,32 @@ blender --background --factory-startup --python tools/partir-centro.py -- \
 La primera versión **cortaba triángulos** por su centroide (r 0,56) y el borde interior del aro
 salió en dientes de sierra (reportado en vivo): el disco del vórtice entra por debajo del anillo
 hasta r 0,65 con triángulos largos y planos —292 cruzaban el corte, de r 0,40 a 0,65— y partirlos
-por la mitad repartía cada uno entre las dos piezas. **Dónde cortar se mide, no se adivina**: el
-objeto son 1018 islas; todas las que entran en el disco (rmin < 0,52) son finas (z +0,00..+0,04)
-y ninguna pasa de r 0,66, y el aro empieza en r 0,56 (salta ×5 en el histograma radial) sin que
-ninguna isla suya baje de 0,52. El corte va en 0,52, en el valle, lejos de los dos. Salen `aro`
-(37 116 tris) y `centro` (3 604, 94 islas) con el mismo material; el cliente busca el hijo `centro`
-y le pone el giro y la aparición (`portal_node.gd`).
+por la mitad repartía cada uno entre las dos piezas. Repartir islas enteras por su radio mínimo
+tampoco bastó (tres rondas en vivo): el disco no es solo «lo que entra por debajo de r 0,52».
+**Todo se midió en la malla** (1018 islas) y el reparto quedó en cinco criterios, en este orden:
+
+1. **Radio**: la isla entra por debajo de `RADIO` (0,52) → centro. 94 islas. El aro empieza en
+   r 0,56 (salta ×5 en el histograma radial) y ninguna isla suya baja de 0,52.
+2. **Losa**: el disco es una lámina fina a altura fija —se mide de los vértices de las islas del
+   criterio 1 casi planas, percentiles 2–98 ± 0,004: z +0,000..+0,041— y sus islas siguen por
+   debajo del anillo hasta r 0,66. Una isla que empieza entre `RADIO` y `LABIO` (0,62) pero vive
+   entera en la losa es disco, no anillo (el anillo baja a z −0,03/−0,09 en esa franja). 18 islas.
+   Con min/max en vez de percentiles la losa bajaba a −0,013 y se llevaba el suelo del anillo.
+3. **Astillas de isla**: 1–3 triángulos que cruzan más de 0,10 de radio por la cara superior
+   (z +0,109), basura del remesh que con el disco escondido se ve como pinchos. 13 islas.
+4. **Islas mixtas, triángulo a triángulo**: la pared interior del aro viene fusionada con trozos
+   del disco (islas de r 0,53–0,70 con z −0,06..+0,03). Dentro de ellas va al centro cada
+   triángulo con la firma del disco: plano, los tres vértices en la losa, entra por debajo de
+   `LABIO`. Corta por donde el disco toca la pared, no por un círculo; la pared no es plana y se
+   queda. 433 triángulos.
+5. **Largo**: en el anillo ningún triángulo legítimo cruza más de ~0,03 de radio (p95 de la pared
+   interior 0,02–0,03); uno que cruza `LARGO` (0,06) o más por dentro del labio es astilla
+   (medidas: 0,07 a 0,39). 7 triángulos — los últimos que asomaban.
+
+`INFORME=1` imprime lo que queda del aro por dentro del labio, isla por isla, con planitud, z y
+largo: es como se afinaron los criterios, no a ojo. Salen `aro` (36 544 tris) y `centro` (4 176)
+con el mismo material; el cliente busca el hijo `centro` y le pone el giro y la aparición
+(`portal_node.gd`).
 
 ### Animación por clave de forma: `tools/animar-alas.py`
 
@@ -745,7 +765,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **104 424** | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientacion` |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
-| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas enteras) → `aro` 37 116 + `centro` 3 604 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + el **centro** (el vórtice, oculto en reposo) aparece creciendo y girando, 2,1 s |
+| Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas + losa + astillas + largo) → `aro` 36 544 + `centro` 4 176 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + el **centro** (el vórtice, oculto en reposo) aparece creciendo y girando, 2,1 s |
 
 **Deuda aceptada por el usuario:** siete de los once llegaron sin remesh (en negrita), entre 2 y 7
 veces el presupuesto de 15 000 — Skarn y Mordax a 104 k con 5 ejemplares cada uno en el 1-1, y la

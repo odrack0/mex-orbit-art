@@ -55,18 +55,15 @@ rv = np.hypot(v[:, ejes[0]] - c[ejes[0]], v[:, ejes[1]] - c[ejes[1]]) / radio
 print("caja %s · eje fino %s · radio de huella %.3f · corte en r=%.2f (%.3f)"
       % (np.round(ext, 3), "XYZ"[fino], radio, RADIO, RADIO * radio))
 
-# islas por conectividad de aristas, y a que pieza va cada cara
+# islas por conectividad de aristas
 bm0 = bmesh.new()
 bm0.from_mesh(src.data)
 bm0.faces.ensure_lookup_table()
-al_centro = np.zeros(len(bm0.faces), bool)
 visto = np.zeros(len(bm0.faces), bool)
-n_islas = 0
-n_centro = 0
+islas = []
 for f0 in bm0.faces:
     if visto[f0.index]:
         continue
-    n_islas += 1
     pila = [f0]
     visto[f0.index] = True
     caras = []
@@ -79,12 +76,94 @@ for f0 in bm0.faces:
                     visto[g.index] = True
                     pila.append(g)
     caras = np.array(caras)
-    rmin = min(rv[vt.index] for i in caras for vt in bm0.faces[i].verts)
-    if rmin < RADIO:
-        al_centro[caras] = True
-        n_centro += 1
+    vs = np.array(sorted({vt.index for i in caras for vt in bm0.faces[i].verts}))
+    z = v[vs, fino] - c[fino]
+    islas.append((caras, rv[vs].min(), rv[vs].max(), z.min(), z.max()))
 bm0.free()
-print("islas %d · al centro %d" % (n_islas, n_centro))
+
+# a que pieza va cada isla. Tres criterios, medidos en el portal (1-sep-2026):
+#  1. entra por debajo de RADIO: es del disco (94 islas)
+#  2. LOSA: el disco del vortice es una lamina fina a una altura fija (z +0,00..
+#     +0,04 en el portal) y sus islas siguen por debajo del aro hasta r 0,66;
+#     las que empiezan entre RADIO y LABIO pero viven ENTERAS en esa losa son
+#     disco, no anillo (el anillo baja a z -0,03/-0,09 en esa misma franja).
+#     Con solo el criterio 1 asomaban bajo el labio del aro como dientes. La
+#     losa se MIDE de las islas del criterio 1 que son casi planas, con un
+#     margen de 0,005.
+#  3. ASTILLAS: triangulos sueltos (1-3) que cruzan medio radio por la cara
+#     superior — basura del remesh que, con el disco escondido, se ve como
+#     pinchos hacia el centro. Van con el disco: escondidos en reposo, y
+#     abiertos quedan donde siempre estuvieron.
+#  4. ISLAS MIXTAS, triangulo a triangulo: la pared interior del aro viene
+#     fusionada con trozos del disco (islas de r 0,53-0,70 con z de -0,06 a
+#     +0,03), y una isla asi no se puede repartir entera. Dentro de ellas va al
+#     centro cada triangulo con la FIRMA del disco: plano (normal por el eje
+#     fino), los tres vertices dentro de la losa y que entra por debajo de
+#     LABIO. Es la unica parte que corta triangulos, y corta por donde el
+#     disco toca la pared —la costura real—, no por un circulo: la pared no
+#     es plana y se queda entera.
+# La losa se MIDE de los vertices de las islas del criterio 1 que son casi
+# planas: percentiles 2-98 mas 0,004. Con min/max una isla que rozaba z -0,008
+# bajaba la losa hasta el suelo del anillo (z -0,011..+0,012) y se lo llevaba.
+LABIO = float(os.environ.get("LABIO", "0.62"))
+LARGO = float(os.environ.get("LARGO", "0.06"))
+nrm = np.array([p.normal[:] for p in src.data.polygons])
+plano = np.abs(nrm[:, fino]) > 0.7
+tri = np.array([p.vertices[:] for p in src.data.polygons])
+zv = v[:, fino] - c[fino]
+zs = []
+for caras, rmin, rmax, zmin, zmax in islas:
+    if rmin < RADIO and len(caras) >= 20 and plano[caras].mean() > 0.9:
+        zs.append(zv[np.unique(tri[caras])])
+if not zs:
+    sys.exit("RECHAZAR: ninguna isla plana entra por debajo de r %.2f — no hay disco que partir" % RADIO)
+zs = np.concatenate(zs)
+losa = (np.percentile(zs, 2) - 0.004, np.percentile(zs, 98) + 0.004)
+print("losa del disco: z %+.3f..%+.3f (de %d vertices)" % (losa[0], losa[1], len(zs)))
+
+al_centro = np.zeros(len(src.data.polygons), bool)
+cuenta = [0, 0, 0, 0, 0]
+for caras, rmin, rmax, zmin, zmax in islas:
+    if rmin < RADIO:
+        k = 0
+    elif rmin < LABIO and zmin >= losa[0] and zmax <= losa[1]:
+        k = 1
+    elif rmin < LABIO and len(caras) <= 3 and rmax - rmin > 0.15:
+        k = 2
+    elif rmin < LABIO:
+        zt = zv[tri[caras]]
+        rt = rv[tri[caras]]
+        firma = plano[caras] & (zt.min(1) >= losa[0]) & (zt.max(1) <= losa[1]) & (rt.min(1) < LABIO)
+        #  5. LARGO: en el anillo ningun triangulo legitimo cruza mas de ~0,03 de
+        #     radio (p95 de la pared interior: 0,02-0,03); uno que cruza 0,06 o
+        #     mas por dentro del labio es una astilla del remesh (medidas: 0,07
+        #     a 0,39), planas a la altura de la cara superior o inclinadas a la
+        #     del disco. Van con el disco, como las astillas de isla entera.
+        largo = (rt.max(1) - rt.min(1) > LARGO) & (rt.min(1) < LABIO)
+        al_centro[caras[firma | largo]] = True
+        cuenta[3] += int(firma.sum())
+        cuenta[4] += int((largo & ~firma).sum())
+        continue
+    else:
+        continue
+    al_centro[caras] = True
+    cuenta[k] += 1
+print("islas %d · al centro %d enteras (por radio %d, por losa %d, astillas %d) + %d triangulos de islas mixtas + %d largos"
+      % (len(islas), sum(cuenta[:3]), cuenta[0], cuenta[1], cuenta[2], cuenta[3], cuenta[4]))
+
+# INFORME=1: que queda del aro por dentro del labio (lo que asomaria con el
+# disco escondido), triangulo a triangulo, para afinar los criterios MIDIENDO
+if os.environ.get("INFORME") == "1":
+    rt = rv[tri]
+    print("--- triangulos del ARO con rmin < %.2f:" % LABIO)
+    for caras, rmin, rmax, zmin, zmax in islas:
+        q = caras[~al_centro[caras] & (rt[caras].min(1) < LABIO - 0.02)]
+        if len(q) == 0:
+            continue
+        zt = zv[tri[q]]
+        print("  isla %5d tris (r %.2f-%.2f) · quedan %3d: plano %3.0f%% · z %+.3f..%+.3f · r %.2f-%.2f · largo p95 %.3f"
+              % (len(caras), rmin, rmax, len(q), 100 * plano[q].mean(), zt.min(), zt.max(),
+                 rt[q].min(), rt[q].max(), np.percentile(rt[q].max(1) - rt[q].min(1), 95)))
 
 
 def pieza(nombre, dentro):
