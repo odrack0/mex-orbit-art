@@ -50,6 +50,9 @@ SOLDAR = float(argv[5]) if len(argv) > 5 else 0.0005
 # pero sin un segundo color al que huir. Con 0,3 solo quedan las venas (p90
 # 0,31, p99 0,80). 0 = sin umbral, el comportamiento de siempre.
 UMBRAL = float(os.environ.get("UMBRAL", "0"))
+# APAGAR (env): cuanto se oscurece el albedo donde emite (0..1). Por defecto 1:
+# el color de una luz viene de la emision, no del sol sobre un albedo saturado.
+APAGAR = float(os.environ.get("APAGAR", "1.0"))
 # TUMBAR=0 deja el modelo COMO VIENE. El contrato de este script —el eje fino
 # acaba en el alto— codifica "objeto plano visto desde arriba", que es lo que son
 # los bichos y las naves. Una estacion no: es una TORRE vertical vista en
@@ -333,6 +336,16 @@ for mat in usados:
         emi = np.zeros_like(px)
         emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
         emi[:, 3] = 1.0
+        # APAGAR el albedo donde emite (2-sep-2026): si el base color conserva el
+        # cian/lava saturado, el sol lo ilumina y sale brillante con la emision a
+        # CERO — medido en el ACI-01: 0,63 de brillo con energia 0,05 y 0,68 con
+        # 3,0, o sea el pulso invisible. El color encendido tiene que venir SOLO
+        # de la emision, asi que el albedo se oscurece en la proporcion de la
+        # mascara (APAGAR=1: a negro donde la mascara es 1; 0 = no tocar).
+        if APAGAR > 0.0:
+            px[:, :3] *= (1.0 - np.clip(mask, 0.0, 1.0) * APAGAR)[:, None]
+            base.image.pixels.foreach_set(px.reshape(-1))
+            base.image.pack()
         img_emi = bpy.data.images.new("emissive_%s" % mat.name, LADO_REAL, LADO_REAL, alpha=True)
         img_emi.pixels.foreach_set(emi.reshape(-1))
         img_emi.pack()

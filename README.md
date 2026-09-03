@@ -847,6 +847,21 @@ el `-alta` era del día anterior). La comparación real, 104 424 contra 9 884 + 
 siendo buena —placas, lava y cristales en su sitio— pero **no idéntica**: el bajo se lee un punto
 más suave. El usuario lo aprobó en vivo.
 
+### El pulso invisible: el albedo tiene que apagarse donde emite (2-sep-2026)
+
+El ACI-01 «no cambiaba de intensidad». La traza en vivo decía que sí: `emission_energy_multiplier`
+iba de 0,05 a 3,0 sobre el material activo del `MeshInstance3D` que se dibuja. Y dos bestiarios con
+la emisiva **fija** en 0,05 y en 3,0 salían iguales (brillo 0,63 y 0,68). La causa: el normalizador
+extraía la emisiva del base color pero **dejaba el cian saturado en el albedo**, y el sol lo iluminaba
+a 0,63 con la emisión a cero. Lo mismo le pasa a la lava del Skarn (0,29 en ambos extremos) y a
+cualquier bicho con acento saturado: su pulso solo asomaba como glow encima de un color ya encendido.
+
+`normalize-model.py` ahora **apaga el albedo en la proporción de la máscara** (`APAGAR`, env, 1,0 por
+defecto = a negro donde la máscara es 1; 0 = como antes). Medido tras el cambio: 0,35 con la emisiva a
+0,05 y 0,57 a 3,0, y a la vista las franjas pasan de teal apagado a cian encendido. Regla: **el color
+de una luz viene de la emisión, no del sol sobre un albedo saturado.** Los nueve bichos anteriores
+siguen normalizados sin apagar; su pulso se verá igual de tímido hasta que se regeneren por la cadena.
+
 ## Dos casos que el Vorax destapó en la cadena 3D
 
 **El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la
