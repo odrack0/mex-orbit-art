@@ -55,6 +55,18 @@ CUERNO_BANDA = float(argv[7]) if len(argv) > 7 else 0.075
 RADIAL = int(os.environ.get("RADIAL", "0"))
 RADIAL_DESDE = float(os.environ.get("RADIAL_DESDE", "0.45"))   # radio, en fraccion del maximo
 RADIAL_ARCO = float(os.environ.get("RADIAL_ARCO", "26"))       # medio ancho angular de un brazo
+# Brazos que CUELGAN (tentaculos bajo un disco, ACI-02 2-sep-2026): el disco y los
+# tentaculos comparten radio y angulo, y solo la ALTURA los separa. Con estos dos
+# el peso lleva una tercera rampa por z: 0 en RADIAL_Z_DESDE (el borde del disco)
+# y 1 en RADIAL_Z_HASTA (la punta), y los picos angulares se miden solo por
+# debajo de RADIAL_Z_DESDE, que si no el borde del disco los tapa. Sin ellos,
+# el rig radial plano de siempre (Vorax).
+RADIAL_Z_DESDE = os.environ.get("RADIAL_Z_DESDE")
+RADIAL_Z_HASTA = os.environ.get("RADIAL_Z_HASTA")
+COLGANTE = RADIAL_Z_DESDE is not None and RADIAL_Z_HASTA is not None
+if COLGANTE:
+    RADIAL_Z_DESDE = float(RADIAL_Z_DESDE)
+    RADIAL_Z_HASTA = float(RADIAL_Z_HASTA)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from salvaguarda import comprobar_salida    # noqa: E402
@@ -111,6 +123,8 @@ if RADIAL > 0:
     r_max = float(rad_v.max())
     r0 = RADIAL_DESDE * r_max
     fuera = rad_v > r0
+    if COLGANTE:
+        fuera = fuera & (co[:, 2] < RADIAL_Z_DESDE)
     ang_v = np.degrees(np.arctan2(co[fuera, 1], co[fuera, 0])) % 360.0
     # Histograma CIRCULAR: sin envolver, un brazo a 358 grados se parte en dos y
     # sale como dos brazos flacos en vez de uno.
@@ -134,8 +148,13 @@ if RADIAL > 0:
     for j, a in enumerate(angulos_brazo):
         ux, uy = math.cos(math.radians(a)), math.sin(math.radians(a))
         b = arm.edit_bones.new("brazo_%d" % (j + 1))
-        b.head = Vector((ux * r0, uy * r0, 0.0))
-        b.tail = Vector((ux * r_max * 0.95, uy * r_max * 0.95, 0.0))
+        if COLGANTE:
+            # el hueso baja con el tentaculo: de la raiz bajo el disco a la punta
+            b.head = Vector((ux * r0, uy * r0, RADIAL_Z_DESDE))
+            b.tail = Vector((ux * r_max * 0.7, uy * r_max * 0.7, RADIAL_Z_HASTA))
+        else:
+            b.head = Vector((ux * r0, uy * r0, 0.0))
+            b.tail = Vector((ux * r_max * 0.95, uy * r_max * 0.95, 0.0))
         b.parent = raiz
     print("RADIAL  %d brazos desde r=%.3f (max %.3f): %s"
           % (len(angulos_brazo), r0, r_max, ["%.0f" % a for a in angulos_brazo]))
@@ -218,6 +237,9 @@ if angulos_brazo:
     r_max = float(rad_v.max())
     r0 = RADIAL_DESDE * r_max
     w_r = suave((rad_v - r0) / max(1e-6, r_max - r0) * 2.0)
+    if COLGANTE:
+        # la tercera rampa: solo lo que cuelga por debajo del disco pesa
+        w_r = w_r * suave((RADIAL_Z_DESDE - co[:, 2]) / max(1e-6, RADIAL_Z_DESDE - RADIAL_Z_HASTA))
     ang_v = np.degrees(np.arctan2(co[:, 1], co[:, 0])) % 360.0
     for a in angulos_brazo:
         d = np.abs(((ang_v - a + 180.0) % 360.0) - 180.0)

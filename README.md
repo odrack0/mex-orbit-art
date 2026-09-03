@@ -765,7 +765,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **9 884** (2-sep: remesh de Meshy a 4,9 k quads + `hornear-normales.py` desde el alto de 3 032 364; antes 104 424, y a 19 177 se veía igual) | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientation`; en el bestiario no se distingue del de 104 k |
 | ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (franjas cian saturado: 9,3 % de la textura, p99 0,98; el umbral apaga el leve tinte cian del cuerpo) | — | **11 811** (2-sep, v2: remesh de Meshy + `hornear-normales.py` desde el alto de 1 934 372) | ya en el plano (esfera) | ninguno (dron de una pieza) | especie mecánica, migración BD 2026.09.02.1. La v1 (prompt de texto) salió sin luces; la v2 nació del contrato del concepto 3D de `prompts/README.md` y en el retrato es el concepto |
-| ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | ninguno | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
+| ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.33 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (218–299 verts cada uno, suma 1,0) | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
 | Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas + losa + astillas + largo) → `aro` 36 544 + `centro` 4 176 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + destello, 2,1 s; el **centro** (el vórtice) va oculto siempre desde el 2-sep (`encendido.vortice: false`, la animación no gustó) |
 
@@ -862,6 +862,19 @@ defecto = a negro donde la máscara es 1; 0 = como antes). Medido tras el cambio
 0,05 y 0,57 a 3,0, y a la vista las franjas pasan de teal apagado a cian encendido. Regla: **el color
 de una luz viene de la emisión, no del sol sobre un albedo saturado.** Los nueve bichos anteriores
 siguen normalizados sin apagar; su pulso se verá igual de tímido hasta que se regeneren por la cadena.
+
+### Tentáculos que cuelgan: el rig radial gana una rampa de altura (2-sep-2026)
+
+El ACI-02 es un disco con tentáculos colgando. El rig radial del Vorax reparte por radio y ángulo
+en el plano del disco, y ahí **el borde del disco y los tentáculos comparten radio y ángulo**: solo
+la altura los separa (el disco baja hasta z −0,39; los tentáculos, medidos por bandas de z, llegan a
+−0,59 y por debajo de −0,47 forman **cuatro haces** en 55°, 110°, 230° y 280°). Con `RADIAL_Z_DESDE`
+y `RADIAL_Z_HASTA` (env) el peso lleva una tercera rampa por z —0 en el borde del disco, 1 en la
+punta—, los picos angulares se miden solo por debajo del borde (si no, el disco los tapa) y los
+huesos bajan con el tentáculo en vez de vivir en el plano. Sin esas dos variables, el rig radial es
+el de siempre. Resultado en el ACI-02: cuatro `brazo_N` con 218–299 vértices cada uno, suma de pesos
+exactamente 1,0, y el disco sin un solo vértice en ellos. Se anima con la onda de brazos del cliente
+(`arms` en su JSON); en el bestiario la diferencia entre dos fotogramas cae solo en las puntas.
 
 ## Dos casos que el Vorax destapó en la cadena 3D
 
