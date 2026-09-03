@@ -61,6 +61,15 @@ RADIAL_ARCO = float(os.environ.get("RADIAL_ARCO", "26"))       # medio ancho ang
 # y 1 en RADIAL_Z_HASTA (la punta), y los picos angulares se miden solo por
 # debajo de RADIAL_Z_DESDE, que si no el borde del disco los tapa. Sin ellos,
 # el rig radial plano de siempre (Vorax).
+# GIRO_Z (env, grados): gira la MALLA sobre el eje vertical antes de riguear, para
+# que la proa del rig (+Y) coincida con la cara del bicho que debe ir delante.
+# El ACI-04 (2-sep-2026) traia el ojo y las manos en -Y: con 180 las manos caen
+# en la zona de cuernos y el cliente no necesita `orientation.yaw`.
+GIRO_Z = float(os.environ.get("GIRO_Z", "0"))
+# CUERNO_X_MIN (env): los cuernos solo pesan desde este |X| hacia fuera. Para un
+# par de MANOS que nacen a los lados de una cabeza redonda: sin esto, el polo
+# delantero del cuerpo (|X| ~ 0) tambien pesa en los cuernos y la cara se pellizca.
+CUERNO_X_MIN = float(os.environ.get("CUERNO_X_MIN", "0"))
 RADIAL_Z_DESDE = os.environ.get("RADIAL_Z_DESDE")
 RADIAL_Z_HASTA = os.environ.get("RADIAL_Z_HASTA")
 COLGANTE = RADIAL_Z_DESDE is not None and RADIAL_Z_HASTA is not None
@@ -90,6 +99,10 @@ if len(mallas) != 1:
     sys.exit(1)
 obj = mallas[0]
 
+if GIRO_Z:
+    from mathutils import Matrix
+    obj.data.transform(Matrix.Rotation(math.radians(GIRO_Z), 4, "Z"))
+    print("GIRO_Z %.0f: la malla gira sobre Z antes del rig" % GIRO_Z)
 n = len(obj.data.vertices)
 co = np.empty(n * 3, dtype=np.float32)
 obj.data.vertices.foreach_get("co", co)
@@ -271,6 +284,9 @@ w_cuerno = suave((co[:, 1] - y_cuerno) / banda_cuerno) if hay_cuernos else np.ze
 # el corte, la franja |X| entre 0,19 y 0,30 pesaba en los dos y la suma llegaba a
 # 1,416 —el vertice se movia mas de la cuenta.
 w_cuerno = w_cuerno * (1.0 - w_ala)
+if hay_cuernos and CUERNO_X_MIN > 0.0:
+    # manos a los lados de una cabeza: el centro no pesa
+    w_cuerno = w_cuerno * suave((np.abs(co[:, 0]) - CUERNO_X_MIN) / max(1e-6, CUERNO_X_MIN * 0.3))
 w_c_izq = np.where(co[:, 0] < 0, w_cuerno, 0.0)
 w_c_der = np.where(co[:, 0] > 0, w_cuerno, 0.0)
 

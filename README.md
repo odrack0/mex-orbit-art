@@ -767,7 +767,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (franjas cian saturado: 9,3 % de la textura, p99 0,98; el umbral apaga el leve tinte cian del cuerpo) | — | **11 811** (2-sep, v2: remesh de Meshy + `hornear-normales.py` desde el alto de 1 934 372) | ya en el plano (esfera) | ninguno (dron de una pieza) | especie mecánica, migración BD 2026.09.02.1. La v1 (prompt de texto) salió sin luces; la v2 nació del contrato del concepto 3D de `prompts/README.md` y en el retrato es el concepto |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.33 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (218–299 verts cada uno, suma 1,0) | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
 | ACI-03 (nombre temporal) | c con `UMBRAL=0.25` (franjas cian saturado dentro de los brazos: 2,5 % de la textura, p99 0,92) | — | **11 388** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 906 212) | ya en el plano (media luna, alto 21 %) | ninguno | ojo en la cápsula del vértice, cara +Z → `orientation.yaw: 180` (los brazos de la U quedan atrás); migración BD 2026.09.02.4 |
-| ACI-04 (nombre temporal) | c con `UMBRAL=0.25` (ojo y franjas cian saturado: 1,5 % de la textura, p99 0,91) | — | **19 295** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 947 890; por encima de 15 k, pide remesh a 6–7 k quads si aparece en grupo) | ya en el plano (esfera, alto 82 %) | alas = las TENAZAS: bisagra 0,72 / banda 0,10 (la esfera llega a |x| 0,66 en el ecuador y los brazos a 0,93; a 0,62 mordía los flancos), sin cola ni cuernos | ojo y franjas en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.5 |
+| ACI-04 (nombre temporal) | c con `UMBRAL=0.25` (ojo y franjas cian saturado: 1,5 % de la textura, p99 0,91) | — | **19 295** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 947 890; por encima de 15 k, pide remesh a 6–7 k quads si aparece en grupo) | ya en el plano (esfera, alto 82 %) | CUERNOS = las MANOS: `GIRO_Z=180 CUERNO_X_MIN=0.30` con `3.0 0.10 0 0 0.15 0.05` (161/153 verts: solo las puntas de las tenazas; la primera versión las montó como alas y movía el brazo entero) | ojo y franjas en la cara +Z; la malla del cliente va girada 180 en el rig, así que el JSON no lleva yaw; pinza eje 1 (medido con `repro_bone_axis`: el 2 casi no la mueve); migración BD 2026.09.02.5 |
 | Caja | y | — | **49 592** | −90 X | — | ámbar, el color de su punto en el minimapa |
 | Portal | c | — | **40 720** | **`TUMBAR=0`** (de pie, como el jumpgate del DO) | `partir-centro.py` a **r 0,52** (islas + losa + astillas + largo) → `aro` 36 544 + `centro` 4 176 | el cliente lo pone de cara a la cámara y centrado en el plano de vuelo (la nave se queda dentro); encendido = luces del aro en rampa **parpadeando** + destello, 2,1 s; el **centro** (el vórtice) va oculto siempre desde el 2-sep (`encendido.vortice: false`, la animación no gustó) |
 
@@ -877,6 +877,19 @@ huesos bajan con el tentáculo en vez de vivir en el plano. Sin esas dos variabl
 el de siempre. Resultado en el ACI-02: cuatro `brazo_N` con 218–299 vértices cada uno, suma de pesos
 exactamente 1,0, y el disco sin un solo vértice en ellos. Se anima con la onda de brazos del cliente
 (`arms` en su JSON); en el bestiario la diferencia entre dos fotogramas cae solo en las puntas.
+
+### Manos que abren y cierran: cuernos con la malla girada (2-sep-2026)
+
+El ACI-04 tiene un par de brazos con tenazas al frente. Montarlos como **alas** (bisagra en |x|)
+movía el brazo entero, y lo pedido era solo la mano. La mano es el gesto de los **cuernos** (la
+pinza del Vex), pero el rig busca los cuernos hacia +Y y este bicho traía el ojo y las manos en −Y.
+Dos variables nuevas de `riguear-modelo.py`: `GIRO_Z` (grados) gira la malla sobre el eje vertical
+antes de riguear —así la proa del rig y la del bicho coinciden y el cliente no necesita
+`orientation.yaw`— y `CUERNO_X_MIN` deja fuera de los cuernos el centro (|x| pequeño), porque la
+cara redonda entre las dos manos también caía en la banda de proa y se pellizcaba con ellas. El eje
+del gesto se **midió** con `tests/repro_bone_axis`: el 2, que es el del Vex, aquí casi no mueve la
+mano (diferencia 0,1 contra el reposo); el 1 la abre en el plano (0,3) y el 0 la levanta hacia la
+cámara (0,3). Un eje no se hereda del bicho de al lado.
 
 ## Dos casos que el Vorax destapó en la cadena 3D
 
