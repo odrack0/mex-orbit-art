@@ -894,6 +894,25 @@ del gesto se **midió** con `tests/repro_bone_axis`: el 2, que es el del Vex, aq
 mano (diferencia 0,1 contra el reposo); el 1 la abre en el plano (0,3) y el 0 la levanta hacia la
 cámara (0,3). Un eje no se hereda del bicho de al lado.
 
+### El presupuesto de triángulos, medido otra vez con LOD (2-sep-2026, noche)
+
+Los bichos de formas finas (tentáculos del ACI-02, pinzas del ACI-05) pierden silueta al remeshear a
+15 k, y las normales horneadas no devuelven silueta. Antes de imponer el presupuesto, se midió lo que
+cuesta no cumplirlo, con `tests/bench_3d` en la iGPU de referencia y 15 bichos en pantalla:
+
+| Modelo | tris/bicho | tris en pantalla | fps media | 1 % peor |
+|---|---|---|---|---|
+| Skarn | 9 884 | 148 k | 103,5 | 93,7 |
+| ACI-02 | 58 106 | 872 k | 102,0 | 96,3 |
+| ACI-05 | 54 086 | 811 k | 108,0 | 77,2 |
+
+Seis veces más triángulos, el mismo fps. La medida vieja («10 k → 31 k cuesta un 38 %») era de antes
+de los LOD automáticos del import de Godot (`meshes/generate_lods`), que a la distancia de juego
+dibujan un nivel reducido. **Regla nueva:** un bicho de formas finas se remeshea a lo que su silueta
+pida (hasta ~60 k); lo que sigue mandando es la VRAM de texturas (12 MB por asset a 1024) y la carga.
+El validador pasa a avisar a 60 000, que es la alarma contra un crudo sin remeshear (100 k+), no un
+dial. Las filas de ACI-02 y ACI-05 que decían «pide remesh» quedan sin efecto.
+
 ## Dos casos que el Vorax destapó en la cadena 3D
 
 **El eje fino no siempre entra en Y.** `normalize-model.py` tumbaba el modelo mirando cuál es la
