@@ -236,19 +236,28 @@ Lo que pedirle a Meshy, y por qué cada cosa:
 
 | ajuste | valor | por qué |
 |---|---|---|
-| **Remesh** | **sí, ~10-15 k tris** | Lo más importante. Sin él Meshy da una sopa de cáscaras solapadas y hay que decimar; el decimador no fusiona entre cáscaras y las deja hechas esquirlas. Con remesh, una superficie cerrada al presupuesto que pidas. |
-| **Modo Ultra** | **apagado** | Triplica los trozos sueltos (431 → 1340) para un detalle que se decima igual. |
+| **Generar** | **sin textura** | Sale el ALTO (1,5–3 M de tris): es la geometría del juego. Va a `crudo/alto/<bicho>.glb`. Lo que Meshy cobra es esto. |
+| **Remesh** | **adaptativo, Ultra (~100–120 k)** | Desde el 3-sep-2026 el remesh es el LIENZO de la textura, no la malla del juego (ver «La cadena desde el alto»). El adaptativo pone los triángulos en púas y filos, que es donde la pintura tiene que caer bien; el fijo de 100 k los gasta en placas lisas. Va a `crudo/<bicho>.glb`. |
+| Textura | sobre el remesh, una vez | Solo el remesh se texturiza. El alto texturizado se probó (3-sep): miles de islas de UV diminutas, franjas con dientes y menos resolución efectiva; no sirve. |
 | Imagen | 3/4, **alas abiertas** | La pose de la imagen es la pose de reposo, y es la única que vas a tener. Se anima hacia adentro, nunca al revés. |
 | Visión múltiple | apagado | Necesita vistas laterales que no existen todavía. |
 | Texturas | 4096 | Se bajan aquí a 1024 (alta) o 512 (media). |
 | Licencia | privada | |
 
-Y la cadena, dos comandos:
+Y la cadena, cuatro comandos (los dos primeros desde el 3-sep-2026, ver «La cadena desde el alto»):
 
 ```bash
-# crudo -> master normalizado (sin decimar: el remesh vive en Meshy, no aqui)
-blender --background --factory-startup --python tools/normalize-model.py -- \
-    source/3d-models/crudo/vexor-texture-v3.glb source/3d-models/vexor-v3.glb 1024 r 1.0 0.0005
+# alto -> malla del juego (100 k) vestida con la textura del remesh
+blender --background --factory-startup --python tools/decimar-y-vestir.py -- \
+    source/3d-models/crudo/alto/<bicho>.glb source/3d-models/crudo/<bicho>.glb <tmp>/<bicho>-vestido.glb 100000 2048 0.08
+
+# + el relieve del alto como mapa de normales
+blender --background --factory-startup --python tools/hornear-normales.py -- \
+    source/3d-models/crudo/alto/<bicho>.glb <tmp>/<bicho>-vestido.glb <tmp>/<bicho>-horneado.glb 2048 0.02 0.1
+
+# -> master normalizado (canal de emision, ganancia, soldadura)
+UMBRAL=0.25 blender --background --factory-startup --python tools/normalize-model.py -- \
+    <tmp>/<bicho>-horneado.glb source/3d-models/<bicho>.glb 1024 c 1.0 0.0005
 
 # master -> asset de juego con esqueleto
 blender --background --factory-startup --python tools/riguear-modelo.py -- \
@@ -267,6 +276,10 @@ Medido con 30 bichos en pantalla, sobre gráficos integrados:
 **Los polígonos cuestan fps; la textura cuesta VRAM.** Y en un bicho cuyo detalle
 vive en el mapa de normales, la textura es donde está el retorno. Por eso el
 asset va a 10 k tris con textura de 1024 y no al revés.
+
+> **Superado el 2 y el 3-sep-2026:** con los LOD automáticos del import de Godot los
+> triángulos dejaron de costar (30 bichos de 150 k = 30 de 56 k, ver «La cadena desde
+> el alto»). Lo de la VRAM sigue en pie: la malla del juego va a 100 k y la textura a 1024.
 
 A 12 MB por especie, los nueve bichos son 108 MB contra los 58 del bestiario en
 atlas de hoy. A 512 serían 27 MB. Ahí está el escalón de `quality.gd`: **alta =
@@ -768,7 +781,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (v3, 2-sep noche: cian saturado al 10,9 % de la textura, p99 0,99; textura 2048) | — | **20 846** (v3: remesh y retextura nuevos de Meshy + `hornear-normales.py` desde el alto de 1 958 208; por encima de 15 k, pide remesh a 6–7 k quads si aparece en grupo) | ya en el plano (esfera) | ninguno | v3 trae UN ojo grande en el POLO INFERIOR (−Y): invariante al yaw, sube a la proa con `orientation.pitch: 90` (la v2 tenía dos en ±X con yaw 90). Ojo: el render de seis caras lo situó en «+Z» y era falso; el árbitro es el bestiario con el dummy mirando al norte; migración BD 2026.09.02.1/.2 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.33 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (218–299 verts cada uno, suma 1,0) | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (v2: el cian vuelve pálido, 0,7 % de la textura, p99 0,12) | — | **58 106** (v2, 2-sep noche: remesh + `hornear-normales.py` desde el alto de 1 881 202; **cuatro veces el presupuesto**, pide remesh a 6–7 k quads) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.35 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (384–1094 verts, suma 1,0) | ojo hacia la cámara con `yaw 0` (a proa sería 180); migración BD 2026.09.02.3 |
-| ACI-03 (nombre temporal) | c con `UMBRAL=0.25` (v2: cian saturado de serie, 4,8 % de la textura, p99 0,96; la v1 daba 2,5 %, p99 0,92) | — | **56 265** (v2, 3-sep: remesh + `hornear-normales.py` desde el alto de 1 940 772; la v1 tenía 11 388; con LOD no cuesta fps) | ya en el plano (media luna, alto 32 %) | ninguno | ojo en la cápsula del vértice; la v2 la trae en +X → `orientation.yaw: 270` (la v1 la traía en +Z, yaw 180); los brazos de la U quedan atrás; migración BD 2026.09.02.4 |
+| ACI-03 (nombre temporal) | c con `UMBRAL=0.25` (3,7 % de la textura traspasada, cian saturado de serie) | — | **99 992** (v3, 3-sep: `decimar-y-vestir.py` desde el alto de 1 940 772, vestido con el remesh Ultra de 121 110; primer caso de la cadena nueva) | ya en el plano (media luna, alto 32 %) | ninguno | ojo en la cápsula del vértice, cara +X → `orientation.yaw: 270` (los brazos de la U quedan atrás); migración BD 2026.09.02.4 |
 | ACI-04 (nombre temporal) | c con `UMBRAL=0.25` (ojo y franjas cian saturado: 1,5 % de la textura, p99 0,91) | — | **19 295** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 947 890; por encima de 15 k, pide remesh a 6–7 k quads si aparece en grupo) | ya en el plano (esfera, alto 82 %) | CUERNOS = las MANOS: `GIRO_Z=180 CUERNO_X_MIN=0.30` con `3.0 0.10 0 0 0.15 0.05` (161/153 verts: solo las puntas de las tenazas; la primera versión las montó como alas y movía el brazo entero) | ojo y franjas en la cara +Z; la malla del cliente va girada 180 en el rig, así que el JSON no lleva yaw; pinza eje 1 (medido con `repro_bone_axis`: el 2 casi no la mueve); migración BD 2026.09.02.5 |
 | ACI-04 (nombre temporal) | c con `UMBRAL=0.25` (ojo y franjas cian saturado: 1,8 % de la textura, p99 0,95) | — | **78 751** (v3, 2-sep noche: remesh + `hornear-normales.py` desde el alto de 1 882 536; con LOD no cuesta fps, ver «El presupuesto de triángulos, medido otra vez») | ya en el plano (esfera, alto 73 %) | CUERNOS = las MANOS: `GIRO_Z=180 CUERNO_X_MIN=0.30` con `3.0 0.10 0 0 0.15 0.05` (1 313/1 015 verts: solo las puntas) | ojo y franjas a proa con yaw 0 (la malla del cliente va girada 180 en el rig); pinza eje 1; migración BD 2026.09.02.5 |
 | ACI-05 (nombre temporal) | c con `UMBRAL=0.25` (pinzas, ojo y góndolas cian saturado: 7,2 % de la textura, p99 0,97) | — | **54 086** (2-sep: remesh de Meshy a ~27 k quads + `hornear-normales.py` desde el alto de 1 926 876; **3,6 veces el presupuesto**, pide remesh a 6–7 k quads) | ya en el plano (alargado, alto 33 %) | ninguno | eje largo en X, pinzas y ojo en −X → `orientation.yaw: 270`; migración BD 2026.09.02.6 |
@@ -989,3 +1002,55 @@ la diferencia no está en el modelo sino en cómo se mira, así que se dice con 
 | `TUMBAR` | **0** | es una torre, no un objeto plano |
 | tris | 30 228, **sin decimar** | es UNA instancia, no quince como un Vex |
 | canal | `c+m` | rótulo magenta + ventanas cian |
+
+## La cadena desde el alto: decimar y vestir (3-sep-2026)
+
+Tres medidas con el ACI-03 cambiaron de sitio la malla del juego. Hasta hoy era el remesh de Meshy
+(4–7 k quads, luego «lo que pida la silueta») con las normales horneadas del alto encima. Y los
+defectos que se veían en el juego —placas derretidas, púas romas, un agujero en el brazo del ACI-03,
+los huecos del ACI-05— no venían de la cantidad de triángulos: venían del remesh.
+
+**1. Geometría** (`tools/escalera_lod` en el scratch, renders en gris a 45° desde el alto de
+1 940 772): Decimate de Blender a 150 k, 100 k, 75 k y 50 k conserva juntas, filos y púas en los
+cuatro; a 50 k solo se ablandan los detalles más pequeños. El remesh de Meshy, con 56 265, sale
+derretido y con el agujero. **Con los mismos triángulos, el Decimate del alto gana.**
+
+**2. Coste**, `tests/bench_3d` con **30** bichos (lo que cabe en el 1-1), iGPU de referencia:
+
+| Malla | tris/bicho | tris en pantalla | fps media |
+|---|---|---|---|
+| Decimate 150 k | 150 000 | 4,5 M | 81,9 |
+| Decimate 100 k | 100 000 | 3,0 M | 81,9 |
+| Remesh Meshy (v2) | 56 265 | 1,7 M | 81,2 |
+
+Ojo a la corrección: en un juego cenital **no hay reparto cerca/medio/lejos**; el LOD de Godot va por
+tamaño en pantalla y los 30 están a la misma distancia, así que los 4,5 M son reales. Aun así, gratis.
+
+**3. Textura.** La malla decimada no trae UV ni pintura. Tres vías probadas, misma cámara:
+- **Traspaso desde el remesh texturizado** (UV automáticas por ángulo + bake *selected to active*
+  del color, 20 s): franjas cian limpias y líneas de panel más nítidas que en el remesh. **Gana.**
+- **Textura heredada del alto texturizado** (Meshy texturizando los 1,9 M; el Decimate conserva UV):
+  franjas con dientes y costuras, paneles con ruido — miles de islas diminutas y la misma textura
+  repartida entre todas. No sirve; no se vuelve a generar.
+- El remesh como malla (lo de antes): descartado por el punto 1.
+
+**La receta que queda.** En Meshy: generar **sin textura** (el alto), remesh **adaptativo Ultra**
+(~100–120 k) y texturizar **solo el remesh**, una vez. Es lo mismo que se hacía, cambiando el remesh
+de 50 k a Ultra: a 100 k sigue al alto casi al milímetro y la pintura cae donde están las juntas; con
+5 k se pintaría sobre una forma redondeada y las franjas saldrían corridas. La resolución de la
+textura no depende del remesh (la fija Meshy; este ACI-03 llegó a 2048). Y como el remesh ya no es la
+malla, sus agujeros dejan de importar: a lo sumo un punto sin color en el traspaso.
+
+`tools/decimar-y-vestir.py <alto> <remesh_tex> <salida> [tris=100000] [lado=2048] [distancia=0.08]`
+decima el alto (collapse), despliega UV automáticas (66°, margen 0,002), hornea el color base como
+pase de color del difuso y el metallic-roughness emitiendo la imagen del remesh (bake EMIT), y saca
+un Principled listo para `hornear-normales.py` (que ahora recibe esta malla como `bajo`) y después
+`normalize-model.py`. Rechaza una textura más de la mitad negra (los dos modelos no comparten espacio
+o la distancia es corta); el «pixeles sin color» que imprime incluye el hueco entre islas (un 27 % en
+el ACI-03 es normal). **100 k es el punto medido**, no un techo: 30 de 150 k dan lo mismo. El
+validador avisa a 120 000 (alarma contra un alto sin decimar) y admite texturas de 1024, que es lo que
+saca la cadena desde hace semanas.
+
+**Primer caso: ACI-03 v3**, 99 992 tris, vestido con el remesh Ultra de 121 110, normales del alto
+(desviación 0,12/0,08/0,23), canal `c` al 3,7 %, bestiario en verde. Las especies anteriores siguen
+con su remesh como malla hasta que se rehagan por esta cadena; nada obliga a rehacerlas de golpe.
