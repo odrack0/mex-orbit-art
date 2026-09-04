@@ -1093,3 +1093,28 @@ lo que se pierde**, porque el Collapse ya coloca cada vértice en el punto ópti
 proyectarlo al vecino más cercano lo saca de ahí; y la pérdida crece suave hasta 10 k y se dispara en
 5 k (p99 de 0,15 % de la diagonal: un cuarto de píxel si la nave se dibuja a ~180 px, pero es el p99, no el máximo). El veredicto visual queda
 pendiente; el número solo acota entre qué candidatos mirar.
+
+## Fuente pulida (Tripo): la cadena corta (3-sep-2026, noche)
+
+El usuario consiguió en Tripo modelos **ya pulidos y texturizados a 10–15 k**. El ACI-01 v4 entró
+así: 13 686 tris en una pieza, UV limpias, juntas de panel modeladas de verdad (no pintadas), color
+base a 8192, cian saturado (5,9 %, p99 0,82). Lo que NO trae: metallic-roughness ni mapa de normales,
+así que el material va con los valores fijos del cliente (`lighting.json`: rugosidad 0,35 sin mapa,
+metal 0) y el relieve es solo la geometría. Comparado a 45° con el v3 de Meshy (20 846 tris + normales
+del alto): silueta y juntas más limpias, textura más clara y uniforme (albedo medio 0,34 contra 0,29),
+sin la pátina metálica del remesh. Es una elección de look, no una pérdida técnica.
+
+**La cadena corta:** `normalize-model.py` (canal de emisión, soldadura, 1024) → `validar-modelo.py`
+→ JSON → bestiario. Ni `crudo/alto/`, ni `decimar-y-vestir.py`, ni `hornear-normales.py`: esos son
+para cuando la fuente es Meshy (alto + remesh). Las dos cadenas conviven; la larga no muere.
+
+Dos cosas que el modelo pulido enseñó:
+- **`TUMBAR=0` en cuerpos casi esféricos.** La caja del dron es 0,962 × 0,996 × 1,000: el tumbado
+  automático tomó X como «eje fino» y giró el modelo a un sitio arbitrario (el ojo quedó al oeste y
+  escondido). Con `TUMBAR=0` se respeta la orientación de Tripo y el ojo sale en +Z del GLB.
+- **Nombres limpios.** Tripo bautiza la imagen con el prompt (`sci-fi+sphere+prop+3d+model_basecolor`)
+  y el material con un hash, y Godot extrae las texturas con esos nombres. `normalize-model.py`
+  renombra ahora cada imagen por su papel (`base_color`, `metallic_roughness`, `normal`) y un
+  material con nombre generado pasa a `mat`.
+
+Los pulidos van a `source/3d-models/pulido/<bicho>.glb`, fuera de git como `crudo/`; el master sí.
