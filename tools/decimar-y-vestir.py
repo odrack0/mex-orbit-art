@@ -42,6 +42,13 @@ def importar(ruta, nombre):
     nuevos = [o for o in bpy.data.objects if o not in antes and o.type == "MESH"]
     if not nuevos:
         sys.exit("RECHAZAR: %s no trae mallas" % ruta)
+    # el export de Meshy a veces trae un cubo suelto de 12 tris: una malla
+    # parasita que, unida al remesh, se pondria en el camino de los rayos del bake
+    mayor = max(len(o.data.polygons) for o in nuevos)
+    for o in [o for o in nuevos if len(o.data.polygons) < mayor * 0.01]:
+        print("descartada malla parasita '%s' (%d caras)" % (o.name, len(o.data.polygons)))
+        bpy.data.objects.remove(o, do_unlink=True)
+    nuevos = [o for o in nuevos if o.name in bpy.data.objects]
     for o in bpy.data.objects:
         o.select_set(False)
     for o in nuevos:
