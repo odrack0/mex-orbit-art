@@ -777,7 +777,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Gravon | r | — | **42 606** | −90 X | ninguno (disco) | trae normal y MR propios |
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **9 884** (2-sep: remesh de Meshy a 4,9 k quads + `hornear-normales.py` desde el alto de 3 032 364; antes 104 424, y a 19 177 se veía igual) | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientation`; en el bestiario no se distingue del de 104 k |
-| ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (v4 Tripo: cian saturado, 5,9 % de la textura, p99 0,82) | — | **13 686** (v4, 3-sep noche: modelo PULIDO de Tripo, cadena corta; las v2/v3 de Meshy tenían 20 846) | `TUMBAR=0` (esfera 0,962 × 0,996 × 1,000: el tumbado automático elige un eje al azar) | ninguno | ojo en +Z del GLB = popa horizontal = mirando a la cámara (lo elegido para este bicho desde la v2): `orientation` a cero; migración BD 2026.09.02.2 |
+| ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25 LIMPIAR=3 PLANO=1` (v4 Tripo: cian saturado, 5,9 % en bruto → 4,4 % limpio, p99 0,82; emisión uniforme (0, 0,80, 0,82)) | — | **13 686** (v4, 3-sep noche: modelo PULIDO de Tripo, cadena corta; las v2/v3 de Meshy tenían 20 846) | `TUMBAR=0` (esfera 0,962 × 0,996 × 1,000: el tumbado automático elige un eje al azar) | ninguno | ojo en +Z del GLB = popa horizontal = mirando a la cámara (lo elegido para este bicho desde la v2): `orientation` a cero; migración BD 2026.09.02.2 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.33 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (218–299 verts cada uno, suma 1,0) | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (v2: el cian vuelve pálido, 0,7 % de la textura, p99 0,12) | — | **58 106** (v2, 2-sep noche: remesh + `hornear-normales.py` desde el alto de 1 881 202; **cuatro veces el presupuesto**, pide remesh a 6–7 k quads) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.35 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (384–1094 verts, suma 1,0) | ojo hacia la cámara con `yaw 0` (a proa sería 180); migración BD 2026.09.02.3 |
 | ACI-03 (nombre temporal) | c con `UMBRAL=0.25` (3,7 % de la textura traspasada, cian saturado de serie) | — | **99 992** (v3, 3-sep: `decimar-y-vestir.py` desde el alto de 1 940 772, vestido con el remesh Ultra de 121 110; primer caso de la cadena nueva) | ya en el plano (media luna, alto 32 %) | ninguno | ojo en la cápsula del vértice, cara +X → `orientation.yaw: 270` (los brazos de la U quedan atrás); migración BD 2026.09.02.4 |
@@ -1118,3 +1118,28 @@ Dos cosas que el modelo pulido enseñó:
   material con nombre generado pasa a `mat`.
 
 Los pulidos van a `source/3d-models/pulido/<bicho>.glb`, fuera de git como `crudo/`; el master sí.
+
+## Las luces manchadas: limpiar la máscara y aplanar la emisión (3-sep-2026, noche)
+
+Los generadores pintan **dentro** de los parches de luz lo mismo que fuera: sombra de las juntas,
+polvo, metal. La emisiva, que hasta hoy era «albedo × máscara», salía con esas manchas: franjas
+con un degradado oscuro por el borde y núcleos con vetas. `normalize-model.py` gana dos diales de
+entorno, medidos con el ACI-01 de Tripo:
+
+- **`LIMPIAR=N`**: la máscara se binariza y se pasa por un **cierre** (tapa agujeros y manchas de
+  hasta 2N px) y una **apertura** (borra motas sueltas de menos de 2N px), con numpy solo (el
+  Blender no trae scipy: dilatar es el máximo en ventana y erosionar el mínimo, por filas y
+  columnas). N va en píxeles **a la resolución de salida** (1024): 3 tapa lo normal; 8 se comió
+  las líneas finas del dron (4,9 % → 3,3 %, un 40 % del área). Nunca más de la mitad del grosor
+  de la franja más fina. Con 3: 4,9 % → 4,4 %, tapado 0,11 %, quitado 0,56 %.
+- **`PLANO=1`** (o `PLANO=00ffff`): la emisión pasa a ser de **un solo color uniforme**, la mediana
+  de los píxeles encendidos (el ACI-01 dio (0, 0,80, 0,82)) o el hex que se pida, por la ganancia.
+  Es la regla del pipeline aprobado: la textura dice **dónde** hay energía, el motor dice **cómo**
+  se ve. La IA deja de ser responsable del color de la luz.
+
+Y un detalle que salió al probarlo: con la máscara binaria, el **borde suave** que se queda fuera
+(dominancia entre el umbral y 0,5) seguía cian en el albedo, y el sol lo encendía como un ribete
+alrededor de cada luz. `APAGAR` oscurece ahora el máximo de las dos máscaras, la limpia y la suave.
+
+Receta para un pulido de Tripo: `TUMBAR=0 UMBRAL=0.25 LIMPIAR=3 PLANO=1`. Las especies de Meshy
+anteriores no se tocan hasta que se rehagan: su emisiva con color del albedo también valía.

@@ -31,6 +31,12 @@ Uso:
   (y `l` = luminancia, para luces palidas sobre cuerpo oscuro; pide UMBRAL)
   para cian, magenta y amarillo — un color secundario tiene dos canales altos y
   ninguno domina al otro, asi que pedirlo por primario no encuentra nada.
+
+  Variables de entorno: UMBRAL (dominancia minima), APAGAR (oscurecer el albedo
+  donde emite, 1.0), TUMBAR=0 (respetar la orientacion), LIMPIAR=N (limpieza
+  morfologica de la mascara, N px a la resolucion de salida; tapa manchas y
+  quita motas) y PLANO=1|hex (emision de color uniforme: la IA dice DONDE, el
+  motor dice COMO). Receta para un pulido de Tripo: UMBRAL=0.25 LIMPIAR=3 PLANO=1.
 """
 import bpy, sys, os, math, mathutils
 import numpy as np
@@ -53,6 +59,20 @@ UMBRAL = float(os.environ.get("UMBRAL", "0"))
 # APAGAR (env): cuanto se oscurece el albedo donde emite (0..1). Por defecto 1:
 # el color de una luz viene de la emision, no del sol sobre un albedo saturado.
 APAGAR = float(os.environ.get("APAGAR", "1.0"))
+# LIMPIAR (env, 3-sep-2026): radio en pixeles (a la resolucion de la textura de
+# entrada) de la limpieza morfologica de la mascara. Los generadores (Tripo,
+# Meshy) meten suciedad, metal y sombra DENTRO de los parches de luz: la mascara
+# sale agujereada y la emisiva "manchada". Con LIMPIAR>0 la mascara se binariza,
+# se CIERRA (rellena agujeros y manchas de hasta 2r px) y se ABRE (borra motas
+# sueltas de menos de 2r px). 0 = no tocar. Con luces grandes y solidas, 6-10
+# a 2048 va bien; nunca mas de la mitad del grosor de la franja mas fina.
+LIMPIAR = int(os.environ.get("LIMPIAR", "0"))
+# PLANO (env, 3-sep-2026): color UNIFORME de la emision. Por defecto la emisiva
+# lleva el color del propio albedo por pixel (con sus manchas). PLANO=1 usa la
+# mediana del color de los pixeles encendidos; PLANO=00ffff (hex) usa ese color.
+# Es el "la textura dice DONDE emite, el motor dice COMO": la IA ya no es
+# responsable del color de la luz. Va con GANANCIA igual.
+PLANO = os.environ.get("PLANO", "")
 # TUMBAR=0 deja el modelo COMO VIENE. El contrato de este script —el eje fino
 # acaba en el alto— codifica "objeto plano visto desde arriba", que es lo que son
 # los bichos y las naves. Una estacion no: es una TORRE vertical vista en
@@ -361,8 +381,42 @@ for mat in usados:
         if UMBRAL > 0.0:
             mask = np.clip((mask - UMBRAL) / (1.0 - UMBRAL), 0.0, 1.0)
 
+        if LIMPIAR > 0:
+            # Morfologia binaria con numpy solo (el Blender no trae scipy):
+            # dilatar = maximo en ventana, erosionar = minimo, por filas y
+            # columnas (ventana cuadrada, separable). Cerrar tapa agujeros y
+            # manchas dentro del parche; abrir quita motas fuera.
+            def ventana(m, r, f):
+                for eje in (0, 1):
+                    acc = m.copy()
+                    for k in range(1, r + 1):
+                        acc = f(acc, np.roll(m, k, axis=eje))
+                        acc = f(acc, np.roll(m, -k, axis=eje))
+                    m = acc
+                return m
+            mask_suave = mask.copy()
+            binaria = (mask.reshape(LADO_REAL, LADO_REAL) > 0.5)
+            antes = float(binaria.mean()) * 100
+            cerrada = ventana(ventana(binaria, LIMPIAR, np.logical_or), LIMPIAR, np.logical_and)
+            abierta = ventana(ventana(cerrada, LIMPIAR, np.logical_and), LIMPIAR, np.logical_or)
+            mask = abierta.reshape(-1).astype(np.float32)
+            print("LIMPIAR %d px: mascara %.1f%% -> %.1f%% (tapado %.2f%%, quitado %.2f%%)" % (
+                LIMPIAR, antes, float(abierta.mean()) * 100,
+                float((cerrada & ~binaria).mean()) * 100, float((cerrada & ~abierta).mean()) * 100))
+
         emi = np.zeros_like(px)
-        emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
+        if PLANO:
+            encendidos = px[mask > 0.5, :3]
+            if PLANO.strip() == "1":
+                color = np.median(encendidos, axis=0) if len(encendidos) else np.array([1.0, 1.0, 1.0])
+            else:
+                h = PLANO.strip().lstrip("#")
+                color = np.array([int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)], dtype=np.float32)
+            print("PLANO: emision uniforme (%.2f, %.2f, %.2f) sobre %d pixeles" % (
+                color[0], color[1], color[2], len(encendidos)))
+            emi[:, :3] = color[None, :] * (mask * GANANCIA)[:, None]
+        else:
+            emi[:, :3] = px[:, :3] * (mask * GANANCIA)[:, None]
         emi[:, 3] = 1.0
         # APAGAR el albedo donde emite (2-sep-2026): si el base color conserva el
         # cian/lava saturado, el sol lo ilumina y sale brillante con la emision a
@@ -371,7 +425,10 @@ for mat in usados:
         # de la emision, asi que el albedo se oscurece en la proporcion de la
         # mascara (APAGAR=1: a negro donde la mascara es 1; 0 = no tocar).
         if APAGAR > 0.0:
-            px[:, :3] *= (1.0 - np.clip(mask, 0.0, 1.0) * APAGAR)[:, None]
+            # con LIMPIAR la mascara es binaria: el borde suave que quedo fuera
+            # tambien se apaga, o el sol enciende un ribete cian alrededor de la luz
+            apagado = np.maximum(mask, mask_suave) if LIMPIAR > 0 else mask
+            px[:, :3] *= (1.0 - np.clip(apagado, 0.0, 1.0) * APAGAR)[:, None]
             base.image.pixels.foreach_set(px.reshape(-1))
             base.image.pack()
         img_emi = bpy.data.images.new("emissive_%s" % mat.name, LADO_REAL, LADO_REAL, alpha=True)
