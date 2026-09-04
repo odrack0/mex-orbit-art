@@ -234,6 +234,34 @@ if SOLDAR > 0:
 for img in bpy.data.images:
     if img.size[0] > LADO:
         img.scale(LADO, LADO)
+# Nombres limpios (3-sep-2026): Tripo y Meshy bautizan imagenes y material con
+# el prompt o un hash ("sci-fi+sphere+prop+3d+model_basecolor", "tripo_node_3be8..."),
+# y Godot extrae las texturas del GLB con ese nombre. Cada imagen se llama por su
+# papel en el Principled, y un material con nombre generado pasa a llamarse `mat`.
+PAPELES = (("Base Color", "base_color"), ("Roughness", "metallic_roughness"),
+           ("Metallic", "metallic_roughness"), ("Normal", "normal"))
+for mat in bpy.data.materials:
+    if not mat.use_nodes:
+        continue
+    if len(mat.name) > 24 or "node" in mat.name.lower():
+        mat.name = "mat"
+    bsdf = next((n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if bsdf is None:
+        continue
+    for socket, nombre in PAPELES:
+        cola = [l.from_node for l in mat.node_tree.links
+                if l.to_node == bsdf and l.to_socket.name == socket]
+        vistos = set()
+        while cola:
+            n = cola.pop()
+            if n in vistos:
+                continue
+            vistos.add(n)
+            if n.type == "TEX_IMAGE" and n.image is not None:
+                if n.image.name != nombre and not n.image.name.startswith(nombre):
+                    n.image.name = nombre
+                break
+            cola += [l.from_node for l in mat.node_tree.links if l.to_node == n]
 
 # ---- 4. emision, material por material ----
 # Con el modelo partido puede venir un material por pieza. Cada uno necesita su

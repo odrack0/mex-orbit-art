@@ -15,3 +15,5 @@ source/frames/
 # los .blend se regeneran del GLB con tools/a-blend.py en dos segundos
 *.blend
 *.blend[0-9]
+# modelos pulidos y texturizados de Tripo (fuente, como crudo/): no se versionan, el master si
+source/3d-models/pulido/

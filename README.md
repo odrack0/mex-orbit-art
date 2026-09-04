@@ -777,8 +777,7 @@ diales con los que salió cada uno, para que la próxima vuelta no vuelva a medi
 | Gravon | r | — | **42 606** | −90 X | ninguno (disco) | trae normal y MR propios |
 | Mordax | r | **0,3** | **104 194** | −90 X | ninguno (bola) | cuerpo rojo oscuro con venas: sin umbral emitía el 99,9 %; con 0,3 el 9,5 % |
 | Skarn | r | — | **9 884** (2-sep: remesh de Meshy a 4,9 k quads + `hornear-normales.py` desde el alto de 3 032 364; antes 104 424, y a 19 177 se veía igual) | +90 Y +90 Z (eje fino X) | ninguno (bola) | orientación verificada con `repro_orientation`; en el bestiario no se distingue del de 104 k |
-| ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (franjas cian saturado: 9,3 % de la textura, p99 0,98; el umbral apaga el leve tinte cian del cuerpo) | — | **11 811** (2-sep, v2: remesh de Meshy + `hornear-normales.py` desde el alto de 1 934 372) | ya en el plano (esfera) | ninguno (dron de una pieza) | especie mecánica, migración BD 2026.09.02.1. La v1 (prompt de texto) salió sin luces; la v2 nació del contrato del concepto 3D de `prompts/README.md` y en el retrato es el concepto |
-| ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (v3, 2-sep noche: cian saturado al 10,9 % de la textura, p99 0,99; textura 2048) | — | **20 846** (v3: remesh y retextura nuevos de Meshy + `hornear-normales.py` desde el alto de 1 958 208; por encima de 15 k, pide remesh a 6–7 k quads si aparece en grupo) | ya en el plano (esfera) | ninguno | v3 trae UN ojo grande en el POLO INFERIOR (−Y): invariante al yaw, sube a la proa con `orientation.pitch: 90` (la v2 tenía dos en ±X con yaw 90). Ojo: el render de seis caras lo situó en «+Z» y era falso; el árbitro es el bestiario con el dummy mirando al norte; migración BD 2026.09.02.1/.2 |
+| ACI-01 (nombre TEMPORAL; nació como Drony) | c con `UMBRAL=0.25` (v4 Tripo: cian saturado, 5,9 % de la textura, p99 0,82) | — | **13 686** (v4, 3-sep noche: modelo PULIDO de Tripo, cadena corta; las v2/v3 de Meshy tenían 20 846) | `TUMBAR=0` (esfera 0,962 × 0,996 × 1,000: el tumbado automático elige un eje al azar) | ninguno | ojo en +Z del GLB = popa horizontal = mirando a la cámara (lo elegido para este bicho desde la v2): `orientation` a cero; migración BD 2026.09.02.2 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (ojo y ventanillas cian pálido: 0,7 % de la textura, p99 0,08) | — | **12 739** (2-sep: remesh + `hornear-normales.py` desde el alto de 1 957 548) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.33 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (218–299 verts cada uno, suma 1,0) | ojo principal en la cara +Z → `orientation.yaw: 180`; migración BD 2026.09.02.3 |
 | ACI-02 (nombre temporal) | c con `UMBRAL=0.25` y ganancia 2,5 (v2: el cian vuelve pálido, 0,7 % de la textura, p99 0,12) | — | **58 106** (v2, 2-sep noche: remesh + `hornear-normales.py` desde el alto de 1 881 202; **cuatro veces el presupuesto**, pide remesh a 6–7 k quads) | ya en el plano (platillo con tentáculos colgando) | radial COLGANTE: `RADIAL=4 RADIAL_DESDE=0.30 RADIAL_ARCO=22 RADIAL_Z_DESDE=-0.35 RADIAL_Z_HASTA=-0.52` → `brazo_1..4` (384–1094 verts, suma 1,0) | ojo hacia la cámara con `yaw 0` (a proa sería 180); migración BD 2026.09.02.3 |
 | ACI-03 (nombre temporal) | c con `UMBRAL=0.25` (3,7 % de la textura traspasada, cian saturado de serie) | — | **99 992** (v3, 3-sep: `decimar-y-vestir.py` desde el alto de 1 940 772, vestido con el remesh Ultra de 121 110; primer caso de la cadena nueva) | ya en el plano (media luna, alto 32 %) | ninguno | ojo en la cápsula del vértice, cara +X → `orientation.yaw: 270` (los brazos de la U quedan atrás); migración BD 2026.09.02.4 |
@@ -1054,3 +1053,43 @@ saca la cadena desde hace semanas.
 **Primer caso: ACI-03 v3**, 99 992 tris, vestido con el remesh Ultra de 121 110, normales del alto
 (desviación 0,12/0,08/0,23), canal `c` al 3,7 %, bestiario en verde. Las especies anteriores siguen
 con su remesh como malla hasta que se rehagan por esta cadena; nada obliga a rehacerlas de golpe.
+
+## Variantes de silueta: elegir el presupuesto ANTES de vestir (3-sep-2026)
+
+`tools/variantes-silueta.py <alto.glb> <carpeta_salida> [planar=1] [tris=30000,20000,15000,10000,8000,5000]`
+saca de un alto de Meshy una escalera de mallas game-ready **sin UV, bake ni textura**, para elegir
+con los ojos (y con un número) qué presupuesto conserva la silueta y los cambios de plano de una nave
+hard-surface. No es «de dos millones a 5 k de un tirón»: la cadena es
+MASTER_ORIGINAL (el GLB intacto) → MASTER_REPAIRED (validar, degenerados, merge conservador, sueltos,
+normales, agujeros pequeños) → CLEAN_SOURCE (Decimate **planar** a 1°, que solo quita la
+triangulación inútil de las placas) → cada presupuesto por **Collapse independiente** desde
+CLEAN_SOURCE, con simetría si la detecta, y de cada uno dos versiones: **A** tal cual y **B** con
+Shrinkwrap a MASTER_REPAIRED (nearest surface, offset 0). Todo triangulado, un GLB por variante, más
+`informe.md` y un `.blend` con la escena entera para comparar en el visor.
+
+Los diales viven relativos a la diagonal de la caja, para que no dependan de la escala de Meshy:
+merge a 1e-5·diag (solo duplicados exactos), islas basura < 100 caras (el cubo suelto que Meshy
+exporta a veces), agujeros «pequeños» ≤ 16 lados y ≤ 2 % de la diagonal de perímetro — **los grandes
+no se tocan, se listan** con centro y caja, porque pueden ser cavidades del diseño —, simetría si la
+mediana del espejo baja de 0,3 % de la diagonal, y sombreado suave con arista dura a 30° (sin esto el
+GLB parte 3 vértices por triángulo). Dos medidas que cambiaron el script: `remove_doubles` tarda 21
+min en 1 M de vértices aunque no fusione nada, así que antes se mira con una rejilla numpy si hay
+candidatos; y un KDTree llenado desde Python tarda 12 min, el BVH nativo 3 s.
+
+La métrica de cada variante es la distancia a MASTER_REPAIRED en % de la diagonal: «pierde» (una
+muestra de 100 k vértices del master a la superficie de la variante: la silueta que ya no cubre) e
+«inventa» (los vértices de la variante al master: cuánto se despega). **Primer caso, ACI-03** (alto de
+1 940 772 tris, cerrado y manifold, sin agujeros ni basura; planar 1° lo deja en 1 474 996):
+
+| tris | pierde mean / p99 (A) | inventa mean / p99 (A) | pierde mean / p99 (B) |
+|---:|---|---|---|
+| 30 000 | 0,005 / 0,021 | 0,010 / 0,033 | 0,010 / 0,035 |
+| 15 000 | 0,009 / 0,038 | 0,016 / 0,052 | 0,017 / 0,059 |
+| 10 000 | 0,013 / 0,060 | 0,021 / 0,069 | 0,024 / 0,086 |
+| 5 000 | 0,034 / 0,148 | 0,037 / 0,129 | 0,052 / 0,186 |
+
+Dos cosas que el número ya dice: el Shrinkwrap deja «inventa» en cero por construcción pero **duplica
+lo que se pierde**, porque el Collapse ya coloca cada vértice en el punto óptimo entre planos y
+proyectarlo al vecino más cercano lo saca de ahí; y la pérdida crece suave hasta 10 k y se dispara en
+5 k (p99 de 0,15 % de la diagonal: un cuarto de píxel si la nave se dibuja a ~180 px, pero es el p99, no el máximo). El veredicto visual queda
+pendiente; el número solo acota entre qué candidatos mirar.
