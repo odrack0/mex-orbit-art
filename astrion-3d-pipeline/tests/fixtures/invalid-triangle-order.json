@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "bad-budget",
+    "category": "prop",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {},
+  "geometry": {
+    "soft_triangle_target": 900,
+    "triangle_ceiling": 800
+  },
+  "appearance": {},
+  "pipeline": {}
+}

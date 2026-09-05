@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_delivery",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "asset_id": "aci-01-test",
+  "state": "received",
+  "probe_plan": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/probe-plan.json",
+    "sha256": "48de854999d12935529ec5fe94efe94cf8ebf265e650be6116c3a6ddd7f503bb"
+  },
+  "provider": "meshy",
+  "request_id": "meshy-geometry-01",
+  "candidate_id": "meshy-candidate-01",
+  "provenance": {
+    "delivery_mode": "manual",
+    "external_job_id": null,
+    "model": "unknown",
+    "generation_mode": "image_to_3d",
+    "settings": {},
+    "seed": null,
+    "generated_at": null,
+    "license": "unknown"
+  },
+  "files": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/meshy/meshy-candidate-01/model.glb",
+      "role": "model",
+      "media_type": "model/gltf-binary",
+      "sha256": "7b5f8825ea65ebfa5bdde0507a8755987ce7770c3c70daef56636286d58ec100",
+      "size_bytes": 265852
+    }
+  ],
+  "delivered_at": "2026-09-05T03:16:09.980151Z",
+  "delivered_by": "repository owner"
+}

@@ -1,0 +1,141 @@
+{
+  "asset_id": "aci-01-test",
+  "authority": {
+    "audit_1_result": null,
+    "master_mesh_promoted": false,
+    "production_handoff": "not_requested",
+    "scope": "probe_evidence_only"
+  },
+  "candidates": [
+    {
+      "candidate_id": "meshy-candidate-01",
+      "evaluation": {
+        "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/candidate-evaluation.json",
+        "sha256": "17996dfdcc4979cdf1a42e425e229cae08539e5e9c0405f341761114cfb683cc"
+      },
+      "identity_summary": {
+        "fail": 0,
+        "pass": 2,
+        "warning": 4
+      },
+      "metrics": {
+        "bounds": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 0.974609375
+        },
+        "connected_components": 50,
+        "material_count": 0,
+        "mesh_count": 1,
+        "parse_status": "usable",
+        "primitive_count": 1,
+        "triangles": 14027,
+        "vertices": 8069
+      },
+      "provider": "meshy",
+      "suggested_outcome": "rebuild_reference",
+      "topology_observations": [
+        {
+          "code": "boundary_edges",
+          "message": "Detected 2015 boundary edges; probe evidence does not decide whether they are intentional.",
+          "severity": "warning"
+        },
+        {
+          "code": "triangle_ceiling_exceeded",
+          "message": "Candidate has 14027 triangles versus the future Master Mesh ceiling of 5000.",
+          "severity": "warning"
+        },
+        {
+          "code": "component_count_outside_plan",
+          "message": "Active scene has 1 mesh components; the future Master Mesh range is 2..32.",
+          "severity": "warning"
+        },
+        {
+          "code": "normals_missing",
+          "message": "One or more active primitives have no normal stream.",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "candidate_id": "tripo-candidate-01",
+      "evaluation": {
+        "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/tripo/tripo-candidate-01/candidate-evaluation.json",
+        "sha256": "6ac94c504466a4c096531fac4cbc7610f5f22e7a465810dd74853bb1e3e1c913"
+      },
+      "identity_summary": {
+        "fail": 0,
+        "pass": 5,
+        "warning": 1
+      },
+      "metrics": {
+        "bounds": {
+          "x": 0.999511719,
+          "y": 0.996582031,
+          "z": 0.999511719
+        },
+        "connected_components": 10,
+        "material_count": 1,
+        "mesh_count": 1,
+        "parse_status": "usable",
+        "primitive_count": 1,
+        "triangles": 13779,
+        "vertices": 14356
+      },
+      "provider": "tripo",
+      "suggested_outcome": "repair",
+      "topology_observations": [
+        {
+          "code": "nonmanifold_edges",
+          "message": "Detected 53 non-manifold edges.",
+          "severity": "error"
+        },
+        {
+          "code": "boundary_edges",
+          "message": "Detected 1586 boundary edges; probe evidence does not decide whether they are intentional.",
+          "severity": "warning"
+        },
+        {
+          "code": "triangle_ceiling_exceeded",
+          "message": "Candidate has 13779 triangles versus the future Master Mesh ceiling of 5000.",
+          "severity": "warning"
+        },
+        {
+          "code": "component_count_outside_plan",
+          "message": "Active scene has 1 mesh components; the future Master Mesh range is 2..32.",
+          "severity": "warning"
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "comparison_status": "candidate_selected",
+    "intended_outcome": "repair",
+    "rationale": "Both candidates preserve the spherical body, segmented shell, and circular front-core identity from the shared geometria.png reference. Tripo is selected because its armor plates and concentric core are more coherent, it has 10 connected components instead of Meshy's 50, it includes normals, and it has fewer boundary edges. It still requires deliberate repair because it has 13779 triangles, 1586 boundary edges, and 53 non-manifold edges; therefore it is not accepted or normalized directly.",
+    "reviewed_at": "2026-09-04T21:36:13-06:00",
+    "reviewer": "E. Lopez",
+    "selected_candidate_id": "tripo-candidate-01",
+    "selected_provider": "tripo"
+  },
+  "evaluation_profile": {
+    "camera_profile": "top_down_default_v1",
+    "coordinate_profile": "astrion_blender_to_godot_v1",
+    "screen_size_world_units": 165.8
+  },
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "question": "Which provider candidate preserves the spherical armor masses, front concentric core, recessed cyan channels, and gameplay-scale silhouette with the lowest authoritative reconstruction cost?",
+  "references": [
+    {
+      "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/geometria.png",
+      "role": "shared-geometry-generation-reference",
+      "sha256": "1df5a0dcf7168e9bdd97cacdae75c4a74f96d6e7ee5c069c5ac0251cef187c07"
+    },
+    {
+      "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/concept.png",
+      "role": "secondary-visual-intent",
+      "sha256": "58677ecce78619bb96654275ca03420e4a915c257902aa87069fb7056c958d2c"
+    }
+  ],
+  "report_type": "generative_probe_comparison",
+  "schema_version": "0.1"
+}

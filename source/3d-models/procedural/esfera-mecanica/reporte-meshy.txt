@@ -1,0 +1,26 @@
+nuestro: 8 objetos; meshy: 1 objetos -> ['meshy_mesh_node']
+tris nuestro=4170 meshy=4152  verts nuestro=4403 meshy=4761
+bbox nuestro min=[-1.0436 -1.035  -1.05  ] max=[1.0436 1.0439 1.05  ]
+bbox meshy   min=[-0.9939 -0.99   -1.    ] max=[0.9939 0.99   1.    ]
+alineacion: escala por eje=[0.95238 0.95238 0.95238] (uniforme=0.95238), traslacion=[ 0.      -0.00425  0.     ]
+bbox meshy alineado min=[-1.0436 -1.035  -1.05  ] max=[1.0436 1.0439 1.05  ]
+vertices de meshy -> superficie nuestra: max=8.00e-07 media=2.77e-07 (>1e-4: 0)
+vertices nuestros -> superficie meshy: max=7.33e-05 media=3.80e-07 (>1e-4: 0)
+vertice meshy -> vertice nuestro mas cercano: max=8.81e-07, coincidentes (<1e-5)=4761/4761
+triangulos nuestros sin gemelo en meshy: 35; area total=2.29e-02; area max=6.90e-03; degenerados (area<1e-9): 0
+  por material: {'MAT_HULL': 17, 'MAT_EMISSION': 0, 'MAT_RECESSES': 18}
+  radio |centroide| de los que faltan: [1.045, 1.045, 1.032, 1.05, 1.042, 1.046, 1.038, 1.042, 1.036, 1.036, 1.05, 1.042, 1.046, 1.042, 1.046, 1.042, 1.042, 1.013, 1.019, 1.013, 1.014, 1.019, 1.01, 0.987, 1.042, 1.013, 1.019, 1.019, 1.023, 1.014]
+triangulos meshy sin gemelo nuestro: 19
+UV: diferencia max por esquina=9.94e-01 media=5.14e-01; esquinas con |d|>1e-3: 12399/12399
+  centroides de esos tris -> superficie meshy: max=2.59e-05 (retriangulacion si ~0)
+  IoU cobertura UV nuestra vs meshy igual: 0.649
+  IoU cobertura UV nuestra vs meshy flipV: 0.655
+  IoU cobertura UV nuestra vs meshy flipU: 0.647
+  IoU cobertura UV nuestra vs meshy transp: 0.644
+normal map media=[0.5   0.499 0.999] desviacion=[0.021 0.022 0.011] (plano = 0.5,0.5,1 con desviacion ~0)
+metallic_roughness media RGB=[1.    0.584 0.47 ] (G=roughness, B=metallic)
+textura base_color: 2048x2048 JPEG canales=4
+textura meshy_uv: 2048x2048 PNG canales=4
+textura metallic_roughness: 2048x2048 JPEG canales=4
+textura normal: 2048x2048 JPEG canales=4
+base_color media en lente=[0.198 0.197 0.196]  fuera=[0.228 0.223 0.22 ]

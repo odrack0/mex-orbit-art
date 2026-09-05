@@ -1,0 +1,156 @@
+{
+  "asset_id": "esfera-mecanica",
+  "checks": [
+    {
+      "evidence": {
+        "resource_type": "PackedScene"
+      },
+      "id": "packed_scene_import",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "count": 8,
+        "names": [
+          "Core_Bezel_Outer",
+          "Core_Lens",
+          "Core_Rim_Inner",
+          "Hub_Pole_Upper",
+          "Plates_Band_Equator",
+          "Plates_Band_Upper",
+          "Plates_Cap_Upper",
+          "Sphere_Core"
+        ]
+      },
+      "id": "mesh_components",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "stored_vertices": 4826,
+        "triangles": 4166
+      },
+      "id": "triangle_count",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "normals": true,
+        "uv0": true
+      },
+      "id": "required_vertex_attributes",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "details": {
+          "MAT_EMISSION": {
+            "base_color_texture": "res://esfera-mecanica-v3-tex_basecolor.png",
+            "class": "StandardMaterial3D",
+            "emission_enabled": true,
+            "emission_texture": "res://esfera-mecanica-v3-tex_emission-mask.png",
+            "metallic_texture": "res://esfera-mecanica-v3-tex_orm.png",
+            "normal_texture": "res://esfera-mecanica-v3-tex_normal.png",
+            "roughness_texture": "res://esfera-mecanica-v3-tex_orm.png"
+          },
+          "MAT_HULL": {
+            "base_color_texture": "res://esfera-mecanica-v3-tex_basecolor.png",
+            "class": "StandardMaterial3D",
+            "emission_enabled": false,
+            "emission_texture": "",
+            "metallic_texture": "res://esfera-mecanica-v3-tex_orm.png",
+            "normal_texture": "res://esfera-mecanica-v3-tex_normal.png",
+            "roughness_texture": "res://esfera-mecanica-v3-tex_orm.png"
+          },
+          "MAT_RECESSES": {
+            "base_color_texture": "res://esfera-mecanica-v3-tex_basecolor.png",
+            "class": "StandardMaterial3D",
+            "emission_enabled": false,
+            "emission_texture": "",
+            "metallic_texture": "res://esfera-mecanica-v3-tex_orm.png",
+            "normal_texture": "res://esfera-mecanica-v3-tex_normal.png",
+            "roughness_texture": "res://esfera-mecanica-v3-tex_orm.png"
+          }
+        },
+        "names": [
+          "MAT_HULL",
+          "MAT_RECESSES",
+          "MAT_EMISSION"
+        ]
+      },
+      "id": "semantic_materials",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "all_materials_have_base_normal_metallic_roughness": true,
+        "emission_material": {
+          "base_color_texture": "res://esfera-mecanica-v3-tex_basecolor.png",
+          "class": "StandardMaterial3D",
+          "emission_enabled": true,
+          "emission_texture": "res://esfera-mecanica-v3-tex_emission-mask.png",
+          "metallic_texture": "res://esfera-mecanica-v3-tex_orm.png",
+          "normal_texture": "res://esfera-mecanica-v3-tex_normal.png",
+          "roughness_texture": "res://esfera-mecanica-v3-tex_orm.png"
+        }
+      },
+      "id": "pbr_texture_import",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "color_srgb": [
+          0.0,
+          0.85,
+          1.0,
+          1.0
+        ],
+        "energy_multiplier": 2.5,
+        "glow_halo_baked": false
+      },
+      "id": "runtime_emission_control",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "max": [
+          1.04356229305267,
+          1.04999995231628,
+          1.0349999666214
+        ],
+        "min": [
+          -1.04356229305267,
+          -1.04999995231628,
+          -1.04392433166504
+        ],
+        "size": [
+          2.08712458610535,
+          2.09999990463257,
+          2.07892417907715
+        ]
+      },
+      "id": "finite_nonzero_bounds",
+      "status": "pass"
+    }
+  ],
+  "provenance": {
+    "godot_version": {
+      "build": "official",
+      "hash": "a13da4feb8d8aefc283c3763d33a2f170a18d541",
+      "hex": 263937,
+      "major": 4,
+      "minor": 7,
+      "patch": 1,
+      "status": "stable",
+      "string": "4.7.1-stable (official)",
+      "timestamp": 0
+    },
+    "resource_path": "res://esfera-mecanica-v3-tex.glb"
+  },
+  "result": "pass",
+  "schema_version": "m3-godot-smoke-0.1",
+  "summary": {
+    "error": 0,
+    "pass": 8
+  }
+}

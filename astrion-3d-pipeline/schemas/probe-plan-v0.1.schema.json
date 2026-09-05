@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/probe-plan-v0.1.schema.json",
+  "title": "Astrion Generative Probe Plan v0.1",
+  "description": "Frozen request and evaluation context for one fresh generative probe set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_type", "probe_id", "asset_id", "state",
+    "asset_spec", "question", "providers", "references", "evaluation_profile",
+    "stop_conditions", "created_at", "created_by"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "record_type": {"const": "probe_plan"},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "asset_id": {"$ref": "#/$defs/id"},
+    "state": {"enum": ["draft", "ready", "skipped", "cancelled"]},
+    "asset_spec": {"$ref": "#/$defs/hashedPath"},
+    "question": {"$ref": "#/$defs/nonEmptyString"},
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/providerRequest"}
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/reference"}
+    },
+    "evaluation_profile": {"$ref": "#/$defs/evaluationProfile"},
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "created_at": {"$ref": "#/$defs/timestamp"},
+    "created_by": {"$ref": "#/$defs/nonEmptyString"},
+    "notes": {"type": "string"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!~)(?!.*:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "hashedPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/repoPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "providerRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "request_id", "delivery_mode", "generation_mode"],
+      "properties": {
+        "provider": {"enum": ["meshy", "tripo"]},
+        "request_id": {"$ref": "#/$defs/id"},
+        "delivery_mode": {"enum": ["manual", "adapter"]},
+        "generation_mode": {"enum": ["image_to_3d", "multi_image_to_3d", "text_to_3d", "other"]}
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/repoPath"},
+        "role": {"$ref": "#/$defs/nonEmptyString"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "evaluationProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["camera_profile", "screen_size_world_units", "coordinate_profile"],
+      "properties": {
+        "camera_profile": {"const": "top_down_default_v1"},
+        "screen_size_world_units": {"type": "number", "exclusiveMinimum": 0},
+        "coordinate_profile": {"const": "astrion_blender_to_godot_v1"}
+      }
+    }
+  }
+}

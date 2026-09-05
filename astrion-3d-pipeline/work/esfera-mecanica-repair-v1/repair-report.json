@@ -1,0 +1,19 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "components": [],
+  "epsilon": 1e-05,
+  "error": "'NoneType' object has no attribute 'get'",
+  "input": {
+    "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+    "sha256": "c5adb582dc433e7d0732f88912df06f49b90e5b707e6d82f2357e205a7cb4dcd"
+  },
+  "limitations": [
+    "Intentional buried closure geometry is preserved.",
+    "Gameplay visibility must be reviewed by Geometry Audit v0.1 after repair."
+  ],
+  "output_dir": "astrion-3d-pipeline/work/esfera-mecanica-repair-v1",
+  "schema_version": "0.1",
+  "script_sha256": "b57129943c128a93133794c279b837eb91fb110859ad97b0ba906183518d3d40",
+  "status": "fail",
+  "tool": "astrion-repair-esfera-mecanica/0.1"
+}

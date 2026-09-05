@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_decision",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "asset_id": "aci-01-test",
+  "state": "closed",
+  "comparison_status": "candidate_selected",
+  "evaluations": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/candidate-evaluation.json",
+      "sha256": "17996dfdcc4979cdf1a42e425e229cae08539e5e9c0405f341761114cfb683cc",
+      "provider": "meshy",
+      "candidate_id": "meshy-candidate-01"
+    },
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/tripo/tripo-candidate-01/candidate-evaluation.json",
+      "sha256": "6ac94c504466a4c096531fac4cbc7610f5f22e7a465810dd74853bb1e3e1c913",
+      "provider": "tripo",
+      "candidate_id": "tripo-candidate-01"
+    }
+  ],
+  "selected_candidate_id": "tripo-candidate-01",
+  "intended_outcome": "repair",
+  "rationale": "Both candidates preserve the spherical body, segmented shell, and circular front-core identity from the shared geometria.png reference. Tripo is selected because its armor plates and concentric core are more coherent, it has 10 connected components instead of Meshy's 50, it includes normals, and it has fewer boundary edges. It still requires deliberate repair because it has 13779 triangles, 1586 boundary edges, and 53 non-manifold edges; therefore it is not accepted or normalized directly.",
+  "reviewer": "E. Lopez",
+  "reviewed_at": "2026-09-04T21:36:13-06:00",
+  "production_handoff": {
+    "status": "not_requested",
+    "asset_spec_path": null,
+    "evidence_report_path": null
+  },
+  "notes": "Reviewed probe closeout only. The selected GLB remains immutable probe evidence. No Master Mesh was promoted and Audit 1 was not run."
+}

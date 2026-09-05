@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "bad-origin",
+    "category": "prop",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {},
+  "geometry": {
+    "preferred_origin": "tripo",
+    "allowed_origins": ["meshy"]
+  },
+  "appearance": {},
+  "pipeline": {}
+}

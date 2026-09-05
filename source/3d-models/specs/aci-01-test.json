@@ -1,0 +1,120 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "aci-01-test",
+    "category": "prop_grande",
+    "family": "mechanical-orb",
+    "tier": "probe",
+    "status": "experimental",
+    "notes": "Fresh Meshy/Tripo geometry probe. This record does not promote either candidate or define a production asset."
+  },
+  "visual": {
+    "screen_size_world_units": 165.8,
+    "camera_profile": "top_down_default_v1",
+    "symmetry": {
+      "type": "none"
+    },
+    "silhouette_complexity": "low",
+    "major_masses": [
+      "spherical primary body",
+      "segmented outer armor shell",
+      "recessed concentric front core"
+    ],
+    "identity_features": [
+      "large curved armor plates",
+      "continuous recessed cyan channels",
+      "front circular lens with concentric rings"
+    ],
+    "notes": "The 165.8-unit review size follows the existing mechanical-sphere reference and remains provisional. A single three-quarter reference does not prove exact rear symmetry, so none is imposed for the probe."
+  },
+  "geometry": {
+    "preferred_origin": "auto",
+    "allowed_origins": [
+      "meshy",
+      "tripo",
+      "procedural_blender"
+    ],
+    "soft_triangle_target": 4000,
+    "triangle_ceiling": 5000,
+    "coordinate_profile": "astrion_blender_to_godot_v1",
+    "components": {
+      "min": 2,
+      "max": 32,
+      "required": [
+        "body",
+        "front_core"
+      ]
+    },
+    "primitive_rules": {
+      "max_rotational_segments": 24
+    },
+    "flatness_range": null,
+    "anchors": {
+      "required": []
+    },
+    "notes": "Targets guide later Master Mesh work, not probe acceptance. Generated candidates may exceed them and remain useful as repair or rebuild references."
+  },
+  "appearance": {
+    "texture_resolutions": [
+      1024,
+      2048
+    ],
+    "maps_required": [
+      "base_color",
+      "normal",
+      "orm",
+      "emission_mask"
+    ],
+    "metallic": "mostly_metal",
+    "roughness": "medium",
+    "wear": "medium",
+    "rust": "light",
+    "emission": {
+      "policy": "material_ids",
+      "material_ids": [
+        "MAT_EMISSION"
+      ],
+      "bake_glow_halo": false
+    },
+    "notes": "concept.png guides finish only. Geometry details come from geometria.png; cyan regions are semantic emission references, not baked glow authority."
+  },
+  "pipeline": {
+    "stage": "generative_probe",
+    "geometry_outcome": "undecided",
+    "source_inputs": [
+      {
+        "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/geometria.png",
+        "role": "shared_geometry_generation_reference",
+        "authority": "external_input",
+        "notes": "Exact clean image declared by the operator as the source used for both Meshy and Tripo geometry generation."
+      },
+      {
+        "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/concept.png",
+        "role": "secondary_visual_intent",
+        "authority": "external_input",
+        "notes": "Appearance and weathering intent; not the geometry-generation input."
+      }
+    ],
+    "generated_inputs": [],
+    "master_mesh": null,
+    "outputs": [],
+    "audits": {
+      "geometry": {
+        "status": "not_run",
+        "report": null
+      },
+      "uv_textures": {
+        "status": "not_run",
+        "report": null
+      }
+    },
+    "provenance": {
+      "probe_flow": "generative-probes-v0.1",
+      "generation_reference_sha256": "1df5a0dcf7168e9bdd97cacdae75c4a74f96d6e7ee5c069c5ac0251cef187c07",
+      "visual_intent_sha256": "58677ecce78619bb96654275ca03420e4a915c257902aa87069fb7056c958d2c",
+      "provider_settings": "unknown",
+      "operator_statement": "Both candidates were generated from the exact geometria.png file."
+    }
+  },
+  "notes": "Probe-only Asset Spec. Candidate metrics are evidence and cannot set an Audit 1 result or Master Mesh authority."
+}

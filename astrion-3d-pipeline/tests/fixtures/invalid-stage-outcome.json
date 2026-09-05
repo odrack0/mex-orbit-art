@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "bad-stage",
+    "category": "prop",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {},
+  "geometry": {},
+  "appearance": {},
+  "pipeline": {
+    "stage": "master_mesh_candidate",
+    "geometry_outcome": "undecided"
+  }
+}

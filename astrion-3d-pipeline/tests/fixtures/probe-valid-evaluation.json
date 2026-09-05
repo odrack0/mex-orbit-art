@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "record_type": "candidate_evaluation",
+  "probe_id": "test-prop-probe-20260904-01",
+  "asset_id": "test-prop",
+  "state": "evaluated",
+  "provider": "meshy",
+  "request_id": "meshy-primary",
+  "candidate_id": "meshy-candidate-01",
+  "delivery": {
+    "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/intake/meshy/meshy-candidate-01/delivery.json",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "input_model": {
+    "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/intake/meshy/meshy-candidate-01/model.glb",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "derived_artifacts": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/derived/meshy/meshy-candidate-01/evaluation-normalized.glb",
+      "role": "evaluation-normalized-model",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "diagnostics": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/gameplay-view.png",
+      "role": "gameplay-view",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  ],
+  "metrics": {
+    "parse_status": "usable",
+    "triangles": 6200,
+    "vertices": 3400,
+    "mesh_count": 1,
+    "primitive_count": 1,
+    "material_count": 1,
+    "connected_components": 3,
+    "bounds": {"x": 2.4, "y": 0.9, "z": 3.1}
+  },
+  "topology_observations": [
+    {
+      "code": "dense_round_features",
+      "severity": "warning",
+      "message": "Round features use more segments than the gameplay view needs."
+    }
+  ],
+  "identity_review": [
+    {
+      "criterion": "wedge silhouette",
+      "status": "pass",
+      "notes": "The primary footprint remains recognizable at the declared screen size."
+    }
+  ],
+  "suggested_outcome": "repair",
+  "evaluated_at": "2026-09-04T18:30:00-06:00",
+  "evaluated_by": "repository owner"
+}

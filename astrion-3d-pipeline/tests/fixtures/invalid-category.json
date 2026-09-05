@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "bad-category",
+    "category": "spaceship",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {},
+  "geometry": {},
+  "appearance": {},
+  "pipeline": {}
+}

@@ -1,0 +1,12 @@
+; Temporary import harness for Astrion M3. It is not a game project.
+config_version=5
+
+[application]
+
+config/name="Astrion M3 GLB Smoke Test"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+

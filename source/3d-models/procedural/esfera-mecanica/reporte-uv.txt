@@ -1,0 +1,34 @@
+  costuras Core_Bezel_Outer         54
+  costuras Core_Lens                24
+  costuras Core_Rim_Inner           54
+  costuras Hub_Pole_Upper           32
+  costuras Plates_Band_Equator     177
+  costuras Plates_Band_Upper       304
+  costuras Plates_Cap_Upper        144
+  costuras Sphere_Core              96
+materiales por pieza (caras):
+  Core_Bezel_Outer       MAT_HULL=72  MAT_RECESSES=72  MAT_EMISSION=0
+  Core_Lens              MAT_HULL=0  MAT_RECESSES=0  MAT_EMISSION=97
+  Core_Rim_Inner         MAT_HULL=72  MAT_RECESSES=72  MAT_EMISSION=0
+  Hub_Pole_Upper         MAT_HULL=64  MAT_RECESSES=34  MAT_EMISSION=0
+  Plates_Band_Equator    MAT_HULL=128  MAT_RECESSES=100  MAT_EMISSION=0
+  Plates_Band_Upper      MAT_HULL=236  MAT_RECESSES=212  MAT_EMISSION=0
+  Plates_Cap_Upper       MAT_HULL=160  MAT_RECESSES=104  MAT_EMISSION=0
+  Sphere_Core            MAT_HULL=0  MAT_RECESSES=512  MAT_EMISSION=0
+  TOTAL                  MAT_HULL=732  MAT_RECESSES=1106  MAT_EMISSION=97
+UV: en rango 0..1=True  pixeles con solape=0  ocupacion=58.2%  texeles/unidad (visibles): media=343 p5=305 p95=419
+mascara: componentes blancos=[(424, np.float64(0.97), np.float64(0.059)), (34515, np.float64(0.463), np.float64(0.94))]
+mascara: 34939 px blancos de 4194304 (0.83%), sangrado 4 px, valores solo 0/1
+[OK ] Core_Bezel_Outer       v=  144 tris=  288 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=24 v_en_superficie=0
+[OK ] Core_Lens              v=   97 tris=  190 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=1 v_en_superficie=0
+[OK ] Core_Rim_Inner         v=  144 tris=  288 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=24 v_en_superficie=0
+[OK ] Hub_Pole_Upper         v=   98 tris=  188 islas= 2 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=2 v_en_superficie=0
+[OK ] Plates_Band_Equator    v=  306 tris=  592 islas= 5 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=8 v_en_superficie=0
+[OK ] Plates_Band_Upper      v=  560 tris= 1072 islas=12 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=36 v_en_superficie=0
+[OK ] Plates_Cap_Upper       v=  312 tris=  592 islas= 8 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=8 v_en_superficie=0
+  esfera: euler V-E+F=2 (2 = cerrada, genero 0), islas=1, desviacion radial max=1.22e-06
+[OK ] Sphere_Core            v=  482 tris=  960 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=0 v_en_superficie=0
+TOTAL evaluado: vertices=2143 triangulos=4170
+RESULTADO: TODO OK
+triangulos evaluados antes=4170 despues=4170
+GLB v2: mallas=8 vertices=4403 triangulos=4170 bytes=176692

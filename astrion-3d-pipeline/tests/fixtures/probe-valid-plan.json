@@ -1,0 +1,44 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_plan",
+  "probe_id": "test-prop-probe-20260904-01",
+  "asset_id": "test-prop",
+  "state": "ready",
+  "asset_spec": {
+    "path": "source/3d-models/specs/test-prop.json",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "question": "Which fresh candidate best preserves the wedge silhouette at gameplay scale?",
+  "providers": [
+    {
+      "provider": "meshy",
+      "request_id": "meshy-primary",
+      "delivery_mode": "manual",
+      "generation_mode": "image_to_3d"
+    },
+    {
+      "provider": "tripo",
+      "request_id": "tripo-primary",
+      "delivery_mode": "manual",
+      "generation_mode": "image_to_3d"
+    }
+  ],
+  "references": [
+    {
+      "path": "source/renders/concepts/test-prop.png",
+      "role": "approved-concept",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "evaluation_profile": {
+    "camera_profile": "top_down_default_v1",
+    "screen_size_world_units": 40,
+    "coordinate_profile": "astrion_blender_to_godot_v1"
+  },
+  "stop_conditions": [
+    "Close without selection if neither candidate preserves the identity features.",
+    "Do not request additional paid generations without a new reviewed plan."
+  ],
+  "created_at": "2026-09-04T17:30:00-06:00",
+  "created_by": "repository owner"
+}

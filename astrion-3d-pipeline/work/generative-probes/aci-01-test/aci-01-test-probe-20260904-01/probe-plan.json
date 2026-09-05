@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_plan",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "asset_id": "aci-01-test",
+  "state": "ready",
+  "asset_spec": {
+    "path": "source/3d-models/specs/aci-01-test.json",
+    "sha256": "86870ba101ced0ceb0d61278afaf5e44370d4c3ffa518438d61d1dbd7c43916f"
+  },
+  "question": "Which provider candidate preserves the spherical armor masses, front concentric core, recessed cyan channels, and gameplay-scale silhouette with the lowest authoritative reconstruction cost?",
+  "providers": [
+    {
+      "provider": "meshy",
+      "request_id": "meshy-geometry-01",
+      "delivery_mode": "manual",
+      "generation_mode": "image_to_3d"
+    },
+    {
+      "provider": "tripo",
+      "request_id": "tripo-geometry-01",
+      "delivery_mode": "manual",
+      "generation_mode": "image_to_3d"
+    }
+  ],
+  "references": [
+    {
+      "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/geometria.png",
+      "role": "shared-geometry-generation-reference",
+      "sha256": "1df5a0dcf7168e9bdd97cacdae75c4a74f96d6e7ee5c069c5ac0251cef187c07"
+    },
+    {
+      "path": "astrion-3d-pipeline/inputs/generative-probes/aci-01-test/references/concept.png",
+      "role": "secondary-visual-intent",
+      "sha256": "58677ecce78619bb96654275ca03420e4a915c257902aa87069fb7056c958d2c"
+    }
+  ],
+  "evaluation_profile": {
+    "camera_profile": "top_down_default_v1",
+    "screen_size_world_units": 165.8,
+    "coordinate_profile": "astrion_blender_to_godot_v1"
+  },
+  "stop_conditions": [
+    "Do not select a candidate until both declared provider branches have a terminal delivery record.",
+    "Select procedural_direct if neither candidate preserves the identity-bearing masses more cheaply than deterministic reconstruction.",
+    "Do not promote, repair, or overwrite any candidate from the probe flow.",
+    "Do not request another paid generation without a new reviewed plan."
+  ],
+  "created_at": "2026-09-04T21:14:24-06:00",
+  "created_by": "repository owner",
+  "notes": "Both provider candidates were generated from the exact geometria.png file. Provider model names, job IDs, seeds, and settings were not supplied and must remain unknown."
+}

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/probe-decision-v0.1.schema.json",
+  "title": "Astrion Generative Probe Decision v0.1",
+  "description": "Reviewed probe closeout and optional evidence-only production handoff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_type", "probe_id", "asset_id", "state",
+    "comparison_status", "evaluations", "selected_candidate_id", "intended_outcome",
+    "rationale", "reviewer", "reviewed_at", "production_handoff"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "record_type": {"const": "probe_decision"},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "asset_id": {"$ref": "#/$defs/id"},
+    "state": {"enum": ["reviewed", "closed"]},
+    "comparison_status": {
+      "enum": [
+        "candidate_selected", "procedural_direct", "more_evidence_required",
+        "no_selection", "skipped"
+      ]
+    },
+    "evaluations": {"type": "array", "items": {"$ref": "#/$defs/evaluationReference"}},
+    "selected_candidate_id": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+    "intended_outcome": {
+      "type": ["string", "null"],
+      "enum": ["accept_normalize", "repair", "rebuild_reference", "procedural_direct", null]
+    },
+    "rationale": {"$ref": "#/$defs/nonEmptyString"},
+    "reviewer": {"$ref": "#/$defs/nonEmptyString"},
+    "reviewed_at": {"$ref": "#/$defs/timestamp"},
+    "production_handoff": {"$ref": "#/$defs/productionHandoff"},
+    "notes": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"comparison_status": {"const": "candidate_selected"}}, "required": ["comparison_status"]},
+      "then": {
+        "properties": {
+          "evaluations": {"minItems": 1},
+          "selected_candidate_id": {"$ref": "#/$defs/id"},
+          "intended_outcome": {"enum": ["accept_normalize", "repair", "rebuild_reference"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"comparison_status": {"const": "procedural_direct"}}, "required": ["comparison_status"]},
+      "then": {
+        "properties": {
+          "selected_candidate_id": {"type": "null"},
+          "intended_outcome": {"const": "procedural_direct"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "comparison_status": {"enum": ["more_evidence_required", "no_selection", "skipped"]}
+        },
+        "required": ["comparison_status"]
+      },
+      "then": {
+        "properties": {
+          "selected_candidate_id": {"type": "null"},
+          "intended_outcome": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"comparison_status": {"const": "skipped"}}, "required": ["comparison_status"]},
+      "then": {"properties": {"evaluations": {"maxItems": 0}}}
+    },
+    {
+      "if": {
+        "properties": {
+          "production_handoff": {
+            "properties": {"status": {"const": "approved"}},
+            "required": ["status"]
+          }
+        },
+        "required": ["production_handoff"]
+      },
+      "then": {"properties": {"comparison_status": {"enum": ["candidate_selected", "procedural_direct"]}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!~)(?!.*:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "evaluationPath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/diagnostics/[a-z0-9-]+/[a-z0-9-]+/.+$"
+    },
+    "evaluationReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "provider", "candidate_id"],
+      "properties": {
+        "path": {"$ref": "#/$defs/evaluationPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "provider": {"enum": ["meshy", "tripo"]},
+        "candidate_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "productionHandoff": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "asset_spec_path", "evidence_report_path"],
+          "properties": {
+            "status": {"const": "not_requested"},
+            "asset_spec_path": {"type": "null"},
+            "evidence_report_path": {"type": "null"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "asset_spec_path", "evidence_report_path"],
+          "properties": {
+            "status": {"const": "approved"},
+            "asset_spec_path": {"$ref": "#/$defs/repoPath"},
+            "evidence_report_path": {"$ref": "#/$defs/repoPath"}
+          }
+        }
+      ]
+    }
+  }
+}

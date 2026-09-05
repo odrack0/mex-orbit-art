@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_delivery",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "asset_id": "aci-01-test",
+  "state": "received",
+  "probe_plan": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/probe-plan.json",
+    "sha256": "48de854999d12935529ec5fe94efe94cf8ebf265e650be6116c3a6ddd7f503bb"
+  },
+  "provider": "tripo",
+  "request_id": "tripo-geometry-01",
+  "candidate_id": "tripo-candidate-01",
+  "provenance": {
+    "delivery_mode": "manual",
+    "external_job_id": null,
+    "model": "unknown",
+    "generation_mode": "image_to_3d",
+    "settings": {},
+    "seed": null,
+    "generated_at": null,
+    "license": "unknown"
+  },
+  "files": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/tripo/tripo-candidate-01/model.glb",
+      "role": "model",
+      "media_type": "model/gltf-binary",
+      "sha256": "0d58620f4aa39a9dd1d98b787b01d1d9d6faf110a6ab193f0044b67755b74587",
+      "size_bytes": 1491844
+    }
+  ],
+  "delivered_at": "2026-09-05T03:16:10.096667Z",
+  "delivered_by": "repository owner"
+}

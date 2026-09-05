@@ -1,0 +1,15 @@
+Meshy: 1 malla(s), texturas 2048x2048 base=base_color mr=metallic_roughness normal=normal
+alineacion Meshy -> nuestra: escala 0.95238, traslacion [ 0.      -0.00425  0.     ]
+triangulos nuestros=4170 con gemelo exacto=4135 resueltos por BVH (n-gonos retriangulados)=35
+muestras=9771985 texeles cubiertos=2456590 (58.6%)  distancia max punto->malla Meshy en los no gemelos=7.48e-05
+texturas: 2048 y 1024 en C:\Source\MexOrbit\mex-orbit-v1\mex-orbit-art\source\3d-models\procedural\esfera-mecanica\textures  (basecolor sRGB; orm/roughness/metallic/normal Non-Color; orm: G=roughness B=metallic, R tal cual de Meshy)
+GLB v3: mallas=8 vertices=4403 triangulos=4170 bytes=10934760
+TOTAL evaluado: vertices=2143 triangulos=4170
+RESULTADO: TODO OK
+geometria: 4170 triangulos evaluados (aprobados: 4170) -> IDENTICA
+materiales por pieza: {'Core_Bezel_Outer': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Core_Lens': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Core_Rim_Inner': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Hub_Pole_Upper': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Plates_Band_Equator': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Plates_Band_Upper': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Plates_Cap_Upper': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION'], 'Sphere_Core': ['MAT_HULL', 'MAT_RECESSES', 'MAT_EMISSION']}
+comparativa three-quarter: diferencia media=0.0064 p99=0.1176 max=0.631 (0..1 sRGB; incluye el ruido de muestreo del render)
+comparativa top: diferencia media=0.0108 p99=0.1647 max=0.702 (0..1 sRGB; incluye el ruido de muestreo del render)
+comparativa front: diferencia media=0.0088 p99=0.1176 max=0.663 (0..1 sRGB; incluye el ruido de muestreo del render)
+mip 256px three-quarter: diferencia media Meshy vs reproyectado=0.0060
+mip 256px top: diferencia media Meshy vs reproyectado=0.0106

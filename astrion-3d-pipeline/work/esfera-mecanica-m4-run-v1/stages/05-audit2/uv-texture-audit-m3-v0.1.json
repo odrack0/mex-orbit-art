@@ -1,0 +1,490 @@
+{
+  "audit": {
+    "asset_id": "esfera-mecanica",
+    "generated_at_utc": "2026-09-04T23:02:00.729851+00:00",
+    "result": "pass",
+    "stage": "audit_2_uv_textures",
+    "tool": "astrion-m3-audit-esfera/0.1",
+    "tool_sha256": "4cad13248bce6bf32701059092009d2e0a14f27c2a1669a7d4a365bdf9938e24"
+  },
+  "checks": [
+    {
+      "evidence": {
+        "bytes": 139280,
+        "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+        "sha256": "c5adb582dc433e7d0732f88912df06f49b90e5b707e6d82f2357e205a7cb4dcd"
+      },
+      "id": "source_asset_unchanged",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "components": [
+          "Core_Bezel_Outer",
+          "Core_Lens",
+          "Core_Rim_Inner",
+          "Hub_Pole_Upper",
+          "Plates_Band_Equator",
+          "Plates_Band_Upper",
+          "Plates_Cap_Upper",
+          "Sphere_Core"
+        ],
+        "detached_uv_polygons": [
+          "Plates_Band_Equator:282",
+          "Plates_Band_Equator:285"
+        ],
+        "emission_mask": {
+          "bleed_pixels": 4,
+          "reported_binary": true,
+          "total_pixels": 4194304,
+          "white_percent": 0.75,
+          "white_pixels": 31351
+        },
+        "in_range_0_1": true,
+        "material_triangles": {
+          "MAT_EMISSION": 190,
+          "MAT_HULL": 1510,
+          "MAT_RECESSES": 2466
+        },
+        "occupancy_percent": 43.2,
+        "overlap_pixels": 0,
+        "triangles_after": 4166,
+        "triangles_before": 4166,
+        "visible_texels_per_unit": {
+          "mean": 244,
+          "p5": 210,
+          "p95": 276
+        }
+      },
+      "id": "uv_tile_range",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "overlap_pixels": 0
+      },
+      "id": "uv_overlap",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "after": 4166,
+        "before": 4166,
+        "master_uv": 4166
+      },
+      "id": "uv_geometry_regression",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "components": [
+          "Core_Bezel_Outer",
+          "Core_Lens",
+          "Core_Rim_Inner",
+          "Hub_Pole_Upper",
+          "Plates_Band_Equator",
+          "Plates_Band_Upper",
+          "Plates_Cap_Upper",
+          "Sphere_Core"
+        ],
+        "material_triangles": {
+          "MAT_EMISSION": 190,
+          "MAT_HULL": 1510,
+          "MAT_RECESSES": 2466
+        }
+      },
+      "id": "semantic_material_assignment",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "inventory": {
+          "base_color_1024": {
+            "bit_depth": 8,
+            "bytes": 1161300,
+            "color_type": 2,
+            "height": 1024,
+            "sha256": "f4f644b74d05662d8ee4bb1a7bb1b71628becd7553e23200f52e8d2b6b8a318a",
+            "width": 1024
+          },
+          "base_color_2048": {
+            "bit_depth": 8,
+            "bytes": 3348636,
+            "color_type": 2,
+            "height": 2048,
+            "sha256": "49bb5de4afc5254103cbe954307b91df2c8d3034ee07d90e3f51cbc0c30196c8",
+            "width": 2048
+          },
+          "emission_mask_2048": {
+            "bit_depth": 8,
+            "bytes": 83094,
+            "color_type": 6,
+            "height": 2048,
+            "sha256": "b88b42c0c609e2bdf09352261974ecc4a0ce00758ca6af8690c3e3f8abecaf24",
+            "width": 2048
+          },
+          "normal_1024": {
+            "bit_depth": 8,
+            "bytes": 894065,
+            "color_type": 2,
+            "height": 1024,
+            "sha256": "8fbcc1bbc22cd3061486062ce2e7e689bbdc61ec32f2336af9e241d07609d3f3",
+            "width": 1024
+          },
+          "normal_2048": {
+            "bit_depth": 8,
+            "bytes": 2552312,
+            "color_type": 2,
+            "height": 2048,
+            "sha256": "2cc43c914dca9361277b49422c9979a5095849884ebe2e7b65d337462196a60e",
+            "width": 2048
+          },
+          "orm_1024": {
+            "bit_depth": 8,
+            "bytes": 1142219,
+            "color_type": 2,
+            "height": 1024,
+            "sha256": "28f93d4baed151974ce2ae9d5f665e6a6bae02c7a3d759594c596ca0dfb82434",
+            "width": 1024
+          },
+          "orm_2048": {
+            "bit_depth": 8,
+            "bytes": 3087381,
+            "color_type": 2,
+            "height": 2048,
+            "sha256": "bbeee63ab6e54efc1590c156134e154570a352b8792c3b6810f939351893117d",
+            "width": 2048
+          }
+        },
+        "required_maps": [
+          "base_color",
+          "normal",
+          "orm",
+          "emission_mask"
+        ]
+      },
+      "id": "texture_resolutions_and_maps",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "baked_glow_halo": false,
+        "decoded_values": [
+          0,
+          255
+        ],
+        "decoded_white_pixels": 31351,
+        "embedded_sha256": "b88b42c0c609e2bdf09352261974ecc4a0ce00758ca6af8690c3e3f8abecaf24",
+        "reported": {
+          "bleed_pixels": 4,
+          "reported_binary": true,
+          "total_pixels": 4194304,
+          "white_percent": 0.75,
+          "white_pixels": 31351
+        }
+      },
+      "id": "deterministic_emission_mask",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "bvh_triangles": 36,
+        "comparisons_srgb": {
+          "front": {
+            "max": 0.686,
+            "mean": 0.0098,
+            "p99": 0.1294
+          },
+          "three-quarter": {
+            "max": 0.639,
+            "mean": 0.0069,
+            "p99": 0.1176
+          },
+          "top": {
+            "max": 0.702,
+            "mean": 0.0113,
+            "p99": 0.1686
+          }
+        },
+        "coverage_percent": 43.9,
+        "covered_texels": 1842306,
+        "exact_twins": 4130,
+        "geometry_result": "IDENTICA",
+        "geometry_triangles": 4166,
+        "master_uv_triangles": 4166,
+        "max_bvh_distance": 6.85e-05,
+        "mip_256_mean_difference": {
+          "three-quarter": 0.006,
+          "top": 0.0107
+        },
+        "samples": 7250710,
+        "stored_glb_vertices": 4826,
+        "triangles": 4166
+      },
+      "id": "reprojection_correspondence",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "full_resolution": {
+          "front": {
+            "max": 0.686,
+            "mean": 0.0098,
+            "p99": 0.1294
+          },
+          "three-quarter": {
+            "max": 0.639,
+            "mean": 0.0069,
+            "p99": 0.1176
+          },
+          "top": {
+            "max": 0.702,
+            "mean": 0.0113,
+            "p99": 0.1686
+          }
+        },
+        "mip_256": {
+          "three-quarter": 0.006,
+          "top": 0.0107
+        }
+      },
+      "id": "reprojection_visual_error",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "reported": "IDENTICA",
+        "v2_signature": "92ad482a475666e2ad93accc38e20142f4ebc8ee4bcb8c5e90c915cb9eb0dbc0",
+        "v3_signature": "92ad482a475666e2ad93accc38e20142f4ebc8ee4bcb8c5e90c915cb9eb0dbc0"
+      },
+      "id": "uv_to_textured_geometry_identity",
+      "status": "pass"
+    },
+    {
+      "evidence": {
+        "color_space_contract": {
+          "basecolor": "sRGB",
+          "emission_mask": "sRGB glTF semantic / binary data",
+          "normal": "linear",
+          "orm": "linear"
+        },
+        "emission_mask_only_on_semantic_material": true,
+        "images": [
+          "basecolor",
+          "emission-mask",
+          "normal",
+          "orm"
+        ],
+        "indexed_position_normal_uv": true,
+        "materials": [
+          "MAT_EMISSION",
+          "MAT_HULL",
+          "MAT_RECESSES"
+        ],
+        "meshes": 8,
+        "single_sided": true
+      },
+      "id": "godot_glb_static_contract",
+      "status": "pass"
+    }
+  ],
+  "inputs": {
+    "appearance_source": {
+      "bytes": 7215588,
+      "path": "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb",
+      "sha256": "329d02b8980f14fbf4e9524d3529669ab2671ea5647ee7cfd67490e5ba730472"
+    },
+    "repair_report": {
+      "bytes": 7624,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/repair-report.json",
+      "sha256": "52bd7fe1f18ce14d108d1b0765b0fad9ed81061aae8f60f630cb290afe5ec81f"
+    },
+    "reprojection_report": {
+      "bytes": 1909,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/reporte-reproyeccion.txt",
+      "sha256": "a91955449c7520c49201c7d1810ee58108502443b3edb328f592ce1046612dd1"
+    },
+    "spec": {
+      "bytes": 5992,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.geometry.json",
+      "sha256": "e21cdf5168b332683ab5b15ddf71fa04d9cd186b1bab747280882c8de8fecb22"
+    },
+    "textured_glb": {
+      "bytes": 9263396,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v3-tex.glb",
+      "sha256": "16e241d0840548205a8ac7ca0ca8242535d511c22bafe70428ef047346c519f4"
+    },
+    "uv_glb": {
+      "bytes": 191240,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v2-uv.glb",
+      "sha256": "9dc693dafca63c41ab1c4ebfed522cae75a555f3b74b0be19361bdcf100f7de0"
+    },
+    "uv_report": {
+      "bytes": 3587,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/reporte-uv.txt",
+      "sha256": "489e5ed4155ddb62b7a48e60c79699e9eb35c89778248baea19b2c19b864b358"
+    }
+  },
+  "metrics": {
+    "reprojection": {
+      "bvh_triangles": 36,
+      "comparisons_srgb": {
+        "front": {
+          "max": 0.686,
+          "mean": 0.0098,
+          "p99": 0.1294
+        },
+        "three-quarter": {
+          "max": 0.639,
+          "mean": 0.0069,
+          "p99": 0.1176
+        },
+        "top": {
+          "max": 0.702,
+          "mean": 0.0113,
+          "p99": 0.1686
+        }
+      },
+      "coverage_percent": 43.9,
+      "covered_texels": 1842306,
+      "exact_twins": 4130,
+      "geometry_result": "IDENTICA",
+      "geometry_triangles": 4166,
+      "master_uv_triangles": 4166,
+      "max_bvh_distance": 6.85e-05,
+      "mip_256_mean_difference": {
+        "three-quarter": 0.006,
+        "top": 0.0107
+      },
+      "samples": 7250710,
+      "stored_glb_vertices": 4826,
+      "triangles": 4166
+    },
+    "uv": {
+      "components": [
+        "Core_Bezel_Outer",
+        "Core_Lens",
+        "Core_Rim_Inner",
+        "Hub_Pole_Upper",
+        "Plates_Band_Equator",
+        "Plates_Band_Upper",
+        "Plates_Cap_Upper",
+        "Sphere_Core"
+      ],
+      "detached_uv_polygons": [
+        "Plates_Band_Equator:282",
+        "Plates_Band_Equator:285"
+      ],
+      "emission_mask": {
+        "bleed_pixels": 4,
+        "reported_binary": true,
+        "total_pixels": 4194304,
+        "white_percent": 0.75,
+        "white_pixels": 31351
+      },
+      "in_range_0_1": true,
+      "material_triangles": {
+        "MAT_EMISSION": 190,
+        "MAT_HULL": 1510,
+        "MAT_RECESSES": 2466
+      },
+      "occupancy_percent": 43.2,
+      "overlap_pixels": 0,
+      "triangles_after": 4166,
+      "triangles_before": 4166,
+      "visible_texels_per_unit": {
+        "mean": 244,
+        "p5": 210,
+        "p95": 276
+      }
+    }
+  },
+  "outputs": {
+    "comparison_render": {
+      "bytes": 2312952,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/renders/compare-three-quarter.png",
+      "sha256": "250da31f88452c70ca7a484447c9c4600ba967fafa07e50b7559ea01489b3a72"
+    },
+    "emission_mask": {
+      "bytes": 83094,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/emission-mask.png",
+      "sha256": "b88b42c0c609e2bdf09352261974ecc4a0ce00758ca6af8690c3e3f8abecaf24"
+    },
+    "gameplay_mip_comparison": {
+      "bytes": 196551,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/renders/compare-top-256px.png",
+      "sha256": "366a21318041366b6704c6f287fd3658f9e69c133f25641ed2689389a5cf661d"
+    },
+    "textured_blend": {
+      "bytes": 212550,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v3-tex.blend",
+      "sha256": "7933c4dc62ca0cfda77f9873c2eb828d93c37dd452df263c43e81cf94058a9d8"
+    },
+    "textured_glb": {
+      "bytes": 9263396,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v3-tex.glb",
+      "sha256": "16e241d0840548205a8ac7ca0ca8242535d511c22bafe70428ef047346c519f4"
+    }
+  },
+  "provenance": {
+    "appearance_source": "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb",
+    "appearance_source_authority": "external_input_non_geometry",
+    "blender_version": "5.2.1 LTS",
+    "commands": [
+      "blender --background --factory-startup --python tools/esfera-mecanica-uv.py -- astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject",
+      "blender --background --factory-startup --python tools/reproyectar-texturas.py -- astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject source/3d-models/crudo/esfera-mecanica-v2-meshy.glb",
+      "python astrion-3d-pipeline/tools/audit_m3_esfera.py --work-dir astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject --spec astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.geometry.json --output astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/05-audit2/uv-texture-audit-m3-v0.1.json --appearance-source source/3d-models/crudo/esfera-mecanica-v2-meshy.glb"
+    ],
+    "emission_authority": "MAT_EMISSION material ID plus deterministic binary mask",
+    "geometry_authority": {
+      "bytes": 164059,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair/esfera-mecanica-repaired.blend",
+      "sha256": "d57aa38dd3d746952b3b0d8be54ab33ceb12faac0659e5103ab0b558d9143342"
+    },
+    "source_asset_unchanged": true,
+    "tools": {
+      "audit_2_recorder": {
+        "bytes": 23960,
+        "path": "astrion-3d-pipeline/tools/audit_m3_esfera.py",
+        "sha256": "4cad13248bce6bf32701059092009d2e0a14f27c2a1669a7d4a365bdf9938e24"
+      },
+      "builder": {
+        "bytes": 22970,
+        "path": "tools/esfera-mecanica.py",
+        "sha256": "20d8f3206c3c0ff48621f2841c66e22858d95297ebfad1bb2cc6de34712681c6"
+      },
+      "repair": {
+        "bytes": 16807,
+        "path": "tools/reparar-esfera-mecanica.py",
+        "sha256": "5100270428b0470403edddf66c399f6bdd5bfa92f27f3e2071429931ea256686"
+      },
+      "reprojection": {
+        "bytes": 24632,
+        "path": "tools/reproyectar-texturas.py",
+        "sha256": "3915b576e46a53ffe8d73e023ec03dce52aa762bb653162cc04efa43ef1f9b19"
+      },
+      "uv_materials": {
+        "bytes": 23087,
+        "path": "tools/esfera-mecanica-uv.py",
+        "sha256": "81b66af36cc9461cd27b95acb0a92a8fa7307dd5625c89718be5c2e809c3446b"
+      }
+    }
+  },
+  "schema_version": "m3-uv-texture-audit-0.1",
+  "summary": {
+    "error": 0,
+    "pass": 11,
+    "warning": 1
+  },
+  "warnings": [
+    {
+      "disposition": "accepted_for_m3",
+      "generic_reference_percent": 75.0,
+      "id": "uv_occupancy_policy_reference",
+      "measured_percent": 43.2,
+      "reason": "Asset Spec v0.1 has no occupancy threshold. The atlas preserves 8 px fractional packing margin, zero overlap, all semantic closed surfaces, and p5 visible density above 200 texels/unit at 2048.",
+      "revisit_condition": "Define class-specific occupancy/padding policy in M6 before production promotion.",
+      "status": "warning"
+    }
+  ]
+}

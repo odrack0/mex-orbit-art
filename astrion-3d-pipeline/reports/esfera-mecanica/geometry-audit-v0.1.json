@@ -1,0 +1,1482 @@
+{
+  "asset": {
+    "asset_id": "esfera-mecanica",
+    "category": "prop_grande",
+    "construction_profile": "mechanical",
+    "family": "mechanical",
+    "geometry_outcome": "procedural_direct"
+  },
+  "audit": {
+    "excluded": [
+      "uv_layout",
+      "textures",
+      "materials",
+      "appearance",
+      "emission"
+    ],
+    "name": "astrion_geometry",
+    "result": "fail",
+    "scope": "geometry_only",
+    "tool_version": "astrion-geometry-audit/0.1",
+    "version": "0.1"
+  },
+  "camera": {
+    "azimuth_degrees": 25.0,
+    "declared_screen_size_world_units": 165.8,
+    "elevation_degrees": 45.0,
+    "pixels_per_world_unit_1440p_zoom1": 1.544297,
+    "profile": "top_down_default_v1",
+    "projected_height_px": 256.0,
+    "projected_union_area_px2": 51551,
+    "projected_width_px": 255.16,
+    "raster_resolution_px": 260,
+    "runtime_scale_from_glb_footprint": 79.439436009,
+    "triangles_per_1000_projected_px2": 80.89
+  },
+  "checks": [
+    {
+      "actual": 4170,
+      "expected": "<= 5000",
+      "id": "triangle_ceiling",
+      "status": "pass"
+    },
+    {
+      "actual": 4170,
+      "evidence": "A soft target is not a minimum or a gate; review the overage at gameplay size.",
+      "expected": "planning target <= 4000",
+      "id": "triangle_soft_target",
+      "status": "warning"
+    },
+    {
+      "actual": {
+        "spec_ceiling": 5000,
+        "spec_soft_target": 4000
+      },
+      "evidence": "The explicit reviewed spec controls this audit; the older category range is reported as a policy conflict.",
+      "expected": {
+        "legacy_range": [
+          800,
+          2500
+        ]
+      },
+      "id": "legacy_category_triangle_policy",
+      "status": "warning"
+    },
+    {
+      "actual": 80.89,
+      "expected": "preferred <= 800.0",
+      "id": "gameplay_triangle_density",
+      "status": "pass"
+    },
+    {
+      "actual": 0,
+      "expected": 0,
+      "id": "degenerate_triangles",
+      "status": "pass"
+    },
+    {
+      "actual": 2,
+      "expected": 0,
+      "id": "duplicate_faces",
+      "status": "error"
+    },
+    {
+      "actual": 2,
+      "expected": 0,
+      "id": "nonmanifold_edges",
+      "status": "error"
+    },
+    {
+      "actual": 0,
+      "expected": 0,
+      "id": "unused_vertices",
+      "status": "pass"
+    },
+    {
+      "actual": 0,
+      "expected": 0,
+      "id": "boundary_edges",
+      "status": "pass"
+    },
+    {
+      "actual": 0,
+      "expected": 0,
+      "id": "zero_thickness_islands",
+      "status": "pass"
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "explicit_normals",
+      "status": "pass"
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "authoritative_source_exists",
+      "status": "pass"
+    },
+    {
+      "actual": "not_evaluable_from_glb",
+      "evidence": "GLB triangulation cannot prove that the .blend source has no n-gons; no repair_report declared in pipeline.provenance",
+      "expected": "0 in authoritative Blender source",
+      "id": "authoritative_source_ngons",
+      "status": "error"
+    },
+    {
+      "actual": 8,
+      "expected": "8..8",
+      "id": "semantic_component_count",
+      "status": "pass"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "required_semantic_components",
+      "status": "pass"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "unique_semantic_component_names",
+      "status": "pass"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "required_anchors",
+      "status": "pass"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "anchor_nodes_have_no_mesh",
+      "status": "pass"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "unique_anchor_names",
+      "status": "pass"
+    },
+    {
+      "actual": 0,
+      "evidence": "Metrics use world-space vertices after inherited GLB matrix/TRS transforms.",
+      "expected": "all active-scene node transforms evaluated",
+      "id": "node_transforms_applied",
+      "status": "pass"
+    },
+    {
+      "actual": 165.8,
+      "expected": 165.8,
+      "id": "runtime_screen_size",
+      "status": "pass"
+    },
+    {
+      "actual": 0.001233,
+      "expected": "<= 0.05 of bounding-box diagonal",
+      "id": "centered_origin",
+      "status": "pass"
+    },
+    {
+      "actual": 1.0062,
+      "expected": "not declared by this spec",
+      "id": "class_flatness",
+      "status": "informational"
+    },
+    {
+      "actual": 0,
+      "evidence": "The whole-mesh point-set probe is evidence only; confirm staggered/partial radial intent visually.",
+      "expected": "multiple of 6",
+      "id": "declared_radial_symmetry",
+      "status": "warning"
+    },
+    {
+      "actual": [
+        {
+          "island": 9,
+          "rot_order": 33
+        }
+      ],
+      "evidence": "Automatic primitive classification is advisory; review the named components before changing geometry.",
+      "expected": "<= 24",
+      "id": "mechanical_rotational_segments",
+      "status": "warning"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "thin_geometry",
+      "status": "pass"
+    },
+    {
+      "actual": 0.256,
+      "expected": "<= 0.05 unless declared FX/exception",
+      "id": "never_visible_geometry",
+      "status": "error"
+    },
+    {
+      "actual": 0.041,
+      "expected": "preferred <= 0.10",
+      "id": "subpixel_triangles",
+      "status": "pass"
+    },
+    {
+      "actual": "required",
+      "evidence": "Automated metrics and the diagnostic image are evidence, not visual approval.",
+      "expected": "human review of silhouette, major masses, and identity features",
+      "id": "gameplay_visual_review",
+      "status": "warning"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "declared_astrion_sources_exist",
+      "status": "pass"
+    },
+    {
+      "actual": "procedural_direct",
+      "expected": "decided geometry outcome",
+      "id": "geometry_origin_consistency",
+      "status": "pass"
+    }
+  ],
+  "diagnostics": {
+    "gameplay_silhouette": {
+      "gameplay_projected_span_px": 256,
+      "hidden_triangles_this_view": 2888,
+      "inspection_resolution_px": 560,
+      "path": "astrion-3d-pipeline/reports/esfera-mecanica/diagnostics/silhouette-esfera-mecanica.png",
+      "silhouette_triangles": 89,
+      "visible_triangles": 1282
+    }
+  },
+  "inputs": {
+    "authoritative_source_path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+    "authoritative_source_sha256": "c5adb582dc433e7d0732f88912df06f49b90e5b707e6d82f2357e205a7cb4dcd",
+    "authoritative_source_topology_evidence": null,
+    "declared_provenance": {
+      "existing_reports": [
+        "source/3d-models/procedural/esfera-mecanica/reporte.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-uv.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-meshy.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-reproyeccion.txt"
+      ],
+      "notes": "Existing reports predate the two formal audit gates. They are evidence, not pass records. No concept-art source was found during M0/M1 discovery.",
+      "tools": [
+        "tools/esfera-mecanica.py",
+        "tools/esfera-mecanica-uv.py",
+        "tools/reproyectar-texturas.py"
+      ]
+    },
+    "declared_source_inputs": [
+      {
+        "authority": "astrion_source",
+        "exists": true,
+        "path": "tools/esfera-mecanica.py",
+        "role": "procedural_builder",
+        "sha256": "20d8f3206c3c0ff48621f2841c66e22858d95297ebfad1bb2cc6de34712681c6"
+      }
+    ],
+    "model_path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.glb",
+    "model_sha256": "0944c75df6f1f2dc4355d9e54a4719c2c683bab1b30b7e71848133da8d5cd262",
+    "spec_path": "source/3d-models/specs/esfera-mecanica.json",
+    "spec_sha256": "a15306f6a752062d67681cbc5ec3422b09e83a0605149d70f3ccccdf61c8ef35"
+  },
+  "islands": [
+    {
+      "aspect": 1.0,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 275.186,
+      "flat_card": false,
+      "island": 9,
+      "median_valence": 6,
+      "radial_slots": 32,
+      "rot_axis": "y",
+      "rot_frac": 1.0,
+      "rot_order": 33,
+      "size": [
+        158.879,
+        158.879,
+        158.879
+      ],
+      "size_share_of_asset": 0.958,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.0,
+      "tris": 960,
+      "verts": 482
+    },
+    {
+      "aspect": 6.59,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 122.986,
+      "flat_card": false,
+      "island": 19,
+      "median_valence": 6,
+      "radial_slots": 24,
+      "rot_axis": "z",
+      "rot_frac": 1.0,
+      "rot_order": 24,
+      "size": [
+        86.469,
+        86.469,
+        13.112
+      ],
+      "size_share_of_asset": 0.428,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.0987,
+      "tris": 288,
+      "verts": 144
+    },
+    {
+      "aspect": 7.46,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 78.798,
+      "flat_card": false,
+      "island": 18,
+      "median_valence": 6,
+      "radial_slots": 24,
+      "rot_axis": "z",
+      "rot_frac": 1.0,
+      "rot_order": 24,
+      "size": [
+        55.47,
+        55.47,
+        7.44
+      ],
+      "size_share_of_asset": 0.274,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.1312,
+      "tris": 288,
+      "verts": 144
+    },
+    {
+      "aspect": 5.84,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 54.696,
+      "flat_card": false,
+      "island": 13,
+      "median_valence": 6,
+      "radial_slots": 24,
+      "rot_axis": "z",
+      "rot_frac": 1.0,
+      "rot_order": 24,
+      "size": [
+        38.396,
+        38.396,
+        6.573
+      ],
+      "size_share_of_asset": 0.19,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.0717,
+      "tris": 190,
+      "verts": 97
+    },
+    {
+      "aspect": 1.48,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 96.687,
+      "flat_card": false,
+      "island": 25,
+      "median_valence": 6,
+      "radial_slots": 27,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        44.96,
+        54.113,
+        66.323
+      ],
+      "size_share_of_asset": 0.336,
+      "slot_regularity": 0.278,
+      "sphere_fit_rms_rel": 0.0681,
+      "tris": 162,
+      "verts": 83
+    },
+    {
+      "aspect": 1.48,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 96.687,
+      "flat_card": false,
+      "island": 2,
+      "median_valence": 6,
+      "radial_slots": 26,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        44.96,
+        54.113,
+        66.323
+      ],
+      "size_share_of_asset": 0.336,
+      "slot_regularity": 0.255,
+      "sphere_fit_rms_rel": 0.0625,
+      "tris": 154,
+      "verts": 79
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 85.675,
+      "flat_card": false,
+      "island": 12,
+      "median_valence": 6,
+      "radial_slots": 19,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        42.109
+      ],
+      "size_share_of_asset": 0.298,
+      "slot_regularity": 0.374,
+      "sphere_fit_rms_rel": 0.1991,
+      "tris": 120,
+      "verts": 62
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 85.675,
+      "flat_card": false,
+      "island": 6,
+      "median_valence": 6,
+      "radial_slots": 19,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        42.109
+      ],
+      "size_share_of_asset": 0.298,
+      "slot_regularity": 0.374,
+      "sphere_fit_rms_rel": 0.1991,
+      "tris": 120,
+      "verts": 62
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 85.675,
+      "flat_card": false,
+      "island": 21,
+      "median_valence": 6,
+      "radial_slots": 20,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        42.109
+      ],
+      "size_share_of_asset": 0.298,
+      "slot_regularity": 0.341,
+      "sphere_fit_rms_rel": 0.2003,
+      "tris": 120,
+      "verts": 62
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 85.675,
+      "flat_card": false,
+      "island": 20,
+      "median_valence": 6,
+      "radial_slots": 20,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        42.109
+      ],
+      "size_share_of_asset": 0.298,
+      "slot_regularity": 0.341,
+      "sphere_fit_rms_rel": 0.2003,
+      "tris": 120,
+      "verts": 62
+    },
+    {
+      "aspect": 4.0,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 37.681,
+      "flat_card": false,
+      "island": 16,
+      "median_valence": 6,
+      "radial_slots": 16,
+      "rot_axis": "y",
+      "rot_frac": 1.0,
+      "rot_order": 16,
+      "size": [
+        26.239,
+        6.552,
+        26.239
+      ],
+      "size_share_of_asset": 0.131,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.0992,
+      "tris": 94,
+      "verts": 49
+    },
+    {
+      "aspect": 4.0,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 37.681,
+      "flat_card": false,
+      "island": 14,
+      "median_valence": 6,
+      "radial_slots": 16,
+      "rot_axis": "y",
+      "rot_frac": 1.0,
+      "rot_order": 16,
+      "size": [
+        26.239,
+        6.552,
+        26.239
+      ],
+      "size_share_of_asset": 0.131,
+      "slot_regularity": 1.0,
+      "sphere_fit_rms_rel": 0.0992,
+      "tris": 94,
+      "verts": 49
+    },
+    {
+      "aspect": 1.54,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 99.017,
+      "flat_card": false,
+      "island": 30,
+      "median_valence": 6,
+      "radial_slots": 18,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        45.144,
+        54.113,
+        69.558
+      ],
+      "size_share_of_asset": 0.345,
+      "slot_regularity": 0.521,
+      "sphere_fit_rms_rel": 0.0404,
+      "tris": 92,
+      "verts": 48
+    },
+    {
+      "aspect": 4.28,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 98.262,
+      "flat_card": false,
+      "island": 24,
+      "median_valence": 6,
+      "radial_slots": 18,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        79.865,
+        54.113,
+        18.677
+      ],
+      "size_share_of_asset": 0.342,
+      "slot_regularity": 0.521,
+      "sphere_fit_rms_rel": 0.0404,
+      "tris": 92,
+      "verts": 48
+    },
+    {
+      "aspect": 1.54,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 99.017,
+      "flat_card": false,
+      "island": 3,
+      "median_valence": 6,
+      "radial_slots": 18,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        45.144,
+        54.113,
+        69.558
+      ],
+      "size_share_of_asset": 0.345,
+      "slot_regularity": 0.521,
+      "sphere_fit_rms_rel": 0.0404,
+      "tris": 92,
+      "verts": 48
+    },
+    {
+      "aspect": 2.16,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 90.376,
+      "flat_card": false,
+      "island": 1,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        34.765,
+        36.66,
+        74.935
+      ],
+      "size_share_of_asset": 0.314,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 15,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        68.662,
+        19.689,
+        38.704
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 8,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        68.662,
+        19.689,
+        38.704
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 91.052,
+      "flat_card": false,
+      "island": 10,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        52.188
+      ],
+      "size_share_of_asset": 0.317,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 91.052,
+      "flat_card": false,
+      "island": 11,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        52.188
+      ],
+      "size_share_of_asset": 0.317,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 2.16,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 90.376,
+      "flat_card": false,
+      "island": 0,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        34.765,
+        36.66,
+        74.935
+      ],
+      "size_share_of_asset": 0.314,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 4,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        38.704,
+        19.689,
+        68.662
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 5,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        68.662,
+        19.689,
+        38.704
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 7,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        38.704,
+        19.689,
+        68.662
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 23,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        38.704,
+        19.689,
+        68.662
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 22,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        68.662,
+        19.689,
+        38.704
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 81.242,
+      "flat_card": false,
+      "island": 17,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        38.704,
+        19.689,
+        68.662
+      ],
+      "size_share_of_asset": 0.283,
+      "slot_regularity": 0.421,
+      "sphere_fit_rms_rel": 0.0817,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 91.052,
+      "flat_card": false,
+      "island": 26,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        52.188
+      ],
+      "size_share_of_asset": 0.317,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 2.16,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 90.376,
+      "flat_card": false,
+      "island": 27,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        34.765,
+        36.66,
+        74.935
+      ],
+      "size_share_of_asset": 0.314,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 1.77,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 91.052,
+      "flat_card": false,
+      "island": 28,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        64.985,
+        36.66,
+        52.188
+      ],
+      "size_share_of_asset": 0.317,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    },
+    {
+      "aspect": 2.16,
+      "boundary_edges": 0,
+      "closed": true,
+      "diag": 90.376,
+      "flat_card": false,
+      "island": 29,
+      "median_valence": 6,
+      "radial_slots": 14,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        34.765,
+        36.66,
+        74.935
+      ],
+      "size_share_of_asset": 0.314,
+      "slot_regularity": 0.574,
+      "sphere_fit_rms_rel": 0.0551,
+      "tris": 74,
+      "verts": 39
+    }
+  ],
+  "metrics": {
+    "area_share_outer_third_radial": 0.673,
+    "bbox_diag": 287.3909196516869,
+    "bbox_x": 165.8,
+    "bbox_y": 166.82280804223424,
+    "bbox_z": 165.14857376055727,
+    "best_mirror": "mirror_x0",
+    "best_mirror_frac": 0.999,
+    "boundary_edges": 0,
+    "coplanar_clusters": 2187,
+    "degenerate_tris": 0,
+    "duplicate_faces": 2,
+    "edges": 6253,
+    "euler_chi": 60,
+    "hard_edge_ratio": 0.273,
+    "hard_edges_gt30": 1705,
+    "has_normals_stream": true,
+    "hidden_gamecam_ratio": 0.698,
+    "interior_tri_ratio": 0.256,
+    "island_bbox_overlaps": 85,
+    "islands": 31,
+    "largest_island_tri_share": 0.23,
+    "manifold_edge_pairs": 6251,
+    "max_coplanar_cluster_tris": 24,
+    "mean_dihedral_deg": 20.95,
+    "median_tri_px": 35.12,
+    "mirror_x0": 0.999,
+    "mirror_xc": 0.999,
+    "mirror_y0": 0.99,
+    "mirror_yc": 0.99,
+    "mirror_z0": 0.707,
+    "mirror_zc": 0.0,
+    "name": "esfera-mecanica",
+    "ngon_clusters_ge3": 144,
+    "nonmanifold_edges": 2,
+    "open_shell": false,
+    "planar_islands": 0,
+    "px_per_visible_tri": 90.22,
+    "quad_tri_ratio": 0.822,
+    "quads_detected": 1714,
+    "rot_sym_axis": "",
+    "rot_sym_frac": 0.0,
+    "rot_sym_order": 0,
+    "screen_px_height": 257.6,
+    "silhouette_band_tri_share": 0.107,
+    "subpixel_tri_ratio": 0.041,
+    "surface_area": 258084.9923837253,
+    "tri_share_for_90pct_pixels": 0.127,
+    "tri_share_outer_third_radial": 0.629,
+    "tri_share_x_upper_half": 0.499,
+    "tri_share_y_upper_half": 0.501,
+    "tri_share_z_upper_half": 0.62,
+    "tris": 4170,
+    "tris_for_50pct_pixels": 101,
+    "tris_for_90pct_pixels": 530,
+    "tris_hidden_gamecam": 2911,
+    "tris_in_flat_clusters_ge3": 687,
+    "tris_never_visible": 1067,
+    "tris_not_in_quad": 742,
+    "tris_under_1px": 170,
+    "tris_under_4px": 453,
+    "tris_visible_gamecam": 1259,
+    "vertex_split_ratio": 1.951,
+    "verts_stored": 4180,
+    "verts_welded": 2143,
+    "visible_px": 113586
+  },
+  "runtime": {
+    "audit_tool_sha256": "4942219a4392133e9a22c9de710a7bc067b5db77e4b229b68d7d5bc2a9594e36",
+    "glb_loader_sha256": "8b1db1afa72473960705d90b53feec704e1de4d1e13882789926cb9262d2ca54",
+    "mesh_engine_wrapper_sha256": "f99f0ca877195e5eaca282db35948acb526156a603ee6418e493f36ead3ce9dc",
+    "metric_engine_sha256": "40081eeb0bb994e9baccba4aacba8c86eb54c15283fdb01e79053171c0fc945d",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14",
+    "requirements_sha256": "5fb69d5c91e5d63ca19fe3f39e2eb8f61cfe567c72cc60faee6015af7b3f51a9",
+    "spatial_query_backend": "astrion.spatial_hash"
+  },
+  "scene": {
+    "active_scene": 0,
+    "components": [
+      {
+        "mesh_index": 0,
+        "name": "Core_Bezel_Outer",
+        "node_index": 0,
+        "primitive_count": 1,
+        "triangles": 288,
+        "vertices": 288,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 1,
+        "name": "Core_Lens",
+        "node_index": 1,
+        "primitive_count": 1,
+        "triangles": 190,
+        "vertices": 169,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 2,
+        "name": "Core_Rim_Inner",
+        "node_index": 2,
+        "primitive_count": 1,
+        "triangles": 288,
+        "vertices": 288,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 3,
+        "name": "Hub_Pole_Upper",
+        "node_index": 3,
+        "primitive_count": 1,
+        "triangles": 188,
+        "vertices": 194,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 4,
+        "name": "Plates_Band_Equator",
+        "node_index": 4,
+        "primitive_count": 1,
+        "triangles": 592,
+        "vertices": 715,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 5,
+        "name": "Plates_Band_Upper",
+        "node_index": 5,
+        "primitive_count": 1,
+        "triangles": 1072,
+        "vertices": 1316,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 6,
+        "name": "Plates_Cap_Upper",
+        "node_index": 6,
+        "primitive_count": 1,
+        "triangles": 592,
+        "vertices": 728,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "mesh_index": 7,
+        "name": "Sphere_Core",
+        "node_index": 7,
+        "primitive_count": 1,
+        "triangles": 960,
+        "vertices": 482,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 0,
+        "local_transform_is_identity": true,
+        "name": "Core_Bezel_Outer",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 1,
+        "local_transform_is_identity": true,
+        "name": "Core_Lens",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 2,
+        "local_transform_is_identity": true,
+        "name": "Core_Rim_Inner",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 3,
+        "local_transform_is_identity": true,
+        "name": "Hub_Pole_Upper",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 4,
+        "local_transform_is_identity": true,
+        "name": "Plates_Band_Equator",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 5,
+        "local_transform_is_identity": true,
+        "name": "Plates_Band_Upper",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 6,
+        "local_transform_is_identity": true,
+        "name": "Plates_Cap_Upper",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 7,
+        "local_transform_is_identity": true,
+        "name": "Sphere_Core",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "source_bbox_dimensions": [
+      2.087124586,
+      2.099999905,
+      2.078924298
+    ],
+    "source_xz_footprint": 2.087124586,
+    "transformed_node_count": 0,
+    "world_bbox_dimensions": [
+      165.8,
+      166.822808042,
+      165.148573761
+    ]
+  },
+  "schema_version": "0.1",
+  "summary": {
+    "errors": 4,
+    "informational": 1,
+    "passes": 21,
+    "waived": 0,
+    "warnings": 5
+  }
+}

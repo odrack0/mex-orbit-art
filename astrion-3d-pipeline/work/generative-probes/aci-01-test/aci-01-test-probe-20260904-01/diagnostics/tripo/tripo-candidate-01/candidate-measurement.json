@@ -1,0 +1,103 @@
+{
+  "asset_id": "aci-01-test",
+  "candidate_id": "tripo-candidate-01",
+  "delivery": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/tripo/tripo-candidate-01/delivery.json",
+    "sha256": "9a733ebb9aa2a9e2d094899b2cb5262964d6ed62571a60c9f0c92c78a9010230"
+  },
+  "derived_artifacts": [],
+  "diagnostics": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/tripo/tripo-candidate-01/silhouette-tripo-candidate-01.png",
+      "role": "gameplay-silhouette",
+      "sha256": "a8b10a2d856fdcbf4faaa330b08691ad1a292c1a183193c4cd87366b2ee336c4"
+    },
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/tripo/tripo-candidate-01/metrics-detail.json",
+      "role": "geometry-metrics-detail",
+      "sha256": "4e005d6fd389b2625b8e75c50bdbb167ec5b6f503e5951de3676160e5b6199dc"
+    }
+  ],
+  "evaluated_at": "2026-09-05T03:27:37.177740Z",
+  "evaluated_by": "astrion-probe-measurement/0.1",
+  "identity_review": [
+    {
+      "criterion": "major mass: spherical primary body",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    },
+    {
+      "criterion": "major mass: segmented outer armor shell",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    },
+    {
+      "criterion": "major mass: recessed concentric front core",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    },
+    {
+      "criterion": "identity feature: large curved armor plates",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    },
+    {
+      "criterion": "identity feature: continuous recessed cyan channels",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    },
+    {
+      "criterion": "identity feature: front circular lens with concentric rings",
+      "notes": "Compare the generated diagnostic with the frozen geometry reference before suggesting an outcome.",
+      "status": "not_assessed"
+    }
+  ],
+  "input_model": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/tripo/tripo-candidate-01/model.glb",
+    "sha256": "0d58620f4aa39a9dd1d98b787b01d1d9d6faf110a6ab193f0044b67755b74587"
+  },
+  "metrics": {
+    "bounds": {
+      "x": 0.999511719,
+      "y": 0.996582031,
+      "z": 0.999511719
+    },
+    "connected_components": 10,
+    "material_count": 1,
+    "mesh_count": 1,
+    "parse_status": "usable",
+    "primitive_count": 1,
+    "triangles": 13779,
+    "vertices": 14356
+  },
+  "notes": "Automated full probe measurement. Identity remains not_assessed and this record is not an Audit 1 result.",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "provider": "tripo",
+  "record_type": "candidate_evaluation",
+  "request_id": "tripo-geometry-01",
+  "schema_version": "0.1",
+  "state": "measured",
+  "suggested_outcome": null,
+  "topology_observations": [
+    {
+      "code": "nonmanifold_edges",
+      "message": "Detected 53 non-manifold edges.",
+      "severity": "error"
+    },
+    {
+      "code": "boundary_edges",
+      "message": "Detected 1586 boundary edges; probe evidence does not decide whether they are intentional.",
+      "severity": "warning"
+    },
+    {
+      "code": "triangle_ceiling_exceeded",
+      "message": "Candidate has 13779 triangles versus the future Master Mesh ceiling of 5000.",
+      "severity": "warning"
+    },
+    {
+      "code": "component_count_outside_plan",
+      "message": "Active scene has 1 mesh components; the future Master Mesh range is 2..32.",
+      "severity": "warning"
+    }
+  ]
+}

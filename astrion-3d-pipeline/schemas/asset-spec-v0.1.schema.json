@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/asset-spec-v0.1.schema.json",
+  "title": "Astrion Asset Spec v0.1",
+  "description": "Machine-readable contract for one Astrion 3D asset. Repository paths are relative to mex-orbit-art and use forward slashes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identity", "visual", "geometry", "appearance", "pipeline"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "identity": {"$ref": "#/$defs/identity"},
+    "visual": {"$ref": "#/$defs/visual"},
+    "geometry": {"$ref": "#/$defs/geometry"},
+    "appearance": {"$ref": "#/$defs/appearance"},
+    "pipeline": {"$ref": "#/$defs/pipeline"},
+    "notes": {"type": "string"}
+  },
+  "$defs": {
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!~)(?!.*:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_id", "category", "family", "tier", "status"],
+      "properties": {
+        "asset_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "category": {
+          "enum": ["prop", "prop_grande", "dron", "pet", "npc_normal", "npc_complejo", "elite", "boss", "uber", "player_ship", "estructura", "portal", "fx"]
+        },
+        "family": {"type": "string", "minLength": 1},
+        "tier": {"type": "string", "minLength": 1},
+        "status": {"enum": ["experimental", "production"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "symmetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {"enum": ["none", "bilateral_x", "bilateral_y", "bilateral_z", "radial"]},
+        "order": {"type": "integer", "minimum": 2}
+      }
+    },
+    "visual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screen_size_world_units", "camera_profile", "symmetry", "silhouette_complexity", "major_masses", "identity_features"],
+      "properties": {
+        "screen_size_world_units": {"type": "number", "exclusiveMinimum": 0},
+        "camera_profile": {"const": "top_down_default_v1"},
+        "symmetry": {"$ref": "#/$defs/symmetry"},
+        "silhouette_complexity": {"enum": ["low", "medium", "high"]},
+        "major_masses": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "identity_features": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "notes": {"type": "string"}
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max", "required"],
+      "properties": {
+        "min": {"type": "integer", "minimum": 1},
+        "max": {"type": "integer", "minimum": 1},
+        "required": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "primitiveRules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_rotational_segments": {"type": "integer", "minimum": 3}
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferred_origin", "allowed_origins", "soft_triangle_target", "triangle_ceiling", "coordinate_profile", "components", "anchors"],
+      "properties": {
+        "preferred_origin": {"enum": ["auto", "meshy", "tripo", "procedural_blender"]},
+        "allowed_origins": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["meshy", "tripo", "procedural_blender"]}
+        },
+        "soft_triangle_target": {"type": "integer", "minimum": 1},
+        "triangle_ceiling": {"type": "integer", "minimum": 1},
+        "coordinate_profile": {"const": "astrion_blender_to_godot_v1"},
+        "components": {"$ref": "#/$defs/components"},
+        "primitive_rules": {"$ref": "#/$defs/primitiveRules"},
+        "flatness_range": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "array",
+              "prefixItems": [
+                {"type": "number", "exclusiveMinimum": 0},
+                {"type": "number", "exclusiveMinimum": 0}
+              ],
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "anchors": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required"],
+          "properties": {
+            "required": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+          }
+        },
+        "notes": {"type": "string"}
+      }
+    },
+    "emission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "material_ids", "bake_glow_halo"],
+      "properties": {
+        "policy": {"enum": ["none", "material_ids", "authored_mask"]},
+        "material_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "runtime_profile": {"type": "string", "minLength": 1},
+        "bake_glow_halo": {"const": false}
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["texture_resolutions", "maps_required", "metallic", "roughness", "wear", "rust", "emission"],
+      "properties": {
+        "texture_resolutions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "integer", "minimum": 16}},
+        "maps_required": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["base_color", "normal", "orm", "metallic", "roughness", "ao", "emission_mask"]}
+        },
+        "metallic": {"enum": ["none", "mixed", "mostly_metal"]},
+        "roughness": {"enum": ["low", "medium", "high", "mixed"]},
+        "wear": {"enum": ["none", "light", "medium", "heavy"]},
+        "rust": {"enum": ["none", "light", "medium", "heavy"]},
+        "emission": {"$ref": "#/$defs/emission"},
+        "notes": {"type": "string"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "authority"],
+      "properties": {
+        "path": {"$ref": "#/$defs/repoPath"},
+        "role": {"type": "string", "minLength": 1},
+        "authority": {"enum": ["external_input", "astrion_source", "derived"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "masterMesh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source_path", "exchange_path"],
+      "properties": {
+        "status": {"enum": ["candidate", "approved"]},
+        "source_path": {"$ref": "#/$defs/repoPath"},
+        "exchange_path": {"$ref": "#/$defs/repoPath"}
+      }
+    },
+    "auditReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "report"],
+      "properties": {
+        "status": {"enum": ["not_run", "pass", "fail", "waived"]},
+        "report": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/repoPath"}]},
+        "waivers": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/waiver"}
+        }
+      }
+    },
+    "waiver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "reason", "scope", "reviewer", "revisit_condition"],
+      "properties": {
+        "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "reason": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1},
+        "reviewer": {"type": "string", "minLength": 1},
+        "revisit_condition": {"type": "string", "minLength": 1},
+        "expires": {"type": ["string", "null"]}
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "geometry_outcome", "source_inputs", "generated_inputs", "master_mesh", "outputs", "audits", "provenance"],
+      "properties": {
+        "stage": {
+          "enum": ["concept_intake", "spec_ready", "generative_probe", "geometry_origin_selected", "master_mesh_candidate", "geometry_audited", "uv_materials_ready", "appearance_ready", "appearance_reprojected", "emission_ready", "uv_textures_audited", "exported", "godot_verified"]
+        },
+        "geometry_outcome": {"enum": ["undecided", "accept_normalize", "repair", "rebuild_reference", "procedural_direct"]},
+        "source_inputs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+        "generated_inputs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+        "master_mesh": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/masterMesh"}]},
+        "outputs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+        "audits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["geometry", "uv_textures"],
+          "properties": {
+            "geometry": {"$ref": "#/$defs/auditReference"},
+            "uv_textures": {"$ref": "#/$defs/auditReference"}
+          }
+        },
+        "provenance": {"type": "object"},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

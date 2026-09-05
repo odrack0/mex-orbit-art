@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_decision",
+  "probe_id": "test-prop-probe-20260904-01",
+  "asset_id": "test-prop",
+  "state": "reviewed",
+  "comparison_status": "candidate_selected",
+  "evaluations": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/candidate-evaluation.json",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "provider": "meshy",
+      "candidate_id": "meshy-candidate-01"
+    }
+  ],
+  "selected_candidate_id": "meshy-candidate-01",
+  "intended_outcome": "repair",
+  "rationale": "The candidate preserves the identity-bearing masses and localized repair is cheaper than rebuilding.",
+  "reviewer": "repository owner",
+  "reviewed_at": "2026-09-04T19:00:00-06:00",
+  "production_handoff": {
+    "status": "not_requested",
+    "asset_spec_path": null,
+    "evidence_report_path": null
+  }
+}

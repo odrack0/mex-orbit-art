@@ -1,0 +1,3 @@
+COMMAND ["C:\\Users\\oDrac\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe", "astrion-3d-pipeline/tools/audit_m3_esfera.py", "--work-dir", "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject", "--spec", "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.geometry.json", "--output", "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/05-audit2/uv-texture-audit-m3-v0.1.json", "--appearance-source", "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb"]
+PASS: 11 pass, 1 warning, 0 error
+C:\Source\MexOrbit\mex-orbit-v1\mex-orbit-art\astrion-3d-pipeline\work\esfera-mecanica-m4-run-v1\stages\05-audit2\uv-texture-audit-m3-v0.1.json

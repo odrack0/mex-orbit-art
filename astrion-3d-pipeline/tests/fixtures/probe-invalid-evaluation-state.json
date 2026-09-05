@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "record_type": "candidate_evaluation",
+  "probe_id": "test-prop-probe-20260904-01",
+  "asset_id": "test-prop",
+  "state": "invalid",
+  "provider": "meshy",
+  "request_id": "meshy-primary",
+  "candidate_id": "meshy-candidate-01",
+  "delivery": {
+    "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/intake/meshy/meshy-candidate-01/delivery.json",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "input_model": {
+    "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/intake/meshy/meshy-candidate-01/model.glb",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "derived_artifacts": [],
+  "diagnostics": [],
+  "metrics": {
+    "parse_status": "usable",
+    "triangles": 10,
+    "vertices": 10,
+    "mesh_count": 1,
+    "primitive_count": 1,
+    "material_count": 0,
+    "connected_components": 1,
+    "bounds": {"x": 1, "y": 1, "z": 1}
+  },
+  "topology_observations": [],
+  "identity_review": [],
+  "suggested_outcome": "accept_normalize",
+  "evaluated_at": "2026-09-04T18:30:00-06:00",
+  "evaluated_by": "repository owner"
+}

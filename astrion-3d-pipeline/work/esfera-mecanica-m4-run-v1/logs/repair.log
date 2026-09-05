@@ -1,0 +1,27 @@
+COMMAND ["C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe", "--background", "--factory-startup", "--python", "tools/reparar-esfera-mecanica.py", "--", "--input", "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend", "--output-dir", "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair", "--repo-root", ".", "--epsilon", "1e-05"]
+00:01.875  blend            | Read blend: "C:\Source\MexOrbit\mex-orbit-v1\mex-orbit-art\source\3d-models\procedural\esfera-mecanica\esfera-mecanica.blend"
+00:02.109  image.write      | ERROR OpenImageIO write failed: Could not open file "\.thumbnails\large\blender_40792_288c22a668d837aa3842e8484c5cf719.png.png"
+Info: Saved as "esfera-mecanica-repaired.blend"
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+17:00:18 | INFO: Starting glTF 2.0 export
+17:00:18 | INFO: Extracting primitive: Core_Bezel_Outer.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Core_Lens.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Core_Rim_Inner.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Hub_Pole_Upper.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Plates_Band_Equator.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Plates_Band_Upper.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Plates_Cap_Upper.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Extracting primitive: Sphere_Core.001
+17:00:18 | INFO: Primitives created: 1
+17:00:18 | INFO: Finished glTF 2.0 export in 0.06849431991577148 s
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+PASS C:\Source\MexOrbit\mex-orbit-v1\mex-orbit-art\astrion-3d-pipeline\work\esfera-mecanica-m4-run-v1\stages\01-repair\repair-report.json

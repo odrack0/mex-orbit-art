@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/probe-evaluation-v0.1.schema.json",
+  "title": "Astrion Generative Candidate Evaluation v0.1",
+  "description": "Provider-neutral probe metrics and review evidence; never an Audit 1 result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_type", "probe_id", "asset_id", "state",
+    "provider", "request_id", "candidate_id", "delivery", "input_model",
+    "derived_artifacts", "diagnostics", "metrics", "topology_observations",
+    "identity_review", "suggested_outcome", "evaluated_at", "evaluated_by"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "record_type": {"const": "candidate_evaluation"},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "asset_id": {"$ref": "#/$defs/id"},
+    "state": {"enum": ["measured", "evaluated", "invalid"]},
+    "provider": {"enum": ["meshy", "tripo"]},
+    "request_id": {"$ref": "#/$defs/id"},
+    "candidate_id": {"$ref": "#/$defs/id"},
+    "delivery": {"$ref": "#/$defs/hashedIntakePath"},
+    "input_model": {"$ref": "#/$defs/hashedIntakePath"},
+    "derived_artifacts": {"type": "array", "items": {"$ref": "#/$defs/derivedArtifact"}},
+    "diagnostics": {"type": "array", "items": {"$ref": "#/$defs/diagnosticArtifact"}},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "topology_observations": {"type": "array", "items": {"$ref": "#/$defs/observation"}},
+    "identity_review": {"type": "array", "items": {"$ref": "#/$defs/identityCriterion"}},
+    "suggested_outcome": {
+      "type": ["string", "null"],
+      "enum": ["accept_normalize", "repair", "rebuild_reference", "procedural_direct", null]
+    },
+    "evaluated_at": {"$ref": "#/$defs/timestamp"},
+    "evaluated_by": {"$ref": "#/$defs/nonEmptyString"},
+    "notes": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "evaluated"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "metrics": {
+            "properties": {
+              "parse_status": {"const": "usable"},
+              "triangles": {"type": "integer", "minimum": 0},
+              "vertices": {"type": "integer", "minimum": 0},
+              "mesh_count": {"type": "integer", "minimum": 0},
+              "primitive_count": {"type": "integer", "minimum": 0},
+              "material_count": {"type": "integer", "minimum": 0},
+              "connected_components": {"type": "integer", "minimum": 0},
+              "bounds": {"type": "object"}
+            }
+          },
+          "identity_review": {"minItems": 1},
+          "suggested_outcome": {"type": "string"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"state": {"const": "invalid"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "metrics": {"properties": {"parse_status": {"const": "invalid"}}},
+          "suggested_outcome": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"state": {"const": "measured"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "metrics": {
+            "properties": {
+              "parse_status": {"const": "usable"},
+              "triangles": {"type": "integer", "minimum": 0},
+              "vertices": {"type": "integer", "minimum": 0},
+              "mesh_count": {"type": "integer", "minimum": 0},
+              "primitive_count": {"type": "integer", "minimum": 0},
+              "material_count": {"type": "integer", "minimum": 0},
+              "connected_components": {"type": "integer", "minimum": 0},
+              "bounds": {"type": "object"}
+            }
+          },
+          "diagnostics": {"minItems": 1},
+          "identity_review": {
+            "minItems": 1,
+            "items": {
+              "allOf": [
+                {"$ref": "#/$defs/identityCriterion"},
+                {"properties": {"status": {"const": "not_assessed"}}}
+              ]
+            }
+          },
+          "suggested_outcome": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "intakePath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/intake/[a-z0-9-]+/[a-z0-9-]+/.+$"
+    },
+    "derivedPath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/derived/[a-z0-9-]+/[a-z0-9-]+/.+$"
+    },
+    "diagnosticPath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/diagnostics/[a-z0-9-]+/[a-z0-9-]+/.+$"
+    },
+    "hashedIntakePath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/intakePath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "derivedArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/derivedPath"},
+        "role": {"$ref": "#/$defs/nonEmptyString"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "diagnosticArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/diagnosticPath"},
+        "role": {"$ref": "#/$defs/nonEmptyString"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullableCount": {"type": ["integer", "null"], "minimum": 0},
+    "bounds": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": {"type": "number", "minimum": 0},
+        "y": {"type": "number", "minimum": 0},
+        "z": {"type": "number", "minimum": 0}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parse_status", "triangles", "vertices", "mesh_count", "primitive_count",
+        "material_count", "connected_components", "bounds"
+      ],
+      "properties": {
+        "parse_status": {"enum": ["usable", "invalid"]},
+        "triangles": {"$ref": "#/$defs/nullableCount"},
+        "vertices": {"$ref": "#/$defs/nullableCount"},
+        "mesh_count": {"$ref": "#/$defs/nullableCount"},
+        "primitive_count": {"$ref": "#/$defs/nullableCount"},
+        "material_count": {"$ref": "#/$defs/nullableCount"},
+        "connected_components": {"$ref": "#/$defs/nullableCount"},
+        "bounds": {"$ref": "#/$defs/bounds"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "severity": {"enum": ["info", "warning", "error"]},
+        "message": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "identityCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterion", "status", "notes"],
+      "properties": {
+        "criterion": {"$ref": "#/$defs/nonEmptyString"},
+        "status": {"enum": ["pass", "warning", "fail", "not_assessed"]},
+        "notes": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    }
+  }
+}

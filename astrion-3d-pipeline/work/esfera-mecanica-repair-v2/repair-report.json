@@ -1,0 +1,275 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "components": [
+    {
+      "after_modifiers": {
+        "ngons": 448,
+        "polygons": 512,
+        "triangles": 960,
+        "vertices": 482
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 1440,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 960,
+        "vertices": 482
+      },
+      "before_modifiers": {
+        "ngons": 448,
+        "polygons": 512,
+        "triangles": 960,
+        "vertices": 482
+      },
+      "coincident_groups": [],
+      "component": "Sphere_Core",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 223,
+        "polygons": 228,
+        "triangles": 592,
+        "vertices": 306
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 888,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 592,
+        "vertices": 306
+      },
+      "before_modifiers": {
+        "ngons": 205,
+        "polygons": 205,
+        "triangles": 460,
+        "vertices": 240
+      },
+      "coincident_groups": [],
+      "component": "Plates_Band_Equator",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 434,
+        "polygons": 448,
+        "triangles": 1072,
+        "vertices": 560
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 1598,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 4,
+        "nonmanifold_edges": 0,
+        "triangles": 1064,
+        "vertices": 558
+      },
+      "before_modifiers": {
+        "ngons": 198,
+        "polygons": 198,
+        "triangles": 444,
+        "vertices": 234
+      },
+      "coincident_groups": [
+        {
+          "coincident_faces": 2,
+          "faces_removed": 2,
+          "opposed_normals": true,
+          "policy": "remove_both_sides"
+        },
+        {
+          "coincident_faces": 2,
+          "faces_removed": 2,
+          "opposed_normals": true,
+          "policy": "remove_both_sides"
+        }
+      ],
+      "component": "Plates_Band_Upper",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 264,
+        "polygons": 264,
+        "triangles": 592,
+        "vertices": 312
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 888,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 592,
+        "vertices": 312
+      },
+      "before_modifiers": {
+        "ngons": 132,
+        "polygons": 132,
+        "triangles": 296,
+        "vertices": 156
+      },
+      "coincident_groups": [],
+      "component": "Plates_Cap_Upper",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 66,
+        "polygons": 98,
+        "triangles": 188,
+        "vertices": 98
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 282,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 188,
+        "vertices": 98
+      },
+      "before_modifiers": {
+        "ngons": 33,
+        "polygons": 49,
+        "triangles": 94,
+        "vertices": 49
+      },
+      "coincident_groups": [],
+      "component": "Hub_Pole_Upper",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 144,
+        "polygons": 144,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 432,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "before_modifiers": {
+        "ngons": 144,
+        "polygons": 144,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "coincident_groups": [],
+      "component": "Core_Bezel_Outer",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 144,
+        "polygons": 144,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 432,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "before_modifiers": {
+        "ngons": 144,
+        "polygons": 144,
+        "triangles": 288,
+        "vertices": 144
+      },
+      "coincident_groups": [],
+      "component": "Core_Rim_Inner",
+      "merged_vertices": 0
+    },
+    {
+      "after_modifiers": {
+        "ngons": 73,
+        "polygons": 97,
+        "triangles": 190,
+        "vertices": 97
+      },
+      "after_repair": {
+        "boundary_edges": 0,
+        "degenerate_triangles": 0,
+        "edges": 285,
+        "flipped_manifold_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "ngons": 0,
+        "nonmanifold_edges": 0,
+        "triangles": 190,
+        "vertices": 97
+      },
+      "before_modifiers": {
+        "ngons": 73,
+        "polygons": 97,
+        "triangles": 190,
+        "vertices": 97
+      },
+      "coincident_groups": [],
+      "component": "Core_Lens",
+      "merged_vertices": 0
+    }
+  ],
+  "epsilon": 1e-05,
+  "error": "la reparacion dejo topologia invalida en ['Plates_Band_Upper']",
+  "global_topology": {
+    "boundary_edges": 0,
+    "duplicate_face_groups": [],
+    "duplicate_faces": 0,
+    "nonmanifold_edge_faces": [],
+    "nonmanifold_edges": 0,
+    "stored_vertices": 2141,
+    "triangles": 4162,
+    "welded_vertices": 2141
+  },
+  "input": {
+    "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+    "sha256": "c5adb582dc433e7d0732f88912df06f49b90e5b707e6d82f2357e205a7cb4dcd"
+  },
+  "limitations": [
+    "Intentional buried closure geometry is preserved.",
+    "Gameplay visibility must be reviewed by Geometry Audit v0.1 after repair."
+  ],
+  "output_dir": "astrion-3d-pipeline/work/esfera-mecanica-repair-v2",
+  "schema_version": "0.1",
+  "script_sha256": "c2d2a52d35fdd207e85f92f3478f0c0b890a9ada81fbfac786f6247b4a29c9ad",
+  "status": "fail",
+  "tool": "astrion-repair-esfera-mecanica/0.1"
+}

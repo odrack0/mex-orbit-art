@@ -1,0 +1,103 @@
+{
+  "asset_id": "aci-01-test",
+  "candidate_id": "meshy-candidate-01",
+  "delivery": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/meshy/meshy-candidate-01/delivery.json",
+    "sha256": "ca27b921f72ce81ea474b17bf3e3db1a88c697bab7f895a4c0f7f2289813bed6"
+  },
+  "derived_artifacts": [],
+  "diagnostics": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/silhouette-meshy-candidate-01.png",
+      "role": "gameplay-silhouette",
+      "sha256": "f54125db7cad95d008fae2f9571358b93672909b696a1ce3b11ac7f6f8c7bb08"
+    },
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/meshy/meshy-candidate-01/metrics-detail.json",
+      "role": "geometry-metrics-detail",
+      "sha256": "ec292a5dc610e3917f79a6ab6b401111346394f0feeccdd28be706f5d0ab3ec8"
+    }
+  ],
+  "evaluated_at": "2026-09-04T21:31:03-06:00",
+  "evaluated_by": "Codex visual review (non-authoritative)",
+  "identity_review": [
+    {
+      "criterion": "major mass: spherical primary body",
+      "notes": "The diagnostic preserves the dominant spherical mass from geometria.png.",
+      "status": "pass"
+    },
+    {
+      "criterion": "major mass: segmented outer armor shell",
+      "notes": "The segmented shell reads clearly, but several seams and plate junctions are irregular or fragmented.",
+      "status": "warning"
+    },
+    {
+      "criterion": "major mass: recessed concentric front core",
+      "notes": "The front core and rings are recognizable, although their concentric forms are softer and less regular than the reference.",
+      "status": "warning"
+    },
+    {
+      "criterion": "identity feature: large curved armor plates",
+      "notes": "Large curved plates survive, but faceting and broken junctions reduce the clean mechanical construction.",
+      "status": "warning"
+    },
+    {
+      "criterion": "identity feature: continuous recessed cyan channels",
+      "notes": "Recessed channel geometry is visible, but continuity is inconsistent; cyan appearance remains outside this geometry-only review.",
+      "status": "warning"
+    },
+    {
+      "criterion": "identity feature: front circular lens with concentric rings",
+      "notes": "The circular front feature and surrounding ring stack remain immediately recognizable.",
+      "status": "pass"
+    }
+  ],
+  "input_model": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/meshy/meshy-candidate-01/model.glb",
+    "sha256": "7b5f8825ea65ebfa5bdde0507a8755987ce7770c3c70daef56636286d58ec100"
+  },
+  "metrics": {
+    "bounds": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 0.974609375
+    },
+    "connected_components": 50,
+    "material_count": 0,
+    "mesh_count": 1,
+    "parse_status": "usable",
+    "primitive_count": 1,
+    "triangles": 14027,
+    "vertices": 8069
+  },
+  "notes": "Visual review against the operator-confirmed geometria.png reference plus measured topology evidence. Meshy is useful as a 3D reference, but 50 connected islands, 2015 boundary edges, missing normals, and 14027 triangles make direct normalization unattractive. This suggestion is probe evidence, not a human selection or Audit 1 result.",
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "provider": "meshy",
+  "record_type": "candidate_evaluation",
+  "request_id": "meshy-geometry-01",
+  "schema_version": "0.1",
+  "state": "evaluated",
+  "suggested_outcome": "rebuild_reference",
+  "topology_observations": [
+    {
+      "code": "boundary_edges",
+      "message": "Detected 2015 boundary edges; probe evidence does not decide whether they are intentional.",
+      "severity": "warning"
+    },
+    {
+      "code": "triangle_ceiling_exceeded",
+      "message": "Candidate has 14027 triangles versus the future Master Mesh ceiling of 5000.",
+      "severity": "warning"
+    },
+    {
+      "code": "component_count_outside_plan",
+      "message": "Active scene has 1 mesh components; the future Master Mesh range is 2..32.",
+      "severity": "warning"
+    },
+    {
+      "code": "normals_missing",
+      "message": "One or more active primitives have no normal stream.",
+      "severity": "warning"
+    }
+  ]
+}

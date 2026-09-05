@@ -1,0 +1,38 @@
+{
+  "identity_review": [
+    {
+      "criterion": "major mass: spherical primary body",
+      "status": "pass",
+      "notes": "The diagnostic preserves the dominant spherical mass from geometria.png."
+    },
+    {
+      "criterion": "major mass: segmented outer armor shell",
+      "status": "pass",
+      "notes": "The outer shell remains coherently segmented with broad plate relationships close to the reference."
+    },
+    {
+      "criterion": "major mass: recessed concentric front core",
+      "status": "pass",
+      "notes": "The recessed circular core and its concentric ring structure read cleanly in the diagnostic."
+    },
+    {
+      "criterion": "identity feature: large curved armor plates",
+      "status": "pass",
+      "notes": "Large curved armor plates are clearly separated and retain the intended mechanical rhythm."
+    },
+    {
+      "criterion": "identity feature: continuous recessed cyan channels",
+      "status": "warning",
+      "notes": "Most recessed channel paths survive, but some runs are shallow or merge into seams; cyan appearance remains outside this geometry-only review."
+    },
+    {
+      "criterion": "identity feature: front circular lens with concentric rings",
+      "status": "pass",
+      "notes": "The circular front lens mass and surrounding rings remain clear and regular."
+    }
+  ],
+  "suggested_outcome": "repair",
+  "reviewed_at": "2026-09-04T21:31:03-06:00",
+  "reviewed_by": "Codex visual review (non-authoritative)",
+  "notes": "Visual review against the operator-confirmed geometria.png reference plus measured topology evidence. Tripo is the stronger repair candidate, but it still exceeds the 5000-triangle ceiling and contains 53 non-manifold and 1586 boundary edges. This suggestion is probe evidence, not a human selection or Audit 1 result."
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "bad-path",
+    "category": "prop",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {},
+  "geometry": {},
+  "appearance": {},
+  "pipeline": {
+    "source_inputs": [
+      {
+        "path": "C:\\raw\\source.glb",
+        "role": "concept",
+        "authority": "external_input"
+      }
+    ]
+  }
+}

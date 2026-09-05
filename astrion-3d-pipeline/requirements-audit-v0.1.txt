@@ -1,0 +1,5 @@
+# Exact versions exercised by Geometry Audit v0.1 on 2026-09-04.
+# SciPy is intentionally not required: the wrapper supplies the bounded
+# spatial query used by the existing mesh_metrics.py engine when SciPy is absent.
+numpy==2.3.5
+Pillow==12.3.0

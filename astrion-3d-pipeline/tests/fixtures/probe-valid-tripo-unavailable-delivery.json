@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1",
+  "record_type": "probe_delivery",
+  "probe_id": "test-prop-probe-20260904-01",
+  "asset_id": "test-prop",
+  "state": "invalid",
+  "probe_plan": {
+    "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/probe-plan.json",
+    "sha256": "9999999999999999999999999999999999999999999999999999999999999999"
+  },
+  "provider": "tripo",
+  "request_id": "tripo-primary",
+  "candidate_id": "tripo-attempt-01",
+  "provenance": {
+    "delivery_mode": "manual",
+    "external_job_id": null,
+    "model": "unknown",
+    "generation_mode": "image_to_3d",
+    "settings": {},
+    "seed": null,
+    "generated_at": null,
+    "license": "unknown"
+  },
+  "files": [
+    {
+      "path": "astrion-3d-pipeline/work/generative-probes/test-prop/test-prop-probe-20260904-01/intake/tripo/tripo-attempt-01/provider-error.json",
+      "role": "metadata",
+      "media_type": "application/json",
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "size_bytes": 256
+    }
+  ],
+  "delivered_at": "2026-09-04T18:05:00-06:00",
+  "delivered_by": "repository owner",
+  "notes": "The provider branch produced no usable model; the captured metadata preserves the failed attempt."
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "esfera-mecanica",
+    "category": "prop_grande",
+    "family": "mechanical",
+    "tier": "reference",
+    "status": "experimental",
+    "notes": "Candidate repaired from the existing experimental mechanical sphere; not promoted."
+  },
+  "visual": {
+    "screen_size_world_units": 165.8,
+    "camera_profile": "top_down_default_v1",
+    "symmetry": {"type": "radial", "order": 6},
+    "silhouette_complexity": "low",
+    "major_masses": ["segmented spherical hull", "recessed concentric front core"],
+    "identity_features": ["staggered armor plate bands", "front lens and concentric rings"]
+  },
+  "geometry": {
+    "preferred_origin": "procedural_blender",
+    "allowed_origins": ["procedural_blender"],
+    "soft_triangle_target": 4000,
+    "triangle_ceiling": 5000,
+    "coordinate_profile": "astrion_blender_to_godot_v1",
+    "components": {
+      "min": 8,
+      "max": 8,
+      "required": [
+        "Sphere_Core",
+        "Plates_Band_Equator",
+        "Plates_Band_Upper",
+        "Plates_Cap_Upper",
+        "Hub_Pole_Upper",
+        "Core_Bezel_Outer",
+        "Core_Rim_Inner",
+        "Core_Lens"
+      ]
+    },
+    "primitive_rules": {"max_rotational_segments": 24},
+    "flatness_range": null,
+    "anchors": {"required": []},
+    "notes": "Verification-only M3 repair candidate. The original source asset remains unchanged."
+  },
+  "appearance": {
+    "texture_resolutions": [1024, 2048],
+    "maps_required": ["base_color", "normal", "orm", "emission_mask"],
+    "metallic": "mostly_metal",
+    "roughness": "medium",
+    "wear": "light",
+    "rust": "none",
+    "emission": {
+      "policy": "material_ids",
+      "material_ids": ["MAT_EMISSION"],
+      "bake_glow_halo": false
+    }
+  },
+  "pipeline": {
+    "stage": "geometry_audited",
+    "geometry_outcome": "procedural_direct",
+    "source_inputs": [
+      {
+        "path": "tools/esfera-mecanica.py",
+        "role": "procedural_builder",
+        "authority": "astrion_source"
+      },
+      {
+        "path": "tools/reparar-esfera-mecanica.py",
+        "role": "deterministic_geometry_repair",
+        "authority": "astrion_source"
+      }
+    ],
+    "generated_inputs": [],
+    "master_mesh": {
+      "status": "approved",
+      "source_path": "astrion-3d-pipeline/work/esfera-mecanica-repair-v3/esfera-mecanica-repaired.blend",
+      "exchange_path": "astrion-3d-pipeline/work/esfera-mecanica-repair-v3/esfera-mecanica-repaired.glb"
+    },
+    "outputs": [
+      {
+        "path": "astrion-3d-pipeline/work/esfera-mecanica-repair-v3/repair-report.json",
+        "role": "repair_evidence",
+        "authority": "derived"
+      }
+    ],
+    "audits": {
+      "geometry": {
+        "status": "waived",
+        "report": "astrion-3d-pipeline/work/esfera-mecanica-repair-v3/geometry-audit-v0.1.json",
+        "waivers": [
+          {
+            "check_id": "never_visible_geometry",
+            "reason": "The raised armor plates and core rings are intentionally closed semantic solids whose buried bases overlap Sphere_Core; deleting them would open the pieces or require a Boolean union that destroys the eight-component ownership contract.",
+            "scope": "Only the 25.5% never-visible ratio measured for the hash-bound 4,166-triangle esfera-mecanica repaired Master Mesh at top_down_default_v1 and 165.8 world units.",
+            "reviewer": "Repository owner, authorized in the Codex task on 2026-09-04",
+            "revisit_condition": "Reopen if geometry/component topology, animation exposure, gameplay camera, declared screen size, or production status changes.",
+            "expires": null
+          }
+        ]
+      },
+      "uv_textures": {"status": "not_run", "report": null}
+    },
+    "provenance": {
+      "repair_report": "astrion-3d-pipeline/work/esfera-mecanica-repair-v3/repair-report.json",
+      "source_asset_unchanged": true
+    },
+    "notes": "Audit 1 is closed by an explicit scoped waiver. The repaired Master Mesh is approved for the manual M3 UV/material stage, not yet for production export."
+  }
+}

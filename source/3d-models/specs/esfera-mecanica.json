@@ -1,0 +1,133 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "esfera-mecanica",
+    "category": "prop_grande",
+    "family": "mechanical",
+    "tier": "reference",
+    "status": "experimental",
+    "notes": "Pipeline reference asset, not a production gameplay asset. Its category is provisional."
+  },
+  "visual": {
+    "screen_size_world_units": 165.8,
+    "camera_profile": "top_down_default_v1",
+    "symmetry": {
+      "type": "radial",
+      "order": 6
+    },
+    "silhouette_complexity": "low",
+    "major_masses": [
+      "segmented spherical hull",
+      "recessed concentric front core"
+    ],
+    "identity_features": [
+      "staggered armor plate bands",
+      "front lens and concentric rings"
+    ],
+    "notes": "The 165.8-unit planning size is provisional: it converts the documented 256-pixel review size at 1440p/zoom 1 using 1.544 px per world unit. Confirm before production use."
+  },
+  "geometry": {
+    "preferred_origin": "procedural_blender",
+    "allowed_origins": [
+      "procedural_blender"
+    ],
+    "soft_triangle_target": 4000,
+    "triangle_ceiling": 5000,
+    "coordinate_profile": "astrion_blender_to_godot_v1",
+    "components": {
+      "min": 8,
+      "max": 8,
+      "required": [
+        "Sphere_Core",
+        "Plates_Band_Equator",
+        "Plates_Band_Upper",
+        "Plates_Cap_Upper",
+        "Hub_Pole_Upper",
+        "Core_Bezel_Outer",
+        "Core_Rim_Inner",
+        "Core_Lens"
+      ]
+    },
+    "primitive_rules": {
+      "max_rotational_segments": 24
+    },
+    "flatness_range": null,
+    "anchors": {
+      "required": []
+    },
+    "notes": "The current 4,170-triangle candidate exceeds the existing prop_grande class range. M2 must report this policy conflict rather than treating 4,000 as a fill target."
+  },
+  "appearance": {
+    "texture_resolutions": [1024, 2048],
+    "maps_required": ["base_color", "normal", "orm", "emission_mask"],
+    "metallic": "mostly_metal",
+    "roughness": "medium",
+    "wear": "light",
+    "rust": "none",
+    "emission": {
+      "policy": "material_ids",
+      "material_ids": ["MAT_EMISSION"],
+      "bake_glow_halo": false
+    },
+    "notes": "Meshy appearance is evidence only; Astrion UVs, material IDs, geometry, and deterministic emission remain authoritative."
+  },
+  "pipeline": {
+    "stage": "master_mesh_candidate",
+    "geometry_outcome": "procedural_direct",
+    "source_inputs": [
+      {
+        "path": "tools/esfera-mecanica.py",
+        "role": "procedural_builder",
+        "authority": "astrion_source"
+      }
+    ],
+    "generated_inputs": [
+      {
+        "path": "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb",
+        "role": "appearance_source",
+        "authority": "external_input",
+        "notes": "Meshy changed UVs/material structure and is not authoritative."
+      }
+    ],
+    "master_mesh": {
+      "status": "candidate",
+      "source_path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+      "exchange_path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.glb"
+    },
+    "outputs": [
+      {
+        "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica-v2-uv.glb",
+        "role": "experimental_uv_material_candidate",
+        "authority": "derived"
+      },
+      {
+        "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica-v3-tex.glb",
+        "role": "experimental_reprojected_candidate",
+        "authority": "derived"
+      }
+    ],
+    "audits": {
+      "geometry": {
+        "status": "fail",
+        "report": "astrion-3d-pipeline/reports/esfera-mecanica/geometry-audit-v0.1.json"
+      },
+      "uv_textures": {"status": "not_run", "report": null}
+    },
+    "provenance": {
+      "tools": [
+        "tools/esfera-mecanica.py",
+        "tools/esfera-mecanica-uv.py",
+        "tools/reproyectar-texturas.py"
+      ],
+      "existing_reports": [
+        "source/3d-models/procedural/esfera-mecanica/reporte.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-uv.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-meshy.txt",
+        "source/3d-models/procedural/esfera-mecanica/reporte-reproyeccion.txt"
+      ],
+      "notes": "Existing reports predate the two formal audit gates. They are evidence, not pass records. No concept-art source was found during M0/M1 discovery."
+    },
+    "notes": "The stage intentionally remains master_mesh_candidate: later experimental artifacts exist, but Geometry Audit v0.1 failed and the candidate is not promoted."
+  },
+  "notes": "Reviewed M1 example. It records known facts and explicit provisional decisions without modifying or promoting the 3D asset."
+}

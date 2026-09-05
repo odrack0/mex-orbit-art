@@ -1,0 +1,8 @@
+78098b89c88a74ebe8c20117b8754620
+::res://::1788561196
+esfera-mecanica-v3-tex.glb::PackedScene::3988486464616117828::1788560556::1788561202::1::::<><><>0<>0<>d4ad941e9c23c64119a5212477567805<>res://.godot/imported/esfera-mecanica-v3-tex.glb-1e62abb9e3c654b993914607d593fbec.scn::uid://b1gjgvuelhmpp::::res://esfera-mecanica-v3-tex_basecolor.png<>uid://cg5uif63to4fg::::res://esfera-mecanica-v3-tex_orm.png<>uid://drjn0a8g5lmv5::::res://esfera-mecanica-v3-tex_normal.png<>uid://cg0fam5fdm0pr::::res://esfera-mecanica-v3-tex_emission-mask.png
+esfera-mecanica-v3-tex_normal.png::CompressedTexture2D::8371885809757673424::1788561199::1788561200::1::::<><><>0<>0<>3412cae2dc7b3ea1594188fd51ca14c9<>res://.godot/imported/esfera-mecanica-v3-tex_normal.png-f66d6e3565a67290f889308a7ade91e5.ctex::
+esfera-mecanica-v3-tex_basecolor.png::CompressedTexture2D::4224275186587801509::1788561200::1788561201::1::::<><><>0<>0<>52891bc3c1952bb4d5d51ab52e84e9b7<>res://.godot/imported/esfera-mecanica-v3-tex_basecolor.png-b445832b0402fcbd5546a7d7c88a8111.ctex::
+esfera-mecanica-v3-tex_orm.png::CompressedTexture2D::5257134699846611972::1788561201::1788561202::1::::<><><>0<>0<>0a67b6a4f98ef707be5c0f7e611fe19f<>res://.godot/imported/esfera-mecanica-v3-tex_orm.png-890a71306985ef463f676b3935267135.ctex::
+esfera-mecanica-v3-tex_emission-mask.png::CompressedTexture2D::5245888134885744547::1788561202::1788561202::1::::<><><>0<>0<>a4f3697484b9aef4e7cd741e9c24dfc4<>res://.godot/imported/esfera-mecanica-v3-tex_emission-mask.png-07033aa747db846b60cc4c88c5fbd39e.ctex::
+verify_import.gd::GDScript::198488305642212071::1788561165::0::1::::<>SceneTree<><>0<>0<><>::

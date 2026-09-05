@@ -1,0 +1,38 @@
+{
+  "identity_review": [
+    {
+      "criterion": "major mass: spherical primary body",
+      "status": "pass",
+      "notes": "The diagnostic preserves the dominant spherical mass from geometria.png."
+    },
+    {
+      "criterion": "major mass: segmented outer armor shell",
+      "status": "warning",
+      "notes": "The segmented shell reads clearly, but several seams and plate junctions are irregular or fragmented."
+    },
+    {
+      "criterion": "major mass: recessed concentric front core",
+      "status": "warning",
+      "notes": "The front core and rings are recognizable, although their concentric forms are softer and less regular than the reference."
+    },
+    {
+      "criterion": "identity feature: large curved armor plates",
+      "status": "warning",
+      "notes": "Large curved plates survive, but faceting and broken junctions reduce the clean mechanical construction."
+    },
+    {
+      "criterion": "identity feature: continuous recessed cyan channels",
+      "status": "warning",
+      "notes": "Recessed channel geometry is visible, but continuity is inconsistent; cyan appearance remains outside this geometry-only review."
+    },
+    {
+      "criterion": "identity feature: front circular lens with concentric rings",
+      "status": "pass",
+      "notes": "The circular front feature and surrounding ring stack remain immediately recognizable."
+    }
+  ],
+  "suggested_outcome": "rebuild_reference",
+  "reviewed_at": "2026-09-04T21:31:03-06:00",
+  "reviewed_by": "Codex visual review (non-authoritative)",
+  "notes": "Visual review against the operator-confirmed geometria.png reference plus measured topology evidence. Meshy is useful as a 3D reference, but 50 connected islands, 2015 boundary edges, missing normals, and 14027 triangles make direct normalization unattractive. This suggestion is probe evidence, not a human selection or Audit 1 result."
+}

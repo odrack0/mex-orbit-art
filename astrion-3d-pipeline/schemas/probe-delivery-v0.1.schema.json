@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/probe-delivery-v0.1.schema.json",
+  "title": "Astrion Generative Probe Delivery v0.1",
+  "description": "Explicit immutable delivery from one provider-specific pipeline.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_type", "probe_id", "asset_id", "state",
+    "probe_plan", "provider", "request_id", "candidate_id", "provenance", "files",
+    "delivered_at", "delivered_by"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "record_type": {"const": "probe_delivery"},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "asset_id": {"$ref": "#/$defs/id"},
+    "state": {"enum": ["received", "invalid", "withdrawn"]},
+    "probe_plan": {"$ref": "#/$defs/hashedPlanPath"},
+    "provider": {"enum": ["meshy", "tripo"]},
+    "request_id": {"$ref": "#/$defs/id"},
+    "candidate_id": {"$ref": "#/$defs/id"},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/deliveredFile"}
+    },
+    "delivered_at": {"$ref": "#/$defs/timestamp"},
+    "delivered_by": {"$ref": "#/$defs/nonEmptyString"},
+    "notes": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "received"}}, "required": ["state"]},
+      "then": {"properties": {"files": {"contains": {"properties": {"role": {"const": "model"}}, "required": ["role"]}}}}
+    },
+    {
+      "if": {"properties": {"state": {"enum": ["invalid", "withdrawn"]}}, "required": ["state"]},
+      "then": {"required": ["notes"], "properties": {"notes": {"minLength": 1}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "intakePath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/intake/[a-z0-9-]+/[a-z0-9-]+/.+$"
+    },
+    "planPath": {
+      "type": "string",
+      "pattern": "^astrion-3d-pipeline/work/generative-probes/[a-z0-9-]+/[a-z0-9-]+/probe-plan\\.json$"
+    },
+    "hashedPlanPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/planPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delivery_mode", "external_job_id", "model", "generation_mode",
+        "settings", "seed", "generated_at", "license"
+      ],
+      "properties": {
+        "delivery_mode": {"enum": ["manual", "adapter"]},
+        "external_job_id": {"oneOf": [{"$ref": "#/$defs/nonEmptyString"}, {"type": "null"}]},
+        "model": {"$ref": "#/$defs/nonEmptyString"},
+        "generation_mode": {"enum": ["image_to_3d", "multi_image_to_3d", "text_to_3d", "other"]},
+        "settings": {"type": "object"},
+        "seed": {"oneOf": [{"$ref": "#/$defs/nonEmptyString"}, {"type": "integer"}, {"type": "null"}]},
+        "generated_at": {"oneOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]},
+        "license": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "deliveredFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "media_type", "sha256", "size_bytes"],
+      "properties": {
+        "path": {"$ref": "#/$defs/intakePath"},
+        "role": {"enum": ["model", "texture", "preview", "metadata", "other"]},
+        "media_type": {"$ref": "#/$defs/nonEmptyString"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "size_bytes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

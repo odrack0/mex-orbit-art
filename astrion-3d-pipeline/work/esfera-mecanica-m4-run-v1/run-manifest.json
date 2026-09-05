@@ -1,0 +1,310 @@
+{
+  "asset_id": "esfera-mecanica",
+  "completed_at_utc": "2026-09-04T23:02:00.856255+00:00",
+  "created_at_utc": "2026-09-04T23:00:16.012383+00:00",
+  "environment": {
+    "blender": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+    "blender_version": "5.2.1 LTS",
+    "python": "3.12.14",
+    "python_executable": "C:\\Users\\oDrac\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"
+  },
+  "inputs": {
+    "appearance_source": {
+      "bytes": 7215588,
+      "path": "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb",
+      "sha256": "329d02b8980f14fbf4e9524d3529669ab2671ea5647ee7cfd67490e5ba730472"
+    },
+    "source_blend": {
+      "bytes": 139280,
+      "path": "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+      "sha256": "c5adb582dc433e7d0732f88912df06f49b90e5b707e6d82f2357e205a7cb4dcd"
+    },
+    "spec": {
+      "bytes": 7523,
+      "path": "astrion-3d-pipeline/work/esfera-mecanica-m3-v4/esfera-mecanica-m3.spec.json",
+      "sha256": "7d5cddb30bcf7b7a20b1ec152bf8f829d9d7be7b68b0d62c885d2d330a73554c"
+    }
+  },
+  "requested_stages": [
+    "repair",
+    "audit1",
+    "uv"
+  ],
+  "schema_version": "m4-run-0.1",
+  "stages": {
+    "audit1": {
+      "command": [
+        "C:\\Users\\oDrac\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "astrion-3d-pipeline/tools/audit_geometry.py",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.audit1-input.json",
+        "--output",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/geometry-audit-v0.1.json",
+        "--diagnostics-dir",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/diagnostics"
+      ],
+      "completed_at_utc": "2026-09-04T23:00:41.608351+00:00",
+      "exit_code": 0,
+      "log": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/audit1.log",
+      "outputs": [
+        {
+          "bytes": 5792,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.audit1-input.json",
+          "sha256": "c76114d05e51114c8135591f8447dde965667b46867daedee59b7c502ffe95a5"
+        },
+        {
+          "bytes": 5992,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.geometry.json",
+          "sha256": "e21cdf5168b332683ab5b15ddf71fa04d9cd186b1bab747280882c8de8fecb22"
+        },
+        {
+          "bytes": 36300,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/geometry-audit-v0.1.json",
+          "sha256": "2c9e6b957494f2be44e22bb94d8c488cce5ebfa0c3818aa70ea3f86833203943"
+        },
+        {
+          "bytes": 64789,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/diagnostics/silhouette-esfera-mecanica.png",
+          "sha256": "e08906dd2b85fce0359d0ece94dc947feac1c3627e25f4a898d04366250eaec9"
+        },
+        {
+          "bytes": 615,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/audit1.log",
+          "sha256": "f2552b1e275673d6efee1921d5cca2675bf5bf525633987bef64df6972ef3623"
+        }
+      ],
+      "started_at_utc": "2026-09-04T23:00:18.919450+00:00",
+      "status": "complete"
+    },
+    "audit2": {
+      "command": [
+        "C:\\Users\\oDrac\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "astrion-3d-pipeline/tools/audit_m3_esfera.py",
+        "--work-dir",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject",
+        "--spec",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/02-audit1/asset-spec.geometry.json",
+        "--output",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/05-audit2/uv-texture-audit-m3-v0.1.json",
+        "--appearance-source",
+        "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb"
+      ],
+      "completed_at_utc": "2026-09-04T23:02:00.802957+00:00",
+      "exit_code": 0,
+      "log": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/audit2.log",
+      "outputs": [
+        {
+          "bytes": 16047,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/05-audit2/uv-texture-audit-m3-v0.1.json",
+          "sha256": "ddab18e95066de0e7b7073ea9f62e2c30cffb944529a5ea70889d78c0860398c"
+        },
+        {
+          "bytes": 7667,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/asset-spec.m4.json",
+          "sha256": "5d483d05f588a135a020f1fbaf5a7ed80c6adb69f7a2487a26ef09135b6c62d2"
+        },
+        {
+          "bytes": 721,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/audit2.log",
+          "sha256": "b22c86feead3dcacc652795ec0cbaea4d688ecac8e211960f4c82130526ce7c5"
+        }
+      ],
+      "started_at_utc": "2026-09-04T23:01:55.143760+00:00",
+      "status": "complete"
+    },
+    "repair": {
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--python",
+        "tools/reparar-esfera-mecanica.py",
+        "--",
+        "--input",
+        "source/3d-models/procedural/esfera-mecanica/esfera-mecanica.blend",
+        "--output-dir",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair",
+        "--repo-root",
+        ".",
+        "--epsilon",
+        "1e-05"
+      ],
+      "completed_at_utc": "2026-09-04T23:00:18.896838+00:00",
+      "exit_code": 0,
+      "log": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/repair.log",
+      "outputs": [
+        {
+          "bytes": 164059,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair/esfera-mecanica-repaired.blend",
+          "sha256": "d57aa38dd3d746952b3b0d8be54ab33ceb12faac0659e5103ab0b558d9143342"
+        },
+        {
+          "bytes": 130904,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair/esfera-mecanica-repaired.glb",
+          "sha256": "2a25a99667ccbb1cc64fa0d18daf73f802d9d23346fa7ac5c79264583022dd6c"
+        },
+        {
+          "bytes": 7624,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/01-repair/repair-report.json",
+          "sha256": "52bd7fe1f18ce14d108d1b0765b0fad9ed81061aae8f60f630cb290afe5ec81f"
+        },
+        {
+          "bytes": 2148,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/repair.log",
+          "sha256": "d67bec6b944df3235238ce2697ec1bfd30cdd62b64b35b5ca553307bb3725a93"
+        }
+      ],
+      "started_at_utc": "2026-09-04T23:00:16.014387+00:00",
+      "status": "complete"
+    },
+    "reproject": {
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--python",
+        "tools/reproyectar-texturas.py",
+        "--",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject",
+        "source/3d-models/crudo/esfera-mecanica-v2-meshy.glb"
+      ],
+      "completed_at_utc": "2026-09-04T23:01:55.065697+00:00",
+      "exit_code": 0,
+      "log": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/reproject.log",
+      "outputs": [
+        {
+          "bytes": 212550,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v3-tex.blend",
+          "sha256": "7933c4dc62ca0cfda77f9873c2eb828d93c37dd452df263c43e81cf94058a9d8"
+        },
+        {
+          "bytes": 9263396,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/esfera-mecanica-v3-tex.glb",
+          "sha256": "16e241d0840548205a8ac7ca0ca8242535d511c22bafe70428ef047346c519f4"
+        },
+        {
+          "bytes": 1909,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/reporte-reproyeccion.txt",
+          "sha256": "a91955449c7520c49201c7d1810ee58108502443b3edb328f592ce1046612dd1"
+        },
+        {
+          "bytes": 83094,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/emission-mask.png",
+          "sha256": "b88b42c0c609e2bdf09352261974ecc4a0ce00758ca6af8690c3e3f8abecaf24"
+        },
+        {
+          "bytes": 3348636,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/basecolor.png",
+          "sha256": "49bb5de4afc5254103cbe954307b91df2c8d3034ee07d90e3f51cbc0c30196c8"
+        },
+        {
+          "bytes": 2552312,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/normal.png",
+          "sha256": "2cc43c914dca9361277b49422c9979a5095849884ebe2e7b65d337462196a60e"
+        },
+        {
+          "bytes": 3087381,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/orm.png",
+          "sha256": "bbeee63ab6e54efc1590c156134e154570a352b8792c3b6810f939351893117d"
+        },
+        {
+          "bytes": 1161300,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/1024/basecolor.png",
+          "sha256": "f4f644b74d05662d8ee4bb1a7bb1b71628becd7553e23200f52e8d2b6b8a318a"
+        },
+        {
+          "bytes": 894065,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/1024/normal.png",
+          "sha256": "8fbcc1bbc22cd3061486062ce2e7e689bbdc61ec32f2336af9e241d07609d3f3"
+        },
+        {
+          "bytes": 1142219,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/textures/1024/orm.png",
+          "sha256": "28f93d4baed151974ce2ae9d5f665e6a6bae02c7a3d759594c596ca0dfb82434"
+        },
+        {
+          "bytes": 2312952,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/renders/compare-three-quarter.png",
+          "sha256": "250da31f88452c70ca7a484447c9c4600ba967fafa07e50b7559ea01489b3a72"
+        },
+        {
+          "bytes": 196551,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/04-reproject/renders/compare-top-256px.png",
+          "sha256": "366a21318041366b6704c6f287fd3658f9e69c133f25641ed2689389a5cf661d"
+        },
+        {
+          "bytes": 9102,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/reproject.log",
+          "sha256": "d07441988f7f2f829d08c2f0ef7aa601493afb3962d80584528987d503a8d4ab"
+        }
+      ],
+      "started_at_utc": "2026-09-04T23:01:19.269040+00:00",
+      "status": "complete"
+    },
+    "uv": {
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--python",
+        "tools/esfera-mecanica-uv.py",
+        "--",
+        "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv"
+      ],
+      "completed_at_utc": "2026-09-04T23:01:10.520932+00:00",
+      "exit_code": 0,
+      "log": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/uv.log",
+      "outputs": [
+        {
+          "bytes": 164059,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/esfera-mecanica.blend",
+          "sha256": "d57aa38dd3d746952b3b0d8be54ab33ceb12faac0659e5103ab0b558d9143342"
+        },
+        {
+          "bytes": 130904,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/esfera-mecanica-master.glb",
+          "sha256": "2a25a99667ccbb1cc64fa0d18daf73f802d9d23346fa7ac5c79264583022dd6c"
+        },
+        {
+          "bytes": 209284,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/esfera-mecanica-v2-uv.blend",
+          "sha256": "ba2e90d1089f1676f80071abb7d2f73198919beaaaed29f56d161e83b5feb8c0"
+        },
+        {
+          "bytes": 191240,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/esfera-mecanica-v2-uv.glb",
+          "sha256": "9dc693dafca63c41ab1c4ebfed522cae75a555f3b74b0be19361bdcf100f7de0"
+        },
+        {
+          "bytes": 497699,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/uv-layout.png",
+          "sha256": "3ad0067f2e6d0d89ca51be374f4fca3d3f2d0178e44d9d1e945279ea814812f8"
+        },
+        {
+          "bytes": 83094,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/emission-mask.png",
+          "sha256": "b88b42c0c609e2bdf09352261974ecc4a0ce00758ca6af8690c3e3f8abecaf24"
+        },
+        {
+          "bytes": 3587,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/reporte-uv.txt",
+          "sha256": "489e5ed4155ddb62b7a48e60c79699e9eb35c89778248baea19b2c19b864b358"
+        },
+        {
+          "bytes": 2447419,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/stages/03-uv/renders/three-quarter-clean.png",
+          "sha256": "042d4c854d3bba4d9bb4fd8950a2af016b77ea434d9e5573a8e9664bee803bae"
+        },
+        {
+          "bytes": 6221,
+          "path": "astrion-3d-pipeline/work/esfera-mecanica-m4-run-v1/logs/uv.log",
+          "sha256": "1992b649a1d7bb8bbc16ba02b153f9c9c2062ed8e93b8d530d5623a4c8b8025c"
+        }
+      ],
+      "started_at_utc": "2026-09-04T23:00:41.638270+00:00",
+      "status": "complete"
+    }
+  },
+  "status": "complete",
+  "tool": "astrion-m4-esfera-runner/0.1",
+  "tool_sha256": "8a3b088fb699f67add2838835b6570b70f5aa5250e899ebd0443b8c49664acc2"
+}

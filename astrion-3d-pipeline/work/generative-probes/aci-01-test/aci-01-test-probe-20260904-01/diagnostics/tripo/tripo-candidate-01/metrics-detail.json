@@ -1,0 +1,391 @@
+{
+  "candidate_id": "tripo-candidate-01",
+  "gameplay_diagnostic": {
+    "gameplay_projected_span_px": 261,
+    "hidden_triangles_this_view": 9373,
+    "inspection_resolution_px": 560,
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/diagnostics/tripo/tripo-candidate-01/silhouette-tripo-candidate-01.png",
+    "silhouette_triangles": 273,
+    "visible_triangles": 4406
+  },
+  "input_model": {
+    "path": "astrion-3d-pipeline/work/generative-probes/aci-01-test/aci-01-test-probe-20260904-01/intake/tripo/tripo-candidate-01/model.glb",
+    "sha256": "0d58620f4aa39a9dd1d98b787b01d1d9d6faf110a6ab193f0044b67755b74587"
+  },
+  "islands": [
+    {
+      "aspect": 1.07,
+      "boundary_edges": 1322,
+      "closed": false,
+      "diag": 280.803,
+      "flat_card": false,
+      "island": 5,
+      "median_valence": 6,
+      "radial_slots": 1,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        165.719,
+        165.314,
+        155.108
+      ],
+      "size_share_of_asset": 0.979,
+      "slot_regularity": 0.0,
+      "sphere_fit_rms_rel": 0.0404,
+      "tris": 10017,
+      "verts": 5606
+    },
+    {
+      "aspect": 2.92,
+      "boundary_edges": 37,
+      "closed": false,
+      "diag": 89.662,
+      "flat_card": false,
+      "island": 0,
+      "median_valence": 6,
+      "radial_slots": 42,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        61.962,
+        61.233,
+        21.221
+      ],
+      "size_share_of_asset": 0.313,
+      "slot_regularity": 0.205,
+      "sphere_fit_rms_rel": 0.1251,
+      "tris": 1515,
+      "verts": 777
+    },
+    {
+      "aspect": 3.49,
+      "boundary_edges": 59,
+      "closed": false,
+      "diag": 83.752,
+      "flat_card": false,
+      "island": 1,
+      "median_valence": 6,
+      "radial_slots": 49,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        58.156,
+        57.913,
+        16.685
+      ],
+      "size_share_of_asset": 0.292,
+      "slot_regularity": 0.254,
+      "sphere_fit_rms_rel": 0.0966,
+      "tris": 1487,
+      "verts": 774
+    },
+    {
+      "aspect": 1.09,
+      "boundary_edges": 26,
+      "closed": false,
+      "diag": 53.717,
+      "flat_card": false,
+      "island": 6,
+      "median_valence": 5,
+      "radial_slots": 23,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        31.994,
+        31.508,
+        29.483
+      ],
+      "size_share_of_asset": 0.187,
+      "slot_regularity": 0.304,
+      "sphere_fit_rms_rel": 0.1243,
+      "tris": 164,
+      "verts": 96
+    },
+    {
+      "aspect": 1.92,
+      "boundary_edges": 23,
+      "closed": false,
+      "diag": 54.441,
+      "flat_card": false,
+      "island": 9,
+      "median_valence": 5,
+      "radial_slots": 26,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        20.735,
+        30.86,
+        39.769
+      ],
+      "size_share_of_asset": 0.19,
+      "slot_regularity": 0.474,
+      "sphere_fit_rms_rel": 0.1051,
+      "tris": 127,
+      "verts": 76
+    },
+    {
+      "aspect": 1.79,
+      "boundary_edges": 22,
+      "closed": false,
+      "diag": 57.335,
+      "flat_card": false,
+      "island": 7,
+      "median_valence": 5,
+      "radial_slots": 24,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        21.707,
+        36.205,
+        38.797
+      ],
+      "size_share_of_asset": 0.2,
+      "slot_regularity": 0.554,
+      "sphere_fit_rms_rel": 0.1085,
+      "tris": 124,
+      "verts": 74
+    },
+    {
+      "aspect": 2.55,
+      "boundary_edges": 34,
+      "closed": false,
+      "diag": 33.479,
+      "flat_card": false,
+      "island": 3,
+      "median_valence": 5,
+      "radial_slots": 19,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        14.093,
+        28.268,
+        11.097
+      ],
+      "size_share_of_asset": 0.117,
+      "slot_regularity": 0.332,
+      "sphere_fit_rms_rel": 0.2865,
+      "tris": 120,
+      "verts": 78
+    },
+    {
+      "aspect": 2.65,
+      "boundary_edges": 20,
+      "closed": false,
+      "diag": 53.804,
+      "flat_card": false,
+      "island": 8,
+      "median_valence": 5,
+      "radial_slots": 22,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        15.632,
+        30.617,
+        41.389
+      ],
+      "size_share_of_asset": 0.188,
+      "slot_regularity": 0.333,
+      "sphere_fit_rms_rel": 0.1185,
+      "tris": 106,
+      "verts": 64
+    },
+    {
+      "aspect": 2.41,
+      "boundary_edges": 27,
+      "closed": false,
+      "diag": 30.269,
+      "flat_card": false,
+      "island": 2,
+      "median_valence": 4,
+      "radial_slots": 20,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        18.629,
+        22.031,
+        9.153
+      ],
+      "size_share_of_asset": 0.106,
+      "slot_regularity": 0.283,
+      "sphere_fit_rms_rel": 0.2655,
+      "tris": 105,
+      "verts": 67
+    },
+    {
+      "aspect": 1.58,
+      "boundary_edges": 16,
+      "closed": false,
+      "diag": 41.318,
+      "flat_card": false,
+      "island": 4,
+      "median_valence": 3,
+      "radial_slots": 16,
+      "rot_axis": "",
+      "rot_frac": 0.0,
+      "rot_order": 0,
+      "size": [
+        29.645,
+        18.71,
+        21.869
+      ],
+      "size_share_of_asset": 0.144,
+      "slot_regularity": 0.32,
+      "sphere_fit_rms_rel": 0.0036,
+      "tris": 14,
+      "verts": 16
+    }
+  ],
+  "metrics": {
+    "area_share_outer_third_radial": 0.727,
+    "bbox_diag": 286.8937179161821,
+    "bbox_x": 165.8,
+    "bbox_y": 165.31402051783098,
+    "bbox_z": 165.8,
+    "best_mirror": "mirror_x0",
+    "best_mirror_frac": 0.019,
+    "boundary_edges": 1586,
+    "coplanar_clusters": 9936,
+    "degenerate_tris": 0,
+    "duplicate_faces": 0,
+    "edges": 21435,
+    "euler_chi": -28,
+    "hard_edge_ratio": 0.242,
+    "hard_edges_gt30": 4782,
+    "has_normals_stream": true,
+    "hidden_gamecam_ratio": 0.689,
+    "interior_tri_ratio": 0.045,
+    "island_bbox_overlaps": 16,
+    "islands": 10,
+    "largest_island_tri_share": 0.727,
+    "manifold_edge_pairs": 19796,
+    "max_coplanar_cluster_tris": 16,
+    "mean_dihedral_deg": 15.85,
+    "median_tri_px": 5.69,
+    "mirror_x0": 0.019,
+    "mirror_xc": 0.019,
+    "mirror_y0": 0.0,
+    "mirror_yc": 0.016,
+    "mirror_z0": 0.01,
+    "mirror_zc": 0.01,
+    "name": "tripo-candidate-01",
+    "ngon_clusters_ge3": 363,
+    "nonmanifold_edges": 53,
+    "open_shell": true,
+    "planar_islands": 0,
+    "px_per_visible_tri": 25.61,
+    "quad_tri_ratio": 0.483,
+    "quads_detected": 3330,
+    "rot_sym_axis": "",
+    "rot_sym_frac": 0.0,
+    "rot_sym_order": 0,
+    "screen_px_height": 256.0,
+    "silhouette_band_tri_share": 0.115,
+    "subpixel_tri_ratio": 0.141,
+    "surface_area": 134181.6286256343,
+    "tri_share_for_90pct_pixels": 0.158,
+    "tri_share_outer_third_radial": 0.802,
+    "tri_share_x_upper_half": 0.541,
+    "tri_share_y_upper_half": 0.504,
+    "tri_share_z_upper_half": 0.488,
+    "tris": 13779,
+    "tris_for_50pct_pixels": 571,
+    "tris_for_90pct_pixels": 2173,
+    "tris_hidden_gamecam": 9495,
+    "tris_in_flat_clusters_ge3": 1489,
+    "tris_never_visible": 614,
+    "tris_not_in_quad": 7119,
+    "tris_under_1px": 1947,
+    "tris_under_4px": 5605,
+    "tris_visible_gamecam": 4284,
+    "vertex_split_ratio": 1.882,
+    "verts_stored": 14356,
+    "verts_welded": 7628,
+    "visible_px": 109696
+  },
+  "mode": "full",
+  "normalization": {
+    "declared_screen_size_world_units": 165.8,
+    "in_memory_uniform_scale": 165.880996580362,
+    "mutated_input": false,
+    "source_bounds": [
+      0.999511719,
+      0.996582031,
+      0.999511719
+    ]
+  },
+  "probe_id": "aci-01-test-probe-20260904-01",
+  "provider": "tripo",
+  "record_type": "probe_metrics_detail",
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "spatial_query_backend": "astrion.spatial_hash"
+  },
+  "scene": {
+    "active_scene": 0,
+    "components": [
+      {
+        "mesh_index": 0,
+        "name": "tripo_node_e3b155ee-b714-4f3c-a51a-1ba4e0e7ae7f",
+        "node_index": 0,
+        "primitive_count": 1,
+        "triangles": 13779,
+        "vertices": 14356,
+        "world_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "children": [],
+        "has_mesh": true,
+        "index": 0,
+        "local_transform_is_identity": true,
+        "name": "tripo_node_e3b155ee-b714-4f3c-a51a-1ba4e0e7ae7f",
+        "parent": null,
+        "world_translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "normals_complete": true,
+    "transformed_node_count": 0
+  },
+  "schema_version": "0.1",
+  "tool_version": "astrion-probe-measurement/0.1"
+}

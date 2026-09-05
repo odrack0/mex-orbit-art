@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://astrion.local/schemas/geometry-audit-v0.1.schema.json",
+  "title": "Astrion Geometry Audit v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit",
+    "asset",
+    "inputs",
+    "runtime",
+    "camera",
+    "scene",
+    "checks",
+    "metrics",
+    "islands",
+    "diagnostics",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "tool_version", "scope", "excluded", "result"],
+      "properties": {
+        "name": {"const": "astrion_geometry"},
+        "version": {"const": "0.1"},
+        "tool_version": {"type": "string", "minLength": 1},
+        "scope": {"const": "geometry_only"},
+        "excluded": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "result": {"enum": ["pass", "fail", "waived"]}
+      }
+    },
+    "asset": {"type": "object"},
+    "inputs": {"type": "object"},
+    "runtime": {"type": "object"},
+    "camera": {"type": "object"},
+    "scene": {"type": "object"},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "actual", "expected"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["pass", "warning", "error", "informational", "waived"]},
+          "actual": {},
+          "expected": {},
+          "evidence": {"type": "string"},
+          "waiver": {"type": "object"}
+        }
+      }
+    },
+    "metrics": {"type": "object"},
+    "islands": {"type": "array", "items": {"type": "object"}},
+    "diagnostics": {"type": "object"},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["errors", "warnings", "waived", "informational", "passes"],
+      "properties": {
+        "errors": {"type": "integer", "minimum": 0},
+        "warnings": {"type": "integer", "minimum": 0},
+        "waived": {"type": "integer", "minimum": 0},
+        "informational": {"type": "integer", "minimum": 0},
+        "passes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

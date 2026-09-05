@@ -1,0 +1,12 @@
+  esfera: euler V-E+F=2 (2 = cerrada, genero 0), islas=1, desviacion radial max=1.22e-06
+[OK ] Sphere_Core            v=  482 tris=  960 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=0 v_en_superficie=0
+[OK ] Plates_Band_Equator    v=  306 tris=  592 islas= 5 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=8 v_en_superficie=0
+[OK ] Plates_Band_Upper      v=  560 tris= 1072 islas=12 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=36 v_en_superficie=0
+[OK ] Plates_Cap_Upper       v=  312 tris=  592 islas= 8 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=8 v_en_superficie=0
+[OK ] Hub_Pole_Upper         v=   98 tris=  188 islas= 2 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=2 v_en_superficie=0
+[OK ] Core_Bezel_Outer       v=  144 tris=  288 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=24 v_en_superficie=0
+[OK ] Core_Rim_Inner         v=  144 tris=  288 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=24 v_en_superficie=0
+[OK ] Core_Lens              v=   97 tris=  190 islas= 1 | nonmanifold e/v=0/0 borde=0 sueltos v/e=0/0 normales_invertidas=0 vol_neg=0 caras_dup=0 v_dobles=0 astillas=[] caras_enterradas=1 v_en_superficie=0
+TOTAL evaluado: vertices=2143 triangulos=4170
+RESULTADO: TODO OK
+GLB: mallas=8 vertices=4180 triangulos=4170 bytes=131472

@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "identity": {
+    "asset_id": "test-prop",
+    "category": "prop",
+    "family": "test",
+    "tier": "standard",
+    "status": "experimental"
+  },
+  "visual": {
+    "screen_size_world_units": 40,
+    "camera_profile": "top_down_default_v1",
+    "symmetry": {"type": "bilateral_x"},
+    "silhouette_complexity": "low",
+    "major_masses": ["body"],
+    "identity_features": ["wedge silhouette"]
+  },
+  "geometry": {
+    "preferred_origin": "auto",
+    "allowed_origins": ["meshy", "procedural_blender"],
+    "soft_triangle_target": 400,
+    "triangle_ceiling": 800,
+    "coordinate_profile": "astrion_blender_to_godot_v1",
+    "components": {"min": 1, "max": 4, "required": ["body"]},
+    "anchors": {"required": []}
+  },
+  "appearance": {
+    "texture_resolutions": [512],
+    "maps_required": ["base_color", "normal", "orm"],
+    "metallic": "mixed",
+    "roughness": "medium",
+    "wear": "light",
+    "rust": "none",
+    "emission": {"policy": "none", "material_ids": [], "bake_glow_halo": false}
+  },
+  "pipeline": {
+    "stage": "spec_ready",
+    "geometry_outcome": "undecided",
+    "source_inputs": [],
+    "generated_inputs": [],
+    "master_mesh": null,
+    "outputs": [],
+    "audits": {
+      "geometry": {"status": "not_run", "report": null},
+      "uv_textures": {"status": "not_run", "report": null}
+    },
+    "provenance": {}
+  }
+}
