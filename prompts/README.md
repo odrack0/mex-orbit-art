@@ -93,6 +93,19 @@ Extras del pipeline:
 - `tools/extract-emissive.py` — capa emisiva (núcleo/venas/reactor) para glow animado en el juego.
 - `tools/obsidiana.py` — pasada de coherencia del catálogo (casco obsidiana, especulares oro, decorado turquesa), con dial de fuerza.
 
+## Texturas
+
+El contrato de arriba gobierna la **imagen** que va a Meshy. El paso de
+**texturizado** tiene su propio brief, con las bandas por canal derivadas de la
+luz real del cliente: **[`texturas.md`](texturas.md)**. Ahí está el prompt
+listo para pegar, el negativo, y el porqué de cada número.
+
+Comprobar un set antes de aceptarlo:
+
+```bash
+py tools/asset-audit/validate_texture.py ../mex-orbit-client/assets/npcs/aci-01.glb
+```
+
 | Asset | Archivo de prompt | Export |
 |---|---|---|
 | Nave inicial Phoenix | [`phoenix.md`](phoenix.md) | `exports/phoenix.png` (512) |

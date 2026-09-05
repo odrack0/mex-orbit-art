@@ -47,6 +47,24 @@ La comprobación que más suele saltar es **densidad en pantalla** (tris por cad
 caza el asset que pesa como un boss y ocupa como un prop. Solo se aplica por
 encima de 1.000 triángulos — por debajo manda el suelo de forma.
 
+### `validate_texture.py` — el validador del brief de texturas
+
+```bash
+py tools/asset-audit/validate_texture.py ../mex-orbit-client/assets/npcs/aci-01.glb
+```
+
+Comprueba el set PBR de un GLB contra
+[`prompts/texturas.md`](../../prompts/texturas.md) §3: qué mapas trae, la banda
+de luminancia del base color (brillos horneados y negros aplastados), rugosidad,
+metálico y cobertura emisiva.
+
+La emisión se mira dos veces: el **mapa emisivo horneado** si el modelo ya pasó
+por `normalize-model.py`, y la **derivable del color dominante del base color**
+—la heurística de ese script— que es la que importa en un set recién salido del
+generador. Si el modelo ya trae emisivo bueno, la segunda pasa a informativa.
+
+`--emissive-channel=r|g|b|c|m|y` fuerza el canal en vez de elegir el mejor.
+
 ---
 
 ## El motor
